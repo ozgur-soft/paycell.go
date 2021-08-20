@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/rand"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -29,22 +28,22 @@ type API struct {
 
 type Request struct {
 	PaymentMethods struct {
-		MSisdn string        `json:"msisdn,omitempty"`
+		MSisdn interface{}   `json:"msisdn,omitempty"`
 		Header RequestHeader `json:"requestHeader,omitempty"`
 	}
 	MobilePayment struct {
-		MSisdn string        `json:"msisdn,omitempty"`
-		EulaID string        `json:"eulaID,omitempty"`
+		MSisdn interface{}   `json:"msisdn,omitempty"`
+		EulaID interface{}   `json:"eulaID,omitempty"`
 		Header RequestHeader `json:"requestHeader,omitempty"`
 	}
 }
 
 type RequestHeader struct {
-	ApplicationName     string `json:"applicationName,omitempty"`
-	ApplicationPwd      string `json:"applicationPwd,omitempty"`
-	ClientIPAddress     string `json:"clientIPAddress,omitempty"`
-	TransactionDateTime string `json:"transactionDateTime,omitempty"`
-	TransactionId       string `json:"transactionId,omitempty"`
+	ApplicationName     interface{} `json:"applicationName,omitempty"`
+	ApplicationPwd      interface{} `json:"applicationPwd,omitempty"`
+	ClientIPAddress     interface{} `json:"clientIPAddress,omitempty"`
+	TransactionDateTime interface{} `json:"transactionDateTime,omitempty"`
+	TransactionId       interface{} `json:"transactionId,omitempty"`
 }
 
 type Response struct {
@@ -102,10 +101,10 @@ func (api *API) GetPaymentMethods(msisdn, clientip interface{}) (response Respon
 	apiurl := APPLICATION_URL[api.Mode] + "/getPaymentMethods/"
 	request := new(Request)
 	if msisdn != nil {
-		request.PaymentMethods.MSisdn = fmt.Sprintf("%v", msisdn)
+		request.PaymentMethods.MSisdn = msisdn
 	}
 	if clientip != nil {
-		request.PaymentMethods.Header.ClientIPAddress = fmt.Sprintf("%v", clientip)
+		request.PaymentMethods.Header.ClientIPAddress = clientip
 	}
 	request.PaymentMethods.Header.ApplicationName = APPLICATION_NAME
 	request.PaymentMethods.Header.ApplicationPwd = APPLICATION_PASSWORD
@@ -135,13 +134,13 @@ func (api *API) OpenMobilePayment(msisdn, eula, clientip interface{}) (response 
 	apiurl := APPLICATION_URL[api.Mode] + "/openMobilePayment/"
 	request := new(Request)
 	if msisdn != nil {
-		request.MobilePayment.MSisdn = fmt.Sprintf("%v", msisdn)
+		request.MobilePayment.MSisdn = msisdn
 	}
 	if eula != nil {
-		request.MobilePayment.EulaID = fmt.Sprintf("%v", eula)
+		request.MobilePayment.EulaID = eula
 	}
 	if clientip != nil {
-		request.MobilePayment.Header.ClientIPAddress = fmt.Sprintf("%v", clientip)
+		request.MobilePayment.Header.ClientIPAddress = clientip
 	}
 	request.MobilePayment.Header.ApplicationName = APPLICATION_NAME
 	request.MobilePayment.Header.ApplicationPwd = APPLICATION_PASSWORD
