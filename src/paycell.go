@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/rand"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -139,6 +140,8 @@ func (api *API) GetPaymentMethods() (response Response) {
 	decoder := json.NewDecoder(res.Body)
 	decoder.UseNumber()
 	decoder.Decode(&response.PaymentMethods)
+	pretty, _ := json.MarshalIndent(response.PaymentMethods, " ", "\t")
+	fmt.Println(string(pretty))
 	return response
 }
 
@@ -171,6 +174,8 @@ func (api *API) OpenMobilePayment(eula interface{}) (response Response) {
 	decoder := json.NewDecoder(res.Body)
 	decoder.UseNumber()
 	decoder.Decode(&response.MobilePayment)
+	pretty, _ := json.MarshalIndent(response.MobilePayment, " ", "\t")
+	fmt.Println(string(pretty))
 	return response
 }
 
@@ -204,6 +209,8 @@ func (api *API) SendOTP(amount interface{}) (response Response) {
 	decoder := json.NewDecoder(res.Body)
 	decoder.UseNumber()
 	decoder.Decode(&response.OTP)
+	pretty, _ := json.MarshalIndent(response.OTP, " ", "\t")
+	fmt.Println(string(pretty))
 	return response
 }
 
@@ -243,5 +250,7 @@ func (api *API) ValidateOTP(token, otp, amount interface{}) (response Response) 
 	decoder := json.NewDecoder(res.Body)
 	decoder.UseNumber()
 	decoder.Decode(&response.OTP)
+	pretty, _ := json.MarshalIndent(response.OTP, " ", "\t")
+	fmt.Println(string(pretty))
 	return response
 }
