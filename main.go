@@ -9,24 +9,24 @@ import (
 func main() {
 	api := new(paycell.API)
 	api.Mode = "TEST"          // "PROD","TEST"
-	api.MSisdn = "5332149727"  // Müşteri telefon numarası
+	api.MSisdn = "5332109727"  // Müşteri telefon numarası
 	api.ClientIP = "127.0.0.1" // Müşteri ip adresi
 	get := api.GetPaymentMethods()
 	if get.PaymentMethods.Header.ResponseCode == "0" {
-		if !get.PaymentMethods.MobilePayment.IsDcbOpen && get.PaymentMethods.MobilePayment.RemainingLimit != "" {
+		if !get.PaymentMethods.MobilePayment.IsDcbOpen {
 			switch get.PaymentMethods.MobilePayment.IsEulaExpired {
 			case true: // Sözleşmesi Güncel Olmayan Müşteri İçin
 				if get.PaymentMethods.MobilePayment.EulaId != "" {
 					open := api.OpenMobilePayment(get.PaymentMethods.MobilePayment.EulaId)
 					if open.MobilePayment.Header.ResponseCode == "0" {
-						log.Println("otp doğrulandı")
+						log.Println("mobil ödeme açıldı")
 					}
 				}
 			case false: // Sözleşmesi Güncel Olan Müşteri İçin
 				if get.PaymentMethods.MobilePayment.SignedEulaId != "" {
 					open := api.OpenMobilePayment(nil)
 					if open.MobilePayment.Header.ResponseCode == "0" {
-						log.Println("otp doğrulandı")
+						log.Println("mobil ödeme açıldı")
 					}
 				}
 			}
