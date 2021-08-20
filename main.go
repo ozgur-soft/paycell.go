@@ -31,7 +31,8 @@ func main() {
 				}
 			}
 		}
-		amount := "100" // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
+		amount := "100"   // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
+		currency := "TRY" // Para birimi (1,00 -> 100) Son 2 hane kuruş
 		send := api.SendOTP(amount)
 		if send.OTP.Header.ResponseCode == "0" {
 			log.Println("otp gönderildi")
@@ -40,6 +41,10 @@ func main() {
 		validate := api.ValidateOTP(send.OTP.Token, otp, amount)
 		if validate.OTP.Header.ResponseCode == "0" {
 			log.Println("otp doğrulandı")
+		}
+		pay := api.ProvisionAll(amount, currency)
+		if pay.Provision.Header.ResponseCode == "0" {
+			log.Println("ödeme başarılı")
 		}
 	}
 }
