@@ -20,11 +20,11 @@ func main() {
 		case true: // Sözleşmesi Güncel Olmayan Müşteri İçin
 			eulaid := response.PaymentMethods.MobilePayment.EulaId
 			response := api.OpenMobilePayment(msisdn, eulaid, clientip)
-			pretty, _ := json.MarshalIndent(response.PaymentMethods, " ", "\t")
+			pretty, _ := json.MarshalIndent(response.MobilePayment, " ", "\t")
 			fmt.Println(string(pretty))
 		case false: // Sözleşmesi Güncel Olan Müşteri İçin
 			response := api.OpenMobilePayment(msisdn, nil, clientip)
-			pretty, _ := json.MarshalIndent(response.PaymentMethods, " ", "\t")
+			pretty, _ := json.MarshalIndent(response.MobilePayment, " ", "\t")
 			fmt.Println(string(pretty))
 		}
 	}
