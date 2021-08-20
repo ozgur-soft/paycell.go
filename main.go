@@ -9,8 +9,17 @@ import (
 func main() {
 	api := new(paycell.API)
 	api.Mode = "TEST"          // "PROD","TEST"
-	api.MSisdn = "5332109681"  // Müşteri telefon numarası
+	api.MSisdn = "5332109727"  // Müşteri telefon numarası
 	api.ClientIP = "127.0.0.1" // Müşteri ip adresi
+	api.Amount = "100"         // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
+	api.Currency = "TRY"       // Para birimi
+	token := token(api)
+	otp := ""
+	validate(api, token, otp)
+	pay(api)
+}
+
+func token(api *paycell.API) (token string) {
 	get := api.GetPaymentMethods()
 	if get.PaymentMethods.Header.ResponseCode == "0" {
 		if get.PaymentMethods.MobilePayment != nil {
@@ -32,19 +41,21 @@ func main() {
 					}
 				}
 			}
-			amount := "100"   // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
-			currency := "TRY" // Para birimi
-			send := api.SendOTP(amount)
+			send := api.SendOTP()
 			if send.OTP.Header.ResponseCode == "0" {
-				otp := "1234" // Müşteriye gönderilen tek kullanımlık şifre
-				validate := api.ValidateOTP(send.OTP.Token, otp, amount)
-				if validate.OTP.Header.ResponseCode == "0" {
-					pay := api.MobilePayment(amount, currency)
-					if pay.Provision.Header.ResponseCode == "0" {
-						log.Println("ödeme başarılı")
-					}
-				}
+				token = send.OTP.Token
 			}
 		}
 	}
+	return token
+}
+
+func validate(api *paycell.API, token, otp string) bool {
+	validate := api.ValidateOTP(token, otp)
+	return validate.OTP.Header.ResponseCode == "0"
+}
+
+func pay(api *paycell.API) bool {
+	pay := api.MobilePayment()
+	return pay.Provision.Header.ResponseCode == "0"
 }
