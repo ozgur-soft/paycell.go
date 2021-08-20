@@ -1,8 +1,7 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+	"log"
 
 	paycell "github.com/ozgur-soft/paycell/src"
 )
@@ -13,27 +12,32 @@ func main() {
 	api.MSisdn = "5332149727"  // Müşteri telefon numarası
 	api.ClientIP = "127.0.0.1" // Müşteri ip adresi
 	get := api.GetPaymentMethods()
-	pretty, _ := json.MarshalIndent(get.PaymentMethods, " ", "\t")
-	fmt.Println(string(pretty))
+	if get.MobilePayment.Header.ResponseCode == "0" {
+		log.Println("ödeme yöntemleri listesi alındı")
+	}
 	if !get.PaymentMethods.MobilePayment.IsDcbOpen {
 		switch get.PaymentMethods.MobilePayment.IsEulaExpired {
 		case true: // Sözleşmesi Güncel Olmayan Müşteri İçin
 			eulaid := get.PaymentMethods.MobilePayment.EulaId
 			open := api.OpenMobilePayment(eulaid)
-			pretty, _ := json.MarshalIndent(open.MobilePayment, " ", "\t")
-			fmt.Println(string(pretty))
+			if open.MobilePayment.Header.ResponseCode == "0" {
+				log.Println("otp doğrulandı")
+			}
 		case false: // Sözleşmesi Güncel Olan Müşteri İçin
 			open := api.OpenMobilePayment(nil)
-			pretty, _ := json.MarshalIndent(open.MobilePayment, " ", "\t")
-			fmt.Println(string(pretty))
+			if open.MobilePayment.Header.ResponseCode == "0" {
+				log.Println("otp doğrulandı")
+			}
 		}
 	}
 	amount := "100" // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
 	send := api.SendOTP(amount)
-	pretty, _ = json.MarshalIndent(send.OTP, " ", "\t")
-	fmt.Println(string(pretty))
+	if send.OTP.Header.ResponseCode == "0" {
+		log.Println("otp gönderildi")
+	}
 	otp := "" // telefona gelen şifre
 	validate := api.ValidateOTP(send.OTP.Token, otp, amount)
-	pretty, _ = json.MarshalIndent(validate.OTP, " ", "\t")
-	fmt.Println(string(pretty))
+	if validate.OTP.Header.ResponseCode == "0" {
+		log.Println("otp doğrulandı")
+	}
 }
