@@ -17,7 +17,8 @@ func main() {
 		fmt.Println(string(pretty))
 	} else {
 		if response.PaymentMethods.MobilePayment.IsEulaExpired {
-			response := api.OpenMobilePayment(msisdn, response.PaymentMethods.MobilePayment.EulaId, clientip)
+			eulaid := response.PaymentMethods.MobilePayment.EulaId
+			response := api.OpenMobilePayment(msisdn, eulaid, clientip)
 			pretty, _ := json.MarshalIndent(response.PaymentMethods, " ", "\t")
 			fmt.Println(string(pretty))
 		} else {
