@@ -8,24 +8,29 @@ import (
 )
 
 func main() {
-	msisdn := "5325628808"      // Müşteri telefon numarası
-	clientip := "127.0.0.1"     // Müşteri ip adresi
-	api := &paycell.API{"TEST"} // "PROD","TEST"
-	response := api.GetPaymentMethods(msisdn, clientip)
-	if response.PaymentMethods.MobilePayment.IsDcbOpen {
-		pretty, _ := json.MarshalIndent(response.PaymentMethods, " ", "\t")
+	api := new(paycell.API)
+	api.Mode = "TEST"          // "PROD","TEST"
+	api.MSisdn = "5332149727"  // Müşteri telefon numarası
+	api.ClientIP = "127.0.0.1" // Müşteri ip adresi
+	get := api.GetPaymentMethods()
+	if get.PaymentMethods.MobilePayment.IsDcbOpen {
+		pretty, _ := json.MarshalIndent(get.PaymentMethods, " ", "\t")
 		fmt.Println(string(pretty))
 	} else {
-		switch response.PaymentMethods.MobilePayment.IsEulaExpired {
+		switch get.PaymentMethods.MobilePayment.IsEulaExpired {
 		case true: // Sözleşmesi Güncel Olmayan Müşteri İçin
-			eulaid := response.PaymentMethods.MobilePayment.EulaId
-			response := api.OpenMobilePayment(msisdn, eulaid, clientip)
-			pretty, _ := json.MarshalIndent(response.MobilePayment, " ", "\t")
+			eulaid := get.PaymentMethods.MobilePayment.EulaId
+			open := api.OpenMobilePayment(eulaid)
+			pretty, _ := json.MarshalIndent(open.MobilePayment, " ", "\t")
 			fmt.Println(string(pretty))
 		case false: // Sözleşmesi Güncel Olan Müşteri İçin
-			response := api.OpenMobilePayment(msisdn, nil, clientip)
-			pretty, _ := json.MarshalIndent(response.MobilePayment, " ", "\t")
+			open := api.OpenMobilePayment(nil)
+			pretty, _ := json.MarshalIndent(open.MobilePayment, " ", "\t")
 			fmt.Println(string(pretty))
 		}
 	}
+	amount := "100" // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
+	send := api.SendOTP(amount)
+	pretty, _ := json.MarshalIndent(send.OTP, " ", "\t")
+	fmt.Println(string(pretty))
 }
