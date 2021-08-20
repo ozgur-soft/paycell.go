@@ -105,7 +105,9 @@ type Response struct {
 		RetryCount string         `json:"remainingRetryCount,omitempty"`
 	}
 	Provision struct {
-		Header ResponseHeader `json:"responseHeader,omitempty"`
+		Header  ResponseHeader `json:"responseHeader,omitempty"`
+		OrderId string         `json:"orderId,omitempty"`
+		Date    string         `json:"reconciliationDate,omitempty"`
 	}
 }
 
