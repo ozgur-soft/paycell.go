@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/rand"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -29,6 +30,11 @@ type API struct {
 type Request struct {
 	PaymentMethods struct {
 		MSisdn string        `json:"msisdn,omitempty"`
+		Header RequestHeader `json:"requestHeader,omitempty"`
+	}
+	MobilePayment struct {
+		MSisdn string        `json:"msisdn,omitempty"`
+		EulaID string        `json:"eulaID,omitempty"`
 		Header RequestHeader `json:"requestHeader,omitempty"`
 	}
 }
@@ -70,6 +76,9 @@ type Response struct {
 			IsEulaExpired  bool   `json:"isEulaExpired,omitempty"`
 		} `json:"mobilePayment,omitempty"`
 	}
+	MobilePayment struct {
+		Header ResponseHeader `json:"responseHeader,omitempty"`
+	}
 }
 
 type ResponseHeader struct {
@@ -89,8 +98,15 @@ func Random(n int) string {
 	return string(bytes)
 }
 
-func (api *API) GetPaymentMethods(request *Request) (response Response) {
+func (api *API) GetPaymentMethods(msisdn, clientip interface{}) (response Response) {
 	apiurl := APPLICATION_URL[api.Mode] + "/getPaymentMethods/"
+	request := new(Request)
+	if msisdn != nil {
+		request.PaymentMethods.MSisdn = fmt.Sprintf("%v", msisdn)
+	}
+	if clientip != nil {
+		request.PaymentMethods.Header.ClientIPAddress = fmt.Sprintf("%v", clientip)
+	}
 	request.PaymentMethods.Header.ApplicationName = APPLICATION_NAME
 	request.PaymentMethods.Header.ApplicationPwd = APPLICATION_PASSWORD
 	request.PaymentMethods.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
@@ -112,5 +128,41 @@ func (api *API) GetPaymentMethods(request *Request) (response Response) {
 	decoder := json.NewDecoder(res.Body)
 	decoder.UseNumber()
 	decoder.Decode(&response.PaymentMethods)
+	return response
+}
+
+func (api *API) OpenMobilePayment(msisdn, eula, clientip interface{}) (response Response) {
+	apiurl := APPLICATION_URL[api.Mode] + "/openMobilePayment/"
+	request := new(Request)
+	if msisdn != nil {
+		request.MobilePayment.MSisdn = fmt.Sprintf("%v", msisdn)
+	}
+	if eula != nil {
+		request.MobilePayment.EulaID = fmt.Sprintf("%v", eula)
+	}
+	if clientip != nil {
+		request.MobilePayment.Header.ClientIPAddress = fmt.Sprintf("%v", clientip)
+	}
+	request.MobilePayment.Header.ApplicationName = APPLICATION_NAME
+	request.MobilePayment.Header.ApplicationPwd = APPLICATION_PASSWORD
+	request.MobilePayment.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	request.MobilePayment.Header.TransactionId = Random(20)
+	contactdata, _ := json.Marshal(request.MobilePayment)
+	cli := new(http.Client)
+	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
+	if err != nil {
+		log.Println(err)
+		return response
+	}
+	req.Header.Set("Content-Type", "application/json")
+	res, err := cli.Do(req)
+	if err != nil {
+		log.Println(err)
+		return response
+	}
+	defer res.Body.Close()
+	decoder := json.NewDecoder(res.Body)
+	decoder.UseNumber()
+	decoder.Decode(&response.MobilePayment)
 	return response
 }
