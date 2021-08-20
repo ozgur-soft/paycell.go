@@ -58,7 +58,7 @@ type Response struct {
 			IsThreeDValidated bool   `json:"isThreeDValidated,omitempty"`
 			IsOTPValidated    bool   `json:"isOTPValidated,omitempty"`
 		} `json:"cardList,omitempty"`
-		MobilePayment []struct {
+		MobilePayment struct {
 			EulaId         string `json:"eulaId,omitempty"`
 			EulaUrl        string `json:"eulaUrl,omitempty"`
 			SignedEulaId   string `json:"signedEulaId,omitempty"`
