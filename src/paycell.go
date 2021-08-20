@@ -68,10 +68,32 @@ type RequestHeader struct {
 
 type Response struct {
 	PaymentMethods struct {
-		Header        ResponseHeader `json:"responseHeader,omitempty"`
-		EulaID        string         `json:"eulaID,omitempty"`
-		CardList      []Card         `json:"cardList,omitempty"`
-		MobilePayment *MobilePayment `json:"mobilePayment,omitempty"`
+		Header   ResponseHeader `json:"responseHeader,omitempty"`
+		EulaID   string         `json:"eulaID,omitempty"`
+		CardList []struct {
+			CardBrand         string `json:"cardBrand,omitempty"`
+			CardId            string `json:"cardId,omitempty"`
+			CardType          string `json:"cardType,omitempty"`
+			MaskedCardNo      string `json:"maskedCardNo,omitempty"`
+			Alias             string `json:"alias,omitempty"`
+			ActivationDate    string `json:"activationDate,omitempty"`
+			IsDefault         bool   `json:"isDefault,omitempty"`
+			IsExpired         bool   `json:"isExpired,omitempty"`
+			ShowEulaId        bool   `json:"showEulaId,omitempty"`
+			IsThreeDValidated bool   `json:"isThreeDValidated,omitempty"`
+			IsOTPValidated    bool   `json:"isOTPValidated,omitempty"`
+		} `json:"cardList,omitempty"`
+		MobilePayment *struct {
+			EulaId         string `json:"eulaId,omitempty"`
+			EulaUrl        string `json:"eulaUrl,omitempty"`
+			SignedEulaId   string `json:"signedEulaId,omitempty"`
+			StatementDate  string `json:"statementDate,omitempty"`
+			Limit          string `json:"limit,omitempty"`
+			MaxLimit       string `json:"maxLimit,omitempty"`
+			RemainingLimit string `json:"remainingLimit,omitempty"`
+			IsDcbOpen      bool   `json:"isDcbOpen,omitempty"`
+			IsEulaExpired  bool   `json:"isEulaExpired,omitempty"`
+		} `json:"mobilePayment,omitempty"`
 	}
 	MobilePayment struct {
 		Header ResponseHeader `json:"responseHeader,omitempty"`
@@ -94,32 +116,6 @@ type ResponseHeader struct {
 	ResponseDescription string `json:"responseDescription,omitempty"`
 	ResponseDateTime    string `json:"responseDateTime,omitempty"`
 	TransactionId       string `json:"transactionId,omitempty"`
-}
-
-type Card struct {
-	CardBrand         string `json:"cardBrand,omitempty"`
-	CardId            string `json:"cardId,omitempty"`
-	CardType          string `json:"cardType,omitempty"`
-	MaskedCardNo      string `json:"maskedCardNo,omitempty"`
-	Alias             string `json:"alias,omitempty"`
-	ActivationDate    string `json:"activationDate,omitempty"`
-	IsDefault         bool   `json:"isDefault,omitempty"`
-	IsExpired         bool   `json:"isExpired,omitempty"`
-	ShowEulaId        bool   `json:"showEulaId,omitempty"`
-	IsThreeDValidated bool   `json:"isThreeDValidated,omitempty"`
-	IsOTPValidated    bool   `json:"isOTPValidated,omitempty"`
-}
-
-type MobilePayment struct {
-	EulaId         string `json:"eulaId,omitempty"`
-	EulaUrl        string `json:"eulaUrl,omitempty"`
-	SignedEulaId   string `json:"signedEulaId,omitempty"`
-	StatementDate  string `json:"statementDate,omitempty"`
-	Limit          string `json:"limit,omitempty"`
-	MaxLimit       string `json:"maxLimit,omitempty"`
-	RemainingLimit string `json:"remainingLimit,omitempty"`
-	IsDcbOpen      bool   `json:"isDcbOpen,omitempty"`
-	IsEulaExpired  bool   `json:"isEulaExpired,omitempty"`
 }
 
 func Random(n int) string {
