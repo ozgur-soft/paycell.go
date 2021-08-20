@@ -13,10 +13,9 @@ func main() {
 	api.MSisdn = "5332149727"  // Müşteri telefon numarası
 	api.ClientIP = "127.0.0.1" // Müşteri ip adresi
 	get := api.GetPaymentMethods()
-	if get.PaymentMethods.MobilePayment.IsDcbOpen {
-		pretty, _ := json.MarshalIndent(get.PaymentMethods, " ", "\t")
-		fmt.Println(string(pretty))
-	} else {
+	pretty, _ := json.MarshalIndent(get.PaymentMethods, " ", "\t")
+	fmt.Println(string(pretty))
+	if !get.PaymentMethods.MobilePayment.IsDcbOpen {
 		switch get.PaymentMethods.MobilePayment.IsEulaExpired {
 		case true: // Sözleşmesi Güncel Olmayan Müşteri İçin
 			eulaid := get.PaymentMethods.MobilePayment.EulaId
@@ -31,6 +30,10 @@ func main() {
 	}
 	amount := "100" // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
 	send := api.SendOTP(amount)
-	pretty, _ := json.MarshalIndent(send.OTP, " ", "\t")
+	pretty, _ = json.MarshalIndent(send.OTP, " ", "\t")
+	fmt.Println(string(pretty))
+	otp := "" // telefona gelen şifre
+	validate := api.ValidateOTP(send.OTP.Token, otp, amount)
+	pretty, _ = json.MarshalIndent(validate.OTP, " ", "\t")
 	fmt.Println(string(pretty))
 }
