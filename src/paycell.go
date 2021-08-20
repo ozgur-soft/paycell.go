@@ -26,6 +26,8 @@ type API struct {
 	Mode     string
 	MSisdn   string
 	ClientIP string
+	Amount   string
+	Currency string
 }
 
 type Request struct {
@@ -162,15 +164,15 @@ func (api *API) GetPaymentMethods() (response Response) {
 func (api *API) OpenMobilePayment(eula interface{}) (response Response) {
 	apiurl := APPLICATION_URL[api.Mode] + "/openMobilePayment/"
 	request := new(Request)
-	if eula != nil {
-		request.MobilePayment.EulaID = eula
-	}
-	request.MobilePayment.MSisdn = api.MSisdn
 	request.MobilePayment.Header.ClientIPAddress = api.ClientIP
 	request.MobilePayment.Header.ApplicationName = APPLICATION_NAME
 	request.MobilePayment.Header.ApplicationPwd = APPLICATION_PASSWORD
 	request.MobilePayment.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	request.MobilePayment.Header.TransactionId = Random(20)
+	request.MobilePayment.MSisdn = api.MSisdn
+	if eula != nil {
+		request.MobilePayment.EulaID = eula
+	}
 	contactdata, _ := json.Marshal(request.MobilePayment)
 	cli := new(http.Client)
 	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
@@ -193,19 +195,17 @@ func (api *API) OpenMobilePayment(eula interface{}) (response Response) {
 	return response
 }
 
-func (api *API) SendOTP(amount interface{}) (response Response) {
+func (api *API) SendOTP() (response Response) {
 	apiurl := APPLICATION_URL[api.Mode] + "/sendOTP/"
 	request := new(Request)
-	if amount != nil {
-		request.OTP.Amount = amount
-	}
-	request.OTP.MSisdn = api.MSisdn
 	request.OTP.Header.ClientIPAddress = api.ClientIP
 	request.OTP.Header.ApplicationName = APPLICATION_NAME
 	request.OTP.Header.ApplicationPwd = APPLICATION_PASSWORD
 	request.OTP.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	request.OTP.Header.TransactionId = Random(20)
+	request.OTP.MSisdn = api.MSisdn
 	request.OTP.RefNo = Random(20)
+	request.OTP.Amount = api.Amount
 	contactdata, _ := json.Marshal(request.OTP)
 	cli := new(http.Client)
 	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
@@ -228,25 +228,23 @@ func (api *API) SendOTP(amount interface{}) (response Response) {
 	return response
 }
 
-func (api *API) ValidateOTP(token, otp, amount interface{}) (response Response) {
+func (api *API) ValidateOTP(token, otp interface{}) (response Response) {
 	apiurl := APPLICATION_URL[api.Mode] + "/validateOTP/"
 	request := new(Request)
+	request.OTP.Header.ClientIPAddress = api.ClientIP
+	request.OTP.Header.ApplicationName = APPLICATION_NAME
+	request.OTP.Header.ApplicationPwd = APPLICATION_PASSWORD
+	request.OTP.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	request.OTP.Header.TransactionId = Random(20)
+	request.OTP.MSisdn = api.MSisdn
+	request.OTP.RefNo = Random(20)
+	request.OTP.Amount = api.Amount
 	if token != nil {
 		request.OTP.Token = token
 	}
 	if otp != nil {
 		request.OTP.OTP = otp
 	}
-	if amount != nil {
-		request.OTP.Amount = amount
-	}
-	request.OTP.MSisdn = api.MSisdn
-	request.OTP.Header.ClientIPAddress = api.ClientIP
-	request.OTP.Header.ApplicationName = APPLICATION_NAME
-	request.OTP.Header.ApplicationPwd = APPLICATION_PASSWORD
-	request.OTP.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
-	request.OTP.Header.TransactionId = Random(20)
-	request.OTP.RefNo = Random(20)
 	contactdata, _ := json.Marshal(request.OTP)
 	cli := new(http.Client)
 	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
@@ -269,25 +267,21 @@ func (api *API) ValidateOTP(token, otp, amount interface{}) (response Response) 
 	return response
 }
 
-func (api *API) MobilePayment(amount, currency interface{}) (response Response) {
+func (api *API) MobilePayment() (response Response) {
 	apiurl := APPLICATION_URL[api.Mode] + "/provisionAll/"
 	request := new(Request)
-	if amount != nil {
-		request.Provision.Amount = amount
-	}
-	if currency != nil {
-		request.Provision.Currency = currency
-	}
-	request.Provision.PaymentType = "SALE"
-	request.Provision.PaymentMethod = "MOBILE_PAYMENT"
-	request.Provision.MSisdn = api.MSisdn
-	request.Provision.MerchantCode = MERCHANT_CODE
 	request.Provision.Header.ClientIPAddress = api.ClientIP
 	request.Provision.Header.ApplicationName = APPLICATION_NAME
 	request.Provision.Header.ApplicationPwd = APPLICATION_PASSWORD
 	request.Provision.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	request.Provision.Header.TransactionId = Random(20)
+	request.Provision.MSisdn = api.MSisdn
+	request.Provision.MerchantCode = MERCHANT_CODE
 	request.Provision.RefNo = REFNO_PREFIX + fmt.Sprintf("%v", request.Provision.Header.TransactionDateTime)
+	request.Provision.Amount = api.Amount
+	request.Provision.Currency = api.Currency
+	request.Provision.PaymentType = "SALE"
+	request.Provision.PaymentMethod = "MOBILE_PAYMENT"
 	contactdata, _ := json.Marshal(request.Provision)
 	cli := new(http.Client)
 	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
