@@ -12,9 +12,8 @@ import (
 )
 
 var (
+	REFNO_PREFIX         = "001"
 	MERCHANT_CODE        = "9998"
-	SECURE_CODE          = "PAYCELL12345"
-	TERMINAL_CODE        = "12345"
 	APPLICATION_NAME     = "PAYCELLTEST"
 	APPLICATION_PASSWORD = "PaycellTestPassword"
 	APPLICATION_URL      = map[string]string{
@@ -268,7 +267,7 @@ func (api *API) ValidateOTP(token, otp, amount interface{}) (response Response) 
 	return response
 }
 
-func (api *API) ProvisionAll(amount, currency interface{}) (response Response) {
+func (api *API) MobilePayment(amount, currency interface{}) (response Response) {
 	apiurl := APPLICATION_URL[api.Mode] + "/provisionAll/"
 	request := new(Request)
 	if amount != nil {
@@ -277,13 +276,16 @@ func (api *API) ProvisionAll(amount, currency interface{}) (response Response) {
 	if currency != nil {
 		request.Provision.Currency = currency
 	}
+	request.Provision.PaymentType = "SALE"
+	request.Provision.PaymentMethod = "MOBILE_PAYMENT"
 	request.Provision.MSisdn = api.MSisdn
+	request.Provision.MerchantCode = MERCHANT_CODE
 	request.Provision.Header.ClientIPAddress = api.ClientIP
 	request.Provision.Header.ApplicationName = APPLICATION_NAME
 	request.Provision.Header.ApplicationPwd = APPLICATION_PASSWORD
 	request.Provision.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	request.Provision.Header.TransactionId = Random(20)
-	request.Provision.RefNo = Random(20)
+	request.Provision.RefNo = REFNO_PREFIX + fmt.Sprintf("%v", request.Provision.Header.TransactionDateTime)
 	contactdata, _ := json.Marshal(request.Provision)
 	cli := new(http.Client)
 	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
