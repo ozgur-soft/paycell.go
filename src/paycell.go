@@ -47,6 +47,10 @@ type Request struct {
 		Token  interface{}   `json:"token,omitempty"`
 		Header RequestHeader `json:"requestHeader,omitempty"`
 	}
+	Provision struct {
+		MSisdn interface{}   `json:"msisdn,omitempty"`
+		Header RequestHeader `json:"requestHeader,omitempty"`
+	}
 }
 
 type RequestHeader struct {
@@ -94,6 +98,9 @@ type Response struct {
 		Token      string         `json:"token,omitempty"`
 		ExpireDate string         `json:"expireDate,omitempty"`
 		RetryCount string         `json:"remainingRetryCount,omitempty"`
+	}
+	Provision struct {
+		Header ResponseHeader `json:"responseHeader,omitempty"`
 	}
 }
 
@@ -223,6 +230,41 @@ func (api *API) ValidateOTP(token, otp, amount interface{}) (response Response) 
 	if otp != nil {
 		request.OTP.OTP = otp
 	}
+	if amount != nil {
+		request.OTP.Amount = amount
+	}
+	request.OTP.MSisdn = api.MSisdn
+	request.OTP.Header.ClientIPAddress = api.ClientIP
+	request.OTP.Header.ApplicationName = APPLICATION_NAME
+	request.OTP.Header.ApplicationPwd = APPLICATION_PASSWORD
+	request.OTP.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	request.OTP.Header.TransactionId = Random(20)
+	request.OTP.RefNo = Random(20)
+	contactdata, _ := json.Marshal(request.OTP)
+	cli := new(http.Client)
+	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
+	if err != nil {
+		log.Println(err)
+		return response
+	}
+	req.Header.Set("Content-Type", "application/json")
+	res, err := cli.Do(req)
+	if err != nil {
+		log.Println(err)
+		return response
+	}
+	defer res.Body.Close()
+	decoder := json.NewDecoder(res.Body)
+	decoder.UseNumber()
+	decoder.Decode(&response.OTP)
+	pretty, _ := json.MarshalIndent(response.OTP, " ", "\t")
+	fmt.Println(string(pretty))
+	return response
+}
+
+func (api *API) ProvisionAll(amount interface{}) (response Response) {
+	apiurl := APPLICATION_URL[api.Mode] + "/provisionAll/"
+	request := new(Request)
 	if amount != nil {
 		request.OTP.Amount = amount
 	}
