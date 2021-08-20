@@ -16,12 +16,13 @@ func main() {
 		pretty, _ := json.MarshalIndent(response.PaymentMethods, " ", "\t")
 		fmt.Println(string(pretty))
 	} else {
-		if response.PaymentMethods.MobilePayment.IsEulaExpired {
+		switch response.PaymentMethods.MobilePayment.IsEulaExpired {
+		case true: // Sözleşmesi Güncel Olmayan Müşteri İçin
 			eulaid := response.PaymentMethods.MobilePayment.EulaId
 			response := api.OpenMobilePayment(msisdn, eulaid, clientip)
 			pretty, _ := json.MarshalIndent(response.PaymentMethods, " ", "\t")
 			fmt.Println(string(pretty))
-		} else {
+		case false: // Sözleşmesi Güncel Olan Müşteri İçin
 			response := api.OpenMobilePayment(msisdn, nil, clientip)
 			pretty, _ := json.MarshalIndent(response.PaymentMethods, " ", "\t")
 			fmt.Println(string(pretty))
