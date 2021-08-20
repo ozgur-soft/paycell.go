@@ -36,7 +36,7 @@ func main() {
 		if send.OTP.Header.ResponseCode == "0" {
 			log.Println("otp gönderildi")
 		}
-		otp := "" // telefona gelen şifre
+		otp := "" // Müşteriye gönderilen tek kullanımlık şifre
 		validate := api.ValidateOTP(send.OTP.Token, otp, amount)
 		if validate.OTP.Header.ResponseCode == "0" {
 			log.Println("otp doğrulandı")
