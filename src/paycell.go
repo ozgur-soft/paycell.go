@@ -48,8 +48,14 @@ type Request struct {
 		Header RequestHeader `json:"requestHeader,omitempty"`
 	}
 	Provision struct {
-		MSisdn interface{}   `json:"msisdn,omitempty"`
-		Header RequestHeader `json:"requestHeader,omitempty"`
+		MSisdn        interface{}   `json:"msisdn,omitempty"`
+		Amount        interface{}   `json:"amount,omitempty"`
+		Currency      interface{}   `json:"currency,omitempty"`
+		RefNo         interface{}   `json:"referenceNumber,omitempty"`
+		PaymentType   interface{}   `json:"paymentType,omitempty"`
+		PaymentMethod interface{}   `json:"paymentMethodType,omitempty"`
+		MerchantCode  interface{}   `json:"merchantCode,omitempty"`
+		Header        RequestHeader `json:"requestHeader,omitempty"`
 	}
 }
 
@@ -262,20 +268,23 @@ func (api *API) ValidateOTP(token, otp, amount interface{}) (response Response) 
 	return response
 }
 
-func (api *API) ProvisionAll(amount interface{}) (response Response) {
+func (api *API) ProvisionAll(amount, currency interface{}) (response Response) {
 	apiurl := APPLICATION_URL[api.Mode] + "/provisionAll/"
 	request := new(Request)
 	if amount != nil {
-		request.OTP.Amount = amount
+		request.Provision.Amount = amount
 	}
-	request.OTP.MSisdn = api.MSisdn
-	request.OTP.Header.ClientIPAddress = api.ClientIP
-	request.OTP.Header.ApplicationName = APPLICATION_NAME
-	request.OTP.Header.ApplicationPwd = APPLICATION_PASSWORD
-	request.OTP.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
-	request.OTP.Header.TransactionId = Random(20)
-	request.OTP.RefNo = Random(20)
-	contactdata, _ := json.Marshal(request.OTP)
+	if currency != nil {
+		request.Provision.Currency = currency
+	}
+	request.Provision.MSisdn = api.MSisdn
+	request.Provision.Header.ClientIPAddress = api.ClientIP
+	request.Provision.Header.ApplicationName = APPLICATION_NAME
+	request.Provision.Header.ApplicationPwd = APPLICATION_PASSWORD
+	request.Provision.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	request.Provision.Header.TransactionId = Random(20)
+	request.Provision.RefNo = Random(20)
+	contactdata, _ := json.Marshal(request.Provision)
 	cli := new(http.Client)
 	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
 	if err != nil {
@@ -291,8 +300,8 @@ func (api *API) ProvisionAll(amount interface{}) (response Response) {
 	defer res.Body.Close()
 	decoder := json.NewDecoder(res.Body)
 	decoder.UseNumber()
-	decoder.Decode(&response.OTP)
-	pretty, _ := json.MarshalIndent(response.OTP, " ", "\t")
+	decoder.Decode(&response.Provision)
+	pretty, _ := json.MarshalIndent(response.Provision, " ", "\t")
 	fmt.Println(string(pretty))
 	return response
 }
