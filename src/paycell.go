@@ -48,6 +48,7 @@ type Response struct {
 		CardList []struct {
 			CardBrand         string `json:"cardBrand,omitempty"`
 			CardId            string `json:"cardId,omitempty"`
+			CardType          string `json:"cardType,omitempty"`
 			MaskedCardNo      string `json:"maskedCardNo,omitempty"`
 			Alias             string `json:"alias,omitempty"`
 			ActivationDate    string `json:"activationDate,omitempty"`
