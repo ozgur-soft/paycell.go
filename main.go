@@ -12,32 +12,34 @@ func main() {
 	api.MSisdn = "5332149727"  // Müşteri telefon numarası
 	api.ClientIP = "127.0.0.1" // Müşteri ip adresi
 	get := api.GetPaymentMethods()
-	if get.MobilePayment.Header.ResponseCode == "0" {
-		log.Println("ödeme yöntemleri listesi alındı")
-	}
-	if !get.PaymentMethods.MobilePayment.IsDcbOpen {
-		switch get.PaymentMethods.MobilePayment.IsEulaExpired {
-		case true: // Sözleşmesi Güncel Olmayan Müşteri İçin
-			eulaid := get.PaymentMethods.MobilePayment.EulaId
-			open := api.OpenMobilePayment(eulaid)
-			if open.MobilePayment.Header.ResponseCode == "0" {
-				log.Println("otp doğrulandı")
-			}
-		case false: // Sözleşmesi Güncel Olan Müşteri İçin
-			open := api.OpenMobilePayment(nil)
-			if open.MobilePayment.Header.ResponseCode == "0" {
-				log.Println("otp doğrulandı")
+	if get.PaymentMethods.Header.ResponseCode == "0" {
+		if !get.PaymentMethods.MobilePayment.IsDcbOpen && get.PaymentMethods.MobilePayment.RemainingLimit != "" {
+			switch get.PaymentMethods.MobilePayment.IsEulaExpired {
+			case true: // Sözleşmesi Güncel Olmayan Müşteri İçin
+				if get.PaymentMethods.MobilePayment.EulaId != "" {
+					open := api.OpenMobilePayment(get.PaymentMethods.MobilePayment.EulaId)
+					if open.MobilePayment.Header.ResponseCode == "0" {
+						log.Println("otp doğrulandı")
+					}
+				}
+			case false: // Sözleşmesi Güncel Olan Müşteri İçin
+				if get.PaymentMethods.MobilePayment.SignedEulaId != "" {
+					open := api.OpenMobilePayment(nil)
+					if open.MobilePayment.Header.ResponseCode == "0" {
+						log.Println("otp doğrulandı")
+					}
+				}
 			}
 		}
-	}
-	amount := "100" // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
-	send := api.SendOTP(amount)
-	if send.OTP.Header.ResponseCode == "0" {
-		log.Println("otp gönderildi")
-	}
-	otp := "" // telefona gelen şifre
-	validate := api.ValidateOTP(send.OTP.Token, otp, amount)
-	if validate.OTP.Header.ResponseCode == "0" {
-		log.Println("otp doğrulandı")
+		amount := "100" // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
+		send := api.SendOTP(amount)
+		if send.OTP.Header.ResponseCode == "0" {
+			log.Println("otp gönderildi")
+		}
+		otp := "" // telefona gelen şifre
+		validate := api.ValidateOTP(send.OTP.Token, otp, amount)
+		if validate.OTP.Header.ResponseCode == "0" {
+			log.Println("otp doğrulandı")
+		}
 	}
 }
