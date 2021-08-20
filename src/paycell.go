@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -91,7 +92,7 @@ func (api *API) GetPaymentMethods(request *Request) (response Response) {
 	apiurl := APPLICATION_URL[api.Mode] + "/getPaymentMethods/"
 	request.PaymentMethods.Header.ApplicationName = APPLICATION_NAME
 	request.PaymentMethods.Header.ApplicationPwd = APPLICATION_PASSWORD
-	request.PaymentMethods.Header.TransactionDateTime = time.Now().Format("20060102150405000")
+	request.PaymentMethods.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	request.PaymentMethods.Header.TransactionId = Random(20)
 	contactdata, _ := json.Marshal(request.PaymentMethods)
 	cli := new(http.Client)
