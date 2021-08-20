@@ -15,8 +15,10 @@ func main() {
 	api.Currency = "TRY"       // Para birimi
 	token := token(api)
 	otp := ""
-	validate(api, token, otp)
-	pay(api)
+	valid := validate(api, token, otp)
+	if valid {
+		pay(api)
+	}
 }
 
 func token(api *paycell.API) (token string) {
