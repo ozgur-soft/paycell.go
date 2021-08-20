@@ -23,7 +23,9 @@ var (
 )
 
 type API struct {
-	Mode string
+	Mode     string
+	MSisdn   string
+	ClientIP string
 }
 
 type Request struct {
@@ -34,6 +36,14 @@ type Request struct {
 	MobilePayment struct {
 		MSisdn interface{}   `json:"msisdn,omitempty"`
 		EulaID interface{}   `json:"eulaID,omitempty"`
+		Header RequestHeader `json:"requestHeader,omitempty"`
+	}
+	OTP struct {
+		MSisdn interface{}   `json:"msisdn,omitempty"`
+		Amount interface{}   `json:"amount,omitempty"`
+		RefNo  interface{}   `json:"referenceNumber,omitempty"`
+		OTP    interface{}   `json:"otp,omitempty"`
+		Token  interface{}   `json:"token,omitempty"`
 		Header RequestHeader `json:"requestHeader,omitempty"`
 	}
 }
@@ -78,6 +88,12 @@ type Response struct {
 	MobilePayment struct {
 		Header ResponseHeader `json:"responseHeader,omitempty"`
 	}
+	OTP struct {
+		Header     ResponseHeader `json:"responseHeader,omitempty"`
+		Token      string         `json:"token,omitempty"`
+		ExpireDate string         `json:"expireDate,omitempty"`
+		RetryCount string         `json:"remainingRetryCount,omitempty"`
+	}
 }
 
 type ResponseHeader struct {
@@ -97,15 +113,11 @@ func Random(n int) string {
 	return string(bytes)
 }
 
-func (api *API) GetPaymentMethods(msisdn, clientip interface{}) (response Response) {
+func (api *API) GetPaymentMethods() (response Response) {
 	apiurl := APPLICATION_URL[api.Mode] + "/getPaymentMethods/"
 	request := new(Request)
-	if msisdn != nil {
-		request.PaymentMethods.MSisdn = msisdn
-	}
-	if clientip != nil {
-		request.PaymentMethods.Header.ClientIPAddress = clientip
-	}
+	request.PaymentMethods.MSisdn = api.MSisdn
+	request.PaymentMethods.Header.ClientIPAddress = api.ClientIP
 	request.PaymentMethods.Header.ApplicationName = APPLICATION_NAME
 	request.PaymentMethods.Header.ApplicationPwd = APPLICATION_PASSWORD
 	request.PaymentMethods.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
@@ -130,18 +142,14 @@ func (api *API) GetPaymentMethods(msisdn, clientip interface{}) (response Respon
 	return response
 }
 
-func (api *API) OpenMobilePayment(msisdn, eula, clientip interface{}) (response Response) {
+func (api *API) OpenMobilePayment(eula interface{}) (response Response) {
 	apiurl := APPLICATION_URL[api.Mode] + "/openMobilePayment/"
 	request := new(Request)
-	if msisdn != nil {
-		request.MobilePayment.MSisdn = msisdn
-	}
 	if eula != nil {
 		request.MobilePayment.EulaID = eula
 	}
-	if clientip != nil {
-		request.MobilePayment.Header.ClientIPAddress = clientip
-	}
+	request.MobilePayment.MSisdn = api.MSisdn
+	request.MobilePayment.Header.ClientIPAddress = api.ClientIP
 	request.MobilePayment.Header.ApplicationName = APPLICATION_NAME
 	request.MobilePayment.Header.ApplicationPwd = APPLICATION_PASSWORD
 	request.MobilePayment.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
@@ -163,5 +171,77 @@ func (api *API) OpenMobilePayment(msisdn, eula, clientip interface{}) (response 
 	decoder := json.NewDecoder(res.Body)
 	decoder.UseNumber()
 	decoder.Decode(&response.MobilePayment)
+	return response
+}
+
+func (api *API) SendOTP(amount interface{}) (response Response) {
+	apiurl := APPLICATION_URL[api.Mode] + "/sendOTP/"
+	request := new(Request)
+	if amount != nil {
+		request.OTP.Amount = amount
+	}
+	request.OTP.MSisdn = api.MSisdn
+	request.OTP.Header.ClientIPAddress = api.ClientIP
+	request.OTP.Header.ApplicationName = APPLICATION_NAME
+	request.OTP.Header.ApplicationPwd = APPLICATION_PASSWORD
+	request.OTP.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	request.OTP.Header.TransactionId = Random(20)
+	request.OTP.RefNo = Random(20)
+	contactdata, _ := json.Marshal(request.OTP)
+	cli := new(http.Client)
+	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
+	if err != nil {
+		log.Println(err)
+		return response
+	}
+	req.Header.Set("Content-Type", "application/json")
+	res, err := cli.Do(req)
+	if err != nil {
+		log.Println(err)
+		return response
+	}
+	defer res.Body.Close()
+	decoder := json.NewDecoder(res.Body)
+	decoder.UseNumber()
+	decoder.Decode(&response.OTP)
+	return response
+}
+
+func (api *API) ValidateOTP(token, otp, amount interface{}) (response Response) {
+	apiurl := APPLICATION_URL[api.Mode] + "/validateOTP/"
+	request := new(Request)
+	if token != nil {
+		request.OTP.Token = token
+	}
+	if otp != nil {
+		request.OTP.OTP = otp
+	}
+	if amount != nil {
+		request.OTP.Amount = amount
+	}
+	request.OTP.MSisdn = api.MSisdn
+	request.OTP.Header.ClientIPAddress = api.ClientIP
+	request.OTP.Header.ApplicationName = APPLICATION_NAME
+	request.OTP.Header.ApplicationPwd = APPLICATION_PASSWORD
+	request.OTP.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	request.OTP.Header.TransactionId = Random(20)
+	request.OTP.RefNo = Random(20)
+	contactdata, _ := json.Marshal(request.OTP)
+	cli := new(http.Client)
+	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
+	if err != nil {
+		log.Println(err)
+		return response
+	}
+	req.Header.Set("Content-Type", "application/json")
+	res, err := cli.Do(req)
+	if err != nil {
+		log.Println(err)
+		return response
+	}
+	defer res.Body.Close()
+	decoder := json.NewDecoder(res.Body)
+	decoder.UseNumber()
+	decoder.Decode(&response.OTP)
 	return response
 }
