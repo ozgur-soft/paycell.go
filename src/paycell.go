@@ -43,12 +43,13 @@ type Request struct {
 		Header RequestHeader `json:"requestHeader,omitempty"`
 	}
 	OTP struct {
-		MSisdn any           `json:"msisdn,omitempty"`
-		Amount any           `json:"amount,omitempty"`
-		RefNo  any           `json:"referenceNumber,omitempty"`
-		OTP    any           `json:"otp,omitempty"`
-		Token  any           `json:"token,omitempty"`
-		Header RequestHeader `json:"requestHeader,omitempty"`
+		MSisdn   any           `json:"msisdn,omitempty"`
+		Amount   any           `json:"amount,omitempty"`
+		Currency any           `json:"currency,omitempty"`
+		RefNo    any           `json:"referenceNumber,omitempty"`
+		OTP      any           `json:"otp,omitempty"`
+		Token    any           `json:"token,omitempty"`
+		Header   RequestHeader `json:"requestHeader,omitempty"`
 	}
 	Provision struct {
 		MSisdn        any           `json:"msisdn,omitempty"`
@@ -78,6 +79,7 @@ type Request struct {
 		MSisdn        any           `json:"msisdn,omitempty"`
 		MerchantCode  any           `json:"merchantCode,omitempty"`
 		Amount        any           `json:"amount,omitempty"`
+		Currency      any           `json:"currency,omitempty"`
 		RefNo         any           `json:"referenceNumber,omitempty"`
 		OriginalRefNo any           `json:"originalReferenceNumber,omitempty"`
 		Header        RequestHeader `json:"requestHeader,omitempty"`
@@ -89,6 +91,7 @@ type Request struct {
 		CardToken    any           `json:"cardToken,omitempty"`
 		Installment  any           `json:"installmentCount,omitempty"`
 		Amount       any           `json:"amount,omitempty"`
+		Currency     any           `json:"currency,omitempty"`
 		RefNo        any           `json:"referenceNumber,omitempty"`
 		Target       any           `json:"target,omitempty"`
 		Transaction  any           `json:"transactionType,omitempty"`
@@ -358,6 +361,74 @@ func (api *API) MobilePayment() (response Response) {
 	decoder.UseNumber()
 	decoder.Decode(&response.Provision)
 	pretty, _ := json.MarshalIndent(response.Provision, " ", "\t")
+	fmt.Println(string(pretty))
+	return response
+}
+
+func (api *API) ThreeDSession() (response Response) {
+	apiurl := Endpoint[api.Mode] + "/getThreeDSession/"
+	request := new(Request)
+	request.ThreeDSession.Header.ClientIPAddress = api.ClientIP
+	request.ThreeDSession.Header.ApplicationName = Application
+	request.ThreeDSession.Header.ApplicationPwd = Password
+	request.ThreeDSession.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	request.ThreeDSession.Header.TransactionId = Random(20)
+	request.ThreeDSession.MSisdn = api.MSisdn
+	request.ThreeDSession.MerchantCode = Merchant
+	request.ThreeDSession.RefNo = RefPrefix + fmt.Sprintf("%v", request.ThreeDSession.Header.TransactionDateTime)
+	request.ThreeDSession.Amount = api.Amount
+	request.ThreeDSession.Currency = api.Currency
+	contactdata, _ := json.Marshal(request.ThreeDSession)
+	cli := new(http.Client)
+	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
+	if err != nil {
+		log.Println(err)
+		return response
+	}
+	req.Header.Set("Content-Type", "application/json")
+	res, err := cli.Do(req)
+	if err != nil {
+		log.Println(err)
+		return response
+	}
+	defer res.Body.Close()
+	decoder := json.NewDecoder(res.Body)
+	decoder.UseNumber()
+	decoder.Decode(&response.ThreeDSession)
+	pretty, _ := json.MarshalIndent(response.ThreeDSession, " ", "\t")
+	fmt.Println(string(pretty))
+	return response
+}
+
+func (api *API) ThreeDResult() (response Response) {
+	apiurl := Endpoint[api.Mode] + "/getThreeDSessionResult/"
+	request := new(Request)
+	request.ThreeDResult.Header.ClientIPAddress = api.ClientIP
+	request.ThreeDResult.Header.ApplicationName = Application
+	request.ThreeDResult.Header.ApplicationPwd = Password
+	request.ThreeDResult.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	request.ThreeDResult.Header.TransactionId = Random(20)
+	request.ThreeDResult.MSisdn = api.MSisdn
+	request.ThreeDResult.MerchantCode = Merchant
+	request.ThreeDResult.RefNo = RefPrefix + fmt.Sprintf("%v", request.ThreeDResult.Header.TransactionDateTime)
+	contactdata, _ := json.Marshal(request.ThreeDResult)
+	cli := new(http.Client)
+	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
+	if err != nil {
+		log.Println(err)
+		return response
+	}
+	req.Header.Set("Content-Type", "application/json")
+	res, err := cli.Do(req)
+	if err != nil {
+		log.Println(err)
+		return response
+	}
+	defer res.Body.Close()
+	decoder := json.NewDecoder(res.Body)
+	decoder.UseNumber()
+	decoder.Decode(&response.ThreeDResult)
+	pretty, _ := json.MarshalIndent(response.ThreeDResult, " ", "\t")
 	fmt.Println(string(pretty))
 	return response
 }
