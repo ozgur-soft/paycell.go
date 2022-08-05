@@ -21,7 +21,7 @@ func main() {
 	}
 }
 
-func token(api *paycell.API) (token string) {
+func token(api *paycell.API) (token interface{}) {
 	get := api.GetPaymentMethods()
 	if get.PaymentMethods.Header.ResponseCode == "0" {
 		if get.PaymentMethods.MobilePayment != nil {
@@ -52,7 +52,7 @@ func token(api *paycell.API) (token string) {
 	return token
 }
 
-func validate(api *paycell.API, token, otp string) bool {
+func validate(api *paycell.API, token, otp interface{}) bool {
 	validate := api.ValidateOTP(token, otp)
 	return validate.OTP.Header.ResponseCode == "0"
 }
