@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	paycell "github.com/ozgur-soft/paycell/src"
@@ -14,10 +15,13 @@ func main() {
 	api.Amount = "100"         // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
 	api.Currency = "TRY"       // Para birimi
 	token := token(api)
-	otp := ""
-	valid := validate(api, token, otp)
-	if valid {
-		pay(api)
+	if token != nil {
+		fmt.Println(token)
+		otp := ""
+		valid := validate(api, token, otp)
+		if valid {
+			pay(api)
+		}
 	}
 }
 
