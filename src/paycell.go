@@ -17,8 +17,9 @@ var (
 	Application = "PAYCELLTEST"
 	Password    = "PaycellTestPassword"
 	StoreKey    = "PAYCELL12345"
-	RefPrefix   = "001"
 	Merchant    = "9998"
+	EulaID      = "17"
+	Prefix      = "666"
 	Endpoint    = map[string]string{
 		"PROD":  "https://tpay.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
 		"TEST":  "https://tpay-test.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
@@ -224,7 +225,7 @@ func (api *API) Auth() (response Response) {
 	request.Provision.Header.TransactionId = Random(20)
 	request.Provision.MSisdn = api.MSisdn
 	request.Provision.MerchantCode = Merchant
-	request.Provision.RefNo = RefPrefix + fmt.Sprintf("%v", request.Provision.Header.TransactionDateTime)
+	request.Provision.RefNo = Prefix + fmt.Sprintf("%v", request.Provision.Header.TransactionDateTime)
 	request.Provision.Amount = api.Amount
 	request.Provision.Currency = api.Currency
 	request.Provision.PaymentType = "SALE"
@@ -260,7 +261,7 @@ func (api *API) PreAuth() (response Response) {
 	request.Provision.Header.TransactionId = Random(20)
 	request.Provision.MSisdn = api.MSisdn
 	request.Provision.MerchantCode = Merchant
-	request.Provision.RefNo = RefPrefix + fmt.Sprintf("%v", request.Provision.Header.TransactionDateTime)
+	request.Provision.RefNo = Prefix + fmt.Sprintf("%v", request.Provision.Header.TransactionDateTime)
 	request.Provision.Amount = api.Amount
 	request.Provision.Currency = api.Currency
 	request.Provision.PaymentType = "PREAUTH"
@@ -296,7 +297,7 @@ func (api *API) PostAuth() (response Response) {
 	request.Provision.Header.TransactionId = Random(20)
 	request.Provision.MSisdn = api.MSisdn
 	request.Provision.MerchantCode = Merchant
-	request.Provision.RefNo = RefPrefix + fmt.Sprintf("%v", request.Provision.Header.TransactionDateTime)
+	request.Provision.RefNo = Prefix + fmt.Sprintf("%v", request.Provision.Header.TransactionDateTime)
 	request.Provision.Amount = api.Amount
 	request.Provision.Currency = api.Currency
 	request.Provision.PaymentType = "POSTAUTH"
@@ -332,7 +333,7 @@ func (api *API) ThreeDSession() (response Response) {
 	request.ThreeDSession.Header.TransactionId = Random(20)
 	request.ThreeDSession.MSisdn = api.MSisdn
 	request.ThreeDSession.MerchantCode = Merchant
-	request.ThreeDSession.RefNo = RefPrefix + fmt.Sprintf("%v", request.ThreeDSession.Header.TransactionDateTime)
+	request.ThreeDSession.RefNo = Prefix + fmt.Sprintf("%v", request.ThreeDSession.Header.TransactionDateTime)
 	request.ThreeDSession.Amount = api.Amount
 	request.ThreeDSession.Currency = api.Currency
 	contactdata, _ := json.Marshal(request.ThreeDSession)
@@ -367,7 +368,7 @@ func (api *API) ThreeDResult(session interface{}) (response Response) {
 	request.ThreeDResult.Header.TransactionId = Random(20)
 	request.ThreeDResult.MSisdn = api.MSisdn
 	request.ThreeDResult.MerchantCode = Merchant
-	request.ThreeDResult.RefNo = RefPrefix + fmt.Sprintf("%v", request.ThreeDResult.Header.TransactionDateTime)
+	request.ThreeDResult.RefNo = Prefix + fmt.Sprintf("%v", request.ThreeDResult.Header.TransactionDateTime)
 	if session != nil {
 		request.ThreeDResult.ThreeDSession = session
 	}
