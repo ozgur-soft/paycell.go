@@ -330,8 +330,8 @@ func (api *API) ValidateOTP(token, otp interface{}) (response Response) {
 	return response
 }
 
-func (api *API) MobilePayment() (response Response) {
-	apiurl := Endpoint[api.Mode] + "/provisionAll/"
+func (api *API) Auth() (response Response) {
+	apiurl := Endpoint[api.Mode] + "/provision/"
 	request := new(Request)
 	request.Provision.Header.ClientIPAddress = api.ClientIP
 	request.Provision.Header.ApplicationName = Application
@@ -344,6 +344,78 @@ func (api *API) MobilePayment() (response Response) {
 	request.Provision.Amount = api.Amount
 	request.Provision.Currency = api.Currency
 	request.Provision.PaymentType = "SALE"
+	contactdata, _ := json.Marshal(request.Provision)
+	cli := new(http.Client)
+	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
+	if err != nil {
+		log.Println(err)
+		return response
+	}
+	req.Header.Set("Content-Type", "application/json")
+	res, err := cli.Do(req)
+	if err != nil {
+		log.Println(err)
+		return response
+	}
+	defer res.Body.Close()
+	decoder := json.NewDecoder(res.Body)
+	decoder.UseNumber()
+	decoder.Decode(&response.Provision)
+	pretty, _ := json.MarshalIndent(response.Provision, " ", "\t")
+	fmt.Println(string(pretty))
+	return response
+}
+
+func (api *API) PreAuth() (response Response) {
+	apiurl := Endpoint[api.Mode] + "/provision/"
+	request := new(Request)
+	request.Provision.Header.ClientIPAddress = api.ClientIP
+	request.Provision.Header.ApplicationName = Application
+	request.Provision.Header.ApplicationPwd = Password
+	request.Provision.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	request.Provision.Header.TransactionId = Random(20)
+	request.Provision.MSisdn = api.MSisdn
+	request.Provision.MerchantCode = Merchant
+	request.Provision.RefNo = RefPrefix + fmt.Sprintf("%v", request.Provision.Header.TransactionDateTime)
+	request.Provision.Amount = api.Amount
+	request.Provision.Currency = api.Currency
+	request.Provision.PaymentType = "PREAUTH"
+	contactdata, _ := json.Marshal(request.Provision)
+	cli := new(http.Client)
+	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
+	if err != nil {
+		log.Println(err)
+		return response
+	}
+	req.Header.Set("Content-Type", "application/json")
+	res, err := cli.Do(req)
+	if err != nil {
+		log.Println(err)
+		return response
+	}
+	defer res.Body.Close()
+	decoder := json.NewDecoder(res.Body)
+	decoder.UseNumber()
+	decoder.Decode(&response.Provision)
+	pretty, _ := json.MarshalIndent(response.Provision, " ", "\t")
+	fmt.Println(string(pretty))
+	return response
+}
+
+func (api *API) PostAuth() (response Response) {
+	apiurl := Endpoint[api.Mode] + "/provision/"
+	request := new(Request)
+	request.Provision.Header.ClientIPAddress = api.ClientIP
+	request.Provision.Header.ApplicationName = Application
+	request.Provision.Header.ApplicationPwd = Password
+	request.Provision.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	request.Provision.Header.TransactionId = Random(20)
+	request.Provision.MSisdn = api.MSisdn
+	request.Provision.MerchantCode = Merchant
+	request.Provision.RefNo = RefPrefix + fmt.Sprintf("%v", request.Provision.Header.TransactionDateTime)
+	request.Provision.Amount = api.Amount
+	request.Provision.Currency = api.Currency
+	request.Provision.PaymentType = "POSTAUTH"
 	contactdata, _ := json.Marshal(request.Provision)
 	cli := new(http.Client)
 	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
