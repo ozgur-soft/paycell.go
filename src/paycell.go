@@ -13,9 +13,10 @@ import (
 
 var (
 	Application = "PAYCELLTEST"
+	Password    = "PaycellTestPassword"
+	StoreKey    = "PAYCELL12345"
 	RefPrefix   = "001"
 	Merchant    = "9998"
-	Password    = "PaycellTestPassword"
 	Endpoint    = map[string]string{
 		"PROD": "https://tpay.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
 		"TEST": "https://tpay-test.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
