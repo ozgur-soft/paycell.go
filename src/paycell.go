@@ -36,24 +36,6 @@ type API struct {
 }
 
 type Request struct {
-	PaymentMethods struct {
-		MSisdn any           `json:"msisdn,omitempty"`
-		Header RequestHeader `json:"requestHeader,omitempty"`
-	}
-	MobilePayment struct {
-		MSisdn any           `json:"msisdn,omitempty"`
-		EulaID any           `json:"eulaID,omitempty"`
-		Header RequestHeader `json:"requestHeader,omitempty"`
-	}
-	OTP struct {
-		MSisdn   any           `json:"msisdn,omitempty"`
-		Amount   any           `json:"amount,omitempty"`
-		Currency any           `json:"currency,omitempty"`
-		RefNo    any           `json:"referenceNumber,omitempty"`
-		OTP      any           `json:"otp,omitempty"`
-		Token    any           `json:"token,omitempty"`
-		Header   RequestHeader `json:"requestHeader,omitempty"`
-	}
 	Provision struct {
 		MSisdn        any           `json:"msisdn,omitempty"`
 		MerchantCode  any           `json:"merchantCode,omitempty"`
@@ -106,6 +88,24 @@ type Request struct {
 		RefNo         any           `json:"referenceNumber,omitempty"`
 		ThreeDSession any           `json:"threeDSessionId,omitempty"`
 		Header        RequestHeader `json:"requestHeader,omitempty"`
+	}
+	PaymentMethods struct {
+		MSisdn any           `json:"msisdn,omitempty"`
+		Header RequestHeader `json:"requestHeader,omitempty"`
+	}
+	MobilePayment struct {
+		MSisdn any           `json:"msisdn,omitempty"`
+		EulaID any           `json:"eulaID,omitempty"`
+		Header RequestHeader `json:"requestHeader,omitempty"`
+	}
+	OTP struct {
+		MSisdn   any           `json:"msisdn,omitempty"`
+		Amount   any           `json:"amount,omitempty"`
+		Currency any           `json:"currency,omitempty"`
+		RefNo    any           `json:"referenceNumber,omitempty"`
+		OTP      any           `json:"otp,omitempty"`
+		Token    any           `json:"token,omitempty"`
+		Header   RequestHeader `json:"requestHeader,omitempty"`
 	}
 }
 
