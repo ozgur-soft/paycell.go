@@ -56,11 +56,13 @@ type Request struct {
 		RefNo         string        `json:"referenceNumber,omitempty"`
 		OriginalRefNo string        `json:"originalReferenceNumber,omitempty"`
 		Amount        string        `json:"amount,omitempty"`
+		PointAmount   string        `json:"pointAmount,omitempty"`
 		Currency      string        `json:"currency,omitempty"`
 		Installment   string        `json:"installmentCount,omitempty"`
 		PaymentType   string        `json:"paymentType,omitempty"`
 		AcquirerBank  string        `json:"acquirerBankCode,omitempty"`
 		SessionId     string        `json:"threeDSessionId,omitempty"`
+		Pin           string        `json:"pin,omitempty"`
 		Header        RequestHeader `json:"requestHeader,omitempty"`
 	}
 	Reverse struct {
