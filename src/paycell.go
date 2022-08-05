@@ -66,13 +66,8 @@ type Request struct {
 	Reverse struct {
 		MSisdn        string        `json:"msisdn,omitempty"`
 		MerchantCode  string        `json:"merchantCode,omitempty"`
-		CardId        string        `json:"cardId,omitempty"`
 		RefNo         string        `json:"referenceNumber,omitempty"`
 		OriginalRefNo string        `json:"originalReferenceNumber,omitempty"`
-		Amount        string        `json:"amount,omitempty"`
-		Currency      string        `json:"currency,omitempty"`
-		AcquirerBank  string        `json:"acquirerBankCode,omitempty"`
-		SessionId     string        `json:"threeDSessionId,omitempty"`
 		Header        RequestHeader `json:"requestHeader,omitempty"`
 	}
 	Refund struct {
