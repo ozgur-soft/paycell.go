@@ -50,11 +50,11 @@ type Request struct {
 	}
 	Provision struct {
 		MSisdn        string        `json:"msisdn,omitempty"`
+		MerchantCode  string        `json:"merchantCode,omitempty"`
 		CardId        string        `json:"cardId,omitempty"`
 		CardToken     string        `json:"cardToken,omitempty"`
 		RefNo         string        `json:"referenceNumber,omitempty"`
 		OriginalRefNo string        `json:"originalReferenceNumber,omitempty"`
-		MerchantCode  string        `json:"merchantCode,omitempty"`
 		Amount        string        `json:"amount,omitempty"`
 		Currency      string        `json:"currency,omitempty"`
 		Installment   string        `json:"installmentCount,omitempty"`
@@ -65,10 +65,10 @@ type Request struct {
 	}
 	Reverse struct {
 		MSisdn        string        `json:"msisdn,omitempty"`
+		MerchantCode  string        `json:"merchantCode,omitempty"`
 		CardId        string        `json:"cardId,omitempty"`
 		RefNo         string        `json:"referenceNumber,omitempty"`
 		OriginalRefNo string        `json:"originalReferenceNumber,omitempty"`
-		MerchantCode  string        `json:"merchantCode,omitempty"`
 		Amount        string        `json:"amount,omitempty"`
 		Currency      string        `json:"currency,omitempty"`
 		AcquirerBank  string        `json:"acquirerBankCode,omitempty"`
@@ -76,9 +76,9 @@ type Request struct {
 		Header        RequestHeader `json:"requestHeader,omitempty"`
 	}
 	Refund struct {
-		Amount        string        `json:"amount,omitempty"`
-		MerchantCode  string        `json:"merchantCode,omitempty"`
 		MSisdn        string        `json:"msisdn,omitempty"`
+		MerchantCode  string        `json:"merchantCode,omitempty"`
+		Amount        string        `json:"amount,omitempty"`
 		RefNo         string        `json:"referenceNumber,omitempty"`
 		OriginalRefNo string        `json:"originalReferenceNumber,omitempty"`
 		Header        RequestHeader `json:"requestHeader,omitempty"`
