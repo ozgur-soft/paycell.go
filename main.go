@@ -9,11 +9,11 @@ import (
 
 func main() {
 	api := new(paycell.API)
-	api.Mode = "TEST"          // "PROD","TEST"
-	api.MSisdn = "5332109727"  // Müşteri telefon numarası
-	api.ClientIP = "127.0.0.1" // Müşteri ip adresi
-	api.Amount = "100"         // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
-	api.Currency = "TRY"       // Para birimi
+	api.Mode = "TEST"           // "PROD","TEST"
+	api.MSisdn = "905591111177" // Müşteri telefon numarası
+	api.ClientIP = "127.0.0.1"  // Müşteri ip adresi
+	api.Amount = "100"          // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
+	api.Currency = "TRY"        // Para birimi
 	token := token(api)
 	if token != nil {
 		fmt.Println(token)
@@ -62,6 +62,6 @@ func validate(api *paycell.API, token, otp interface{}) bool {
 }
 
 func pay(api *paycell.API) bool {
-	pay := api.MobilePayment()
+	pay := api.Auth()
 	return pay.Provision.Header.ResponseCode == "0"
 }
