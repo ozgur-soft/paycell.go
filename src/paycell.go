@@ -32,40 +32,65 @@ type API struct {
 
 type Request struct {
 	PaymentMethods struct {
-		MSisdn interface{}   `json:"msisdn,omitempty"`
+		MSisdn string        `json:"msisdn,omitempty"`
 		Header RequestHeader `json:"requestHeader,omitempty"`
 	}
 	MobilePayment struct {
-		MSisdn interface{}   `json:"msisdn,omitempty"`
-		EulaID interface{}   `json:"eulaID,omitempty"`
+		MSisdn string        `json:"msisdn,omitempty"`
+		EulaID string        `json:"eulaID,omitempty"`
 		Header RequestHeader `json:"requestHeader,omitempty"`
 	}
 	OTP struct {
-		MSisdn interface{}   `json:"msisdn,omitempty"`
-		Amount interface{}   `json:"amount,omitempty"`
-		RefNo  interface{}   `json:"referenceNumber,omitempty"`
-		OTP    interface{}   `json:"otp,omitempty"`
-		Token  interface{}   `json:"token,omitempty"`
+		MSisdn string        `json:"msisdn,omitempty"`
+		Amount string        `json:"amount,omitempty"`
+		RefNo  string        `json:"referenceNumber,omitempty"`
+		OTP    string        `json:"otp,omitempty"`
+		Token  string        `json:"token,omitempty"`
 		Header RequestHeader `json:"requestHeader,omitempty"`
 	}
 	Provision struct {
-		MSisdn        interface{}   `json:"msisdn,omitempty"`
-		Amount        interface{}   `json:"amount,omitempty"`
-		Currency      interface{}   `json:"currency,omitempty"`
-		RefNo         interface{}   `json:"referenceNumber,omitempty"`
-		PaymentType   interface{}   `json:"paymentType,omitempty"`
-		PaymentMethod interface{}   `json:"paymentMethodType,omitempty"`
-		MerchantCode  interface{}   `json:"merchantCode,omitempty"`
+		MSisdn        string        `json:"msisdn,omitempty"`
+		CardId        string        `json:"cardId,omitempty"`
+		CardToken     string        `json:"cardToken,omitempty"`
+		RefNo         string        `json:"referenceNumber,omitempty"`
+		OriginalRefNo string        `json:"originalReferenceNumber,omitempty"`
+		MerchantCode  string        `json:"merchantCode,omitempty"`
+		Amount        string        `json:"amount,omitempty"`
+		Currency      string        `json:"currency,omitempty"`
+		Installment   string        `json:"installmentCount,omitempty"`
+		PaymentType   string        `json:"paymentType,omitempty"`
+		AcquirerBank  string        `json:"acquirerBankCode,omitempty"`
+		SessionId     string        `json:"threeDSessionId,omitempty"`
+		Header        RequestHeader `json:"requestHeader,omitempty"`
+	}
+	Reverse struct {
+		MSisdn        string        `json:"msisdn,omitempty"`
+		CardId        string        `json:"cardId,omitempty"`
+		RefNo         string        `json:"referenceNumber,omitempty"`
+		OriginalRefNo string        `json:"originalReferenceNumber,omitempty"`
+		MerchantCode  string        `json:"merchantCode,omitempty"`
+		Amount        string        `json:"amount,omitempty"`
+		Currency      string        `json:"currency,omitempty"`
+		AcquirerBank  string        `json:"acquirerBankCode,omitempty"`
+		SessionId     string        `json:"threeDSessionId,omitempty"`
+		Header        RequestHeader `json:"requestHeader,omitempty"`
+	}
+	Refund struct {
+		Amount        string        `json:"amount,omitempty"`
+		MerchantCode  string        `json:"merchantCode,omitempty"`
+		MSisdn        string        `json:"msisdn,omitempty"`
+		RefNo         string        `json:"referenceNumber,omitempty"`
+		OriginalRefNo string        `json:"originalReferenceNumber,omitempty"`
 		Header        RequestHeader `json:"requestHeader,omitempty"`
 	}
 }
 
 type RequestHeader struct {
-	ApplicationName     interface{} `json:"applicationName,omitempty"`
-	ApplicationPwd      interface{} `json:"applicationPwd,omitempty"`
-	ClientIPAddress     interface{} `json:"clientIPAddress,omitempty"`
-	TransactionDateTime interface{} `json:"transactionDateTime,omitempty"`
-	TransactionId       interface{} `json:"transactionId,omitempty"`
+	ApplicationName     string `json:"applicationName,omitempty"`
+	ApplicationPwd      string `json:"applicationPwd,omitempty"`
+	ClientIPAddress     string `json:"clientIPAddress,omitempty"`
+	TransactionDateTime string `json:"transactionDateTime,omitempty"`
+	TransactionId       string `json:"transactionId,omitempty"`
 }
 
 type Response struct {
@@ -107,9 +132,12 @@ type Response struct {
 		RetryCount string         `json:"remainingRetryCount,omitempty"`
 	}
 	Provision struct {
-		Header    ResponseHeader `json:"responseHeader,omitempty"`
-		OrderId   string         `json:"orderId,omitempty"`
-		OrderDate string         `json:"reconciliationDate,omitempty"`
+		Header       ResponseHeader `json:"responseHeader,omitempty"`
+		OrderId      string         `json:"orderId,omitempty"`
+		OrderDate    string         `json:"reconciliationDate,omitempty"`
+		ApprovalCode string         `json:"approvalCodeo,omitempty"`
+		AcquirerBank string         `json:"acquirerBankCode,omitempty"`
+		IssuerBank   string         `json:"issuerBankCode,omitempty"`
 	}
 }
 
