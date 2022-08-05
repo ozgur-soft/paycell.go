@@ -12,11 +12,11 @@ import (
 )
 
 var (
-	REFNO_PREFIX         = "001"
-	MERCHANT_CODE        = "9998"
-	APPLICATION_NAME     = "PAYCELLTEST"
-	APPLICATION_PASSWORD = "PaycellTestPassword"
-	APPLICATION_URL      = map[string]string{
+	Application = "PAYCELLTEST"
+	RefPrefix   = "001"
+	Merchant    = "9998"
+	Password    = "PaycellTestPassword"
+	Endpoint    = map[string]string{
 		"PROD": "https://tpay.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
 		"TEST": "https://tpay-test.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
 	}
@@ -156,12 +156,12 @@ func Random(n int) string {
 }
 
 func (api *API) GetPaymentMethods() (response Response) {
-	apiurl := APPLICATION_URL[api.Mode] + "/getPaymentMethods/"
+	apiurl := Endpoint[api.Mode] + "/getPaymentMethods/"
 	request := new(Request)
 	request.PaymentMethods.MSisdn = api.MSisdn
 	request.PaymentMethods.Header.ClientIPAddress = api.ClientIP
-	request.PaymentMethods.Header.ApplicationName = APPLICATION_NAME
-	request.PaymentMethods.Header.ApplicationPwd = APPLICATION_PASSWORD
+	request.PaymentMethods.Header.ApplicationName = Application
+	request.PaymentMethods.Header.ApplicationPwd = Password
 	request.PaymentMethods.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	request.PaymentMethods.Header.TransactionId = Random(20)
 	contactdata, _ := json.Marshal(request.PaymentMethods)
@@ -187,11 +187,11 @@ func (api *API) GetPaymentMethods() (response Response) {
 }
 
 func (api *API) OpenMobilePayment(eula interface{}) (response Response) {
-	apiurl := APPLICATION_URL[api.Mode] + "/openMobilePayment/"
+	apiurl := Endpoint[api.Mode] + "/openMobilePayment/"
 	request := new(Request)
 	request.MobilePayment.Header.ClientIPAddress = api.ClientIP
-	request.MobilePayment.Header.ApplicationName = APPLICATION_NAME
-	request.MobilePayment.Header.ApplicationPwd = APPLICATION_PASSWORD
+	request.MobilePayment.Header.ApplicationName = Application
+	request.MobilePayment.Header.ApplicationPwd = Password
 	request.MobilePayment.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	request.MobilePayment.Header.TransactionId = Random(20)
 	request.MobilePayment.MSisdn = api.MSisdn
@@ -221,11 +221,11 @@ func (api *API) OpenMobilePayment(eula interface{}) (response Response) {
 }
 
 func (api *API) SendOTP() (response Response) {
-	apiurl := APPLICATION_URL[api.Mode] + "/sendOTP/"
+	apiurl := Endpoint[api.Mode] + "/sendOTP/"
 	request := new(Request)
 	request.OTP.Header.ClientIPAddress = api.ClientIP
-	request.OTP.Header.ApplicationName = APPLICATION_NAME
-	request.OTP.Header.ApplicationPwd = APPLICATION_PASSWORD
+	request.OTP.Header.ApplicationName = Application
+	request.OTP.Header.ApplicationPwd = Password
 	request.OTP.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	request.OTP.Header.TransactionId = Random(20)
 	request.OTP.MSisdn = api.MSisdn
@@ -254,11 +254,11 @@ func (api *API) SendOTP() (response Response) {
 }
 
 func (api *API) ValidateOTP(token, otp interface{}) (response Response) {
-	apiurl := APPLICATION_URL[api.Mode] + "/validateOTP/"
+	apiurl := Endpoint[api.Mode] + "/validateOTP/"
 	request := new(Request)
 	request.OTP.Header.ClientIPAddress = api.ClientIP
-	request.OTP.Header.ApplicationName = APPLICATION_NAME
-	request.OTP.Header.ApplicationPwd = APPLICATION_PASSWORD
+	request.OTP.Header.ApplicationName = Application
+	request.OTP.Header.ApplicationPwd = Password
 	request.OTP.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	request.OTP.Header.TransactionId = Random(20)
 	request.OTP.MSisdn = api.MSisdn
@@ -293,16 +293,16 @@ func (api *API) ValidateOTP(token, otp interface{}) (response Response) {
 }
 
 func (api *API) MobilePayment() (response Response) {
-	apiurl := APPLICATION_URL[api.Mode] + "/provisionAll/"
+	apiurl := Endpoint[api.Mode] + "/provisionAll/"
 	request := new(Request)
 	request.Provision.Header.ClientIPAddress = api.ClientIP
-	request.Provision.Header.ApplicationName = APPLICATION_NAME
-	request.Provision.Header.ApplicationPwd = APPLICATION_PASSWORD
+	request.Provision.Header.ApplicationName = Application
+	request.Provision.Header.ApplicationPwd = Password
 	request.Provision.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	request.Provision.Header.TransactionId = Random(20)
 	request.Provision.MSisdn = api.MSisdn
-	request.Provision.MerchantCode = MERCHANT_CODE
-	request.Provision.RefNo = REFNO_PREFIX + fmt.Sprintf("%v", request.Provision.Header.TransactionDateTime)
+	request.Provision.MerchantCode = Merchant
+	request.Provision.RefNo = RefPrefix + fmt.Sprintf("%v", request.Provision.Header.TransactionDateTime)
 	request.Provision.Amount = api.Amount
 	request.Provision.Currency = api.Currency
 	request.Provision.PaymentType = "SALE"
