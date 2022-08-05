@@ -205,14 +205,12 @@ func Random(n int) string {
 }
 
 func (api *API) HashRequest(transactionId, transactionDateTime string) string {
-	hashpassword := SHA256(strings.ToUpper(Password + Application))
-	hashdata := SHA256(strings.ToUpper(Application + transactionId + transactionDateTime + StoreKey + hashpassword))
+	hashdata := SHA256(strings.ToUpper(Application + transactionId + transactionDateTime + StoreKey + SHA256(strings.ToUpper(Password+Application))))
 	return hashdata
 }
 
 func (api *API) HashResponse(transactionId, responseDateTime, responseCode, cardToken string) string {
-	hashpassword := SHA256(strings.ToUpper(Password + Application))
-	hashdata := SHA256(strings.ToUpper(Application + transactionId + responseDateTime + responseCode + cardToken + StoreKey + hashpassword))
+	hashdata := SHA256(strings.ToUpper(Application + transactionId + responseDateTime + responseCode + cardToken + StoreKey + SHA256(strings.ToUpper(Password+Application))))
 	return hashdata
 }
 
