@@ -18,8 +18,10 @@ var (
 	RefPrefix   = "001"
 	Merchant    = "9998"
 	Endpoint    = map[string]string{
-		"PROD": "https://tpay.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
-		"TEST": "https://tpay-test.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
+		"PROD":   "https://tpay.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
+		"TEST":   "https://tpay-test.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
+		"PROD3D": "https://omccstb.turkcell.com.tr/paymentmanagement/rest/getCardTokenSecure",
+		"TEST3D": "https://omccstb.turkcell.com.tr/paymentmanagement/rest/getCardTokenSecure",
 	}
 )
 
