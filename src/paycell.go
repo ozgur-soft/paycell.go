@@ -3,6 +3,8 @@ package paycell
 import (
 	"bytes"
 	"crypto/rand"
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -185,6 +187,13 @@ type ResponseHeader struct {
 	TransactionId       any `json:"transactionId,omitempty"`
 }
 
+func SHA256(data string) (hash string) {
+	h := sha256.New()
+	h.Write([]byte(data))
+	hash = base64.StdEncoding.EncodeToString(h.Sum(nil))
+	return hash
+}
+
 func Random(n int) string {
 	const alphanum = "0123456789"
 	var bytes = make([]byte, n)
@@ -193,6 +202,18 @@ func Random(n int) string {
 		bytes[i] = alphanum[b%byte(len(alphanum))]
 	}
 	return string(bytes)
+}
+
+func (api *API) HashRequest(transactionId, transactionDateTime string) string {
+	hashpassword := SHA256(strings.ToUpper(Password + Application))
+	hashdata := SHA256(strings.ToUpper(Application + transactionId + transactionDateTime + StoreKey + hashpassword))
+	return hashdata
+}
+
+func (api *API) HashResponse(transactionId, responseDateTime, responseCode, cardToken string) string {
+	hashpassword := SHA256(strings.ToUpper(Password + Application))
+	hashdata := SHA256(strings.ToUpper(Application + transactionId + responseDateTime + responseCode + cardToken + StoreKey + hashpassword))
+	return hashdata
 }
 
 func (api *API) Auth() (response Response) {
