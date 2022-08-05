@@ -22,6 +22,8 @@ var (
 	}
 )
 
+type any = interface{}
+
 type API struct {
 	Mode     string
 	MSisdn   string
@@ -32,91 +34,91 @@ type API struct {
 
 type Request struct {
 	PaymentMethods struct {
-		MSisdn string        `json:"msisdn,omitempty"`
+		MSisdn any           `json:"msisdn,omitempty"`
 		Header RequestHeader `json:"requestHeader,omitempty"`
 	}
 	MobilePayment struct {
-		MSisdn string        `json:"msisdn,omitempty"`
-		EulaID string        `json:"eulaID,omitempty"`
+		MSisdn any           `json:"msisdn,omitempty"`
+		EulaID any           `json:"eulaID,omitempty"`
 		Header RequestHeader `json:"requestHeader,omitempty"`
 	}
 	OTP struct {
-		MSisdn string        `json:"msisdn,omitempty"`
-		Amount string        `json:"amount,omitempty"`
-		RefNo  string        `json:"referenceNumber,omitempty"`
-		OTP    string        `json:"otp,omitempty"`
-		Token  string        `json:"token,omitempty"`
+		MSisdn any           `json:"msisdn,omitempty"`
+		Amount any           `json:"amount,omitempty"`
+		RefNo  any           `json:"referenceNumber,omitempty"`
+		OTP    any           `json:"otp,omitempty"`
+		Token  any           `json:"token,omitempty"`
 		Header RequestHeader `json:"requestHeader,omitempty"`
 	}
 	Provision struct {
-		MSisdn        string        `json:"msisdn,omitempty"`
-		MerchantCode  string        `json:"merchantCode,omitempty"`
-		CardId        string        `json:"cardId,omitempty"`
-		CardToken     string        `json:"cardToken,omitempty"`
-		RefNo         string        `json:"referenceNumber,omitempty"`
-		OriginalRefNo string        `json:"originalReferenceNumber,omitempty"`
-		Amount        string        `json:"amount,omitempty"`
-		PointAmount   string        `json:"pointAmount,omitempty"`
-		Currency      string        `json:"currency,omitempty"`
-		Installment   string        `json:"installmentCount,omitempty"`
-		PaymentType   string        `json:"paymentType,omitempty"`
-		AcquirerBank  string        `json:"acquirerBankCode,omitempty"`
-		SessionId     string        `json:"threeDSessionId,omitempty"`
-		Pin           string        `json:"pin,omitempty"`
+		MSisdn        any           `json:"msisdn,omitempty"`
+		MerchantCode  any           `json:"merchantCode,omitempty"`
+		CardId        any           `json:"cardId,omitempty"`
+		CardToken     any           `json:"cardToken,omitempty"`
+		RefNo         any           `json:"referenceNumber,omitempty"`
+		OriginalRefNo any           `json:"originalReferenceNumber,omitempty"`
+		Amount        any           `json:"amount,omitempty"`
+		PointAmount   any           `json:"pointAmount,omitempty"`
+		Currency      any           `json:"currency,omitempty"`
+		Installment   any           `json:"installmentCount,omitempty"`
+		PaymentType   any           `json:"paymentType,omitempty"`
+		AcquirerBank  any           `json:"acquirerBankCode,omitempty"`
+		SessionId     any           `json:"threeDSessionId,omitempty"`
+		Pin           any           `json:"pin,omitempty"`
 		Header        RequestHeader `json:"requestHeader,omitempty"`
 	}
 	Reverse struct {
-		MSisdn        string        `json:"msisdn,omitempty"`
-		MerchantCode  string        `json:"merchantCode,omitempty"`
-		RefNo         string        `json:"referenceNumber,omitempty"`
-		OriginalRefNo string        `json:"originalReferenceNumber,omitempty"`
+		MSisdn        any           `json:"msisdn,omitempty"`
+		MerchantCode  any           `json:"merchantCode,omitempty"`
+		RefNo         any           `json:"referenceNumber,omitempty"`
+		OriginalRefNo any           `json:"originalReferenceNumber,omitempty"`
 		Header        RequestHeader `json:"requestHeader,omitempty"`
 	}
 	Refund struct {
-		MSisdn        string        `json:"msisdn,omitempty"`
-		MerchantCode  string        `json:"merchantCode,omitempty"`
-		Amount        string        `json:"amount,omitempty"`
-		RefNo         string        `json:"referenceNumber,omitempty"`
-		OriginalRefNo string        `json:"originalReferenceNumber,omitempty"`
+		MSisdn        any           `json:"msisdn,omitempty"`
+		MerchantCode  any           `json:"merchantCode,omitempty"`
+		Amount        any           `json:"amount,omitempty"`
+		RefNo         any           `json:"referenceNumber,omitempty"`
+		OriginalRefNo any           `json:"originalReferenceNumber,omitempty"`
 		Header        RequestHeader `json:"requestHeader,omitempty"`
 	}
 }
 
 type RequestHeader struct {
-	ApplicationName     string `json:"applicationName,omitempty"`
-	ApplicationPwd      string `json:"applicationPwd,omitempty"`
-	ClientIPAddress     string `json:"clientIPAddress,omitempty"`
-	TransactionDateTime string `json:"transactionDateTime,omitempty"`
-	TransactionId       string `json:"transactionId,omitempty"`
+	ApplicationName     any `json:"applicationName,omitempty"`
+	ApplicationPwd      any `json:"applicationPwd,omitempty"`
+	ClientIPAddress     any `json:"clientIPAddress,omitempty"`
+	TransactionDateTime any `json:"transactionDateTime,omitempty"`
+	TransactionId       any `json:"transactionId,omitempty"`
 }
 
 type Response struct {
 	PaymentMethods struct {
 		Header   ResponseHeader `json:"responseHeader,omitempty"`
-		EulaID   string         `json:"eulaID,omitempty"`
+		EulaID   any            `json:"eulaID,omitempty"`
 		CardList []struct {
-			CardBrand         string `json:"cardBrand,omitempty"`
-			CardId            string `json:"cardId,omitempty"`
-			CardType          string `json:"cardType,omitempty"`
-			MaskedCardNo      string `json:"maskedCardNo,omitempty"`
-			Alias             string `json:"alias,omitempty"`
-			ActivationDate    string `json:"activationDate,omitempty"`
-			IsDefault         bool   `json:"isDefault,omitempty"`
-			IsExpired         bool   `json:"isExpired,omitempty"`
-			ShowEulaId        bool   `json:"showEulaId,omitempty"`
-			IsThreeDValidated bool   `json:"isThreeDValidated,omitempty"`
-			IsOTPValidated    bool   `json:"isOTPValidated,omitempty"`
+			CardBrand         any  `json:"cardBrand,omitempty"`
+			CardId            any  `json:"cardId,omitempty"`
+			CardType          any  `json:"cardType,omitempty"`
+			MaskedCardNo      any  `json:"maskedCardNo,omitempty"`
+			Alias             any  `json:"alias,omitempty"`
+			ActivationDate    any  `json:"activationDate,omitempty"`
+			IsDefault         bool `json:"isDefault,omitempty"`
+			IsExpired         bool `json:"isExpired,omitempty"`
+			ShowEulaId        bool `json:"showEulaId,omitempty"`
+			IsThreeDValidated bool `json:"isThreeDValidated,omitempty"`
+			IsOTPValidated    bool `json:"isOTPValidated,omitempty"`
 		} `json:"cardList,omitempty"`
 		MobilePayment *struct {
-			EulaId         string `json:"eulaId,omitempty"`
-			EulaUrl        string `json:"eulaUrl,omitempty"`
-			SignedEulaId   string `json:"signedEulaId,omitempty"`
-			StatementDate  string `json:"statementDate,omitempty"`
-			Limit          string `json:"limit,omitempty"`
-			MaxLimit       string `json:"maxLimit,omitempty"`
-			RemainingLimit string `json:"remainingLimit,omitempty"`
-			IsDcbOpen      bool   `json:"isDcbOpen,omitempty"`
-			IsEulaExpired  bool   `json:"isEulaExpired,omitempty"`
+			EulaId         any  `json:"eulaId,omitempty"`
+			EulaUrl        any  `json:"eulaUrl,omitempty"`
+			SignedEulaId   any  `json:"signedEulaId,omitempty"`
+			StatementDate  any  `json:"statementDate,omitempty"`
+			Limit          any  `json:"limit,omitempty"`
+			MaxLimit       any  `json:"maxLimit,omitempty"`
+			RemainingLimit any  `json:"remainingLimit,omitempty"`
+			IsDcbOpen      bool `json:"isDcbOpen,omitempty"`
+			IsEulaExpired  bool `json:"isEulaExpired,omitempty"`
 		} `json:"mobilePayment,omitempty"`
 	}
 	MobilePayment struct {
@@ -124,25 +126,25 @@ type Response struct {
 	}
 	OTP struct {
 		Header     ResponseHeader `json:"responseHeader,omitempty"`
-		Token      string         `json:"token,omitempty"`
-		ExpireDate string         `json:"expireDate,omitempty"`
-		RetryCount string         `json:"remainingRetryCount,omitempty"`
+		Token      any            `json:"token,omitempty"`
+		ExpireDate any            `json:"expireDate,omitempty"`
+		RetryCount any            `json:"remainingRetryCount,omitempty"`
 	}
 	Provision struct {
 		Header       ResponseHeader `json:"responseHeader,omitempty"`
-		OrderId      string         `json:"orderId,omitempty"`
-		OrderDate    string         `json:"reconciliationDate,omitempty"`
-		ApprovalCode string         `json:"approvalCodeo,omitempty"`
-		AcquirerBank string         `json:"acquirerBankCode,omitempty"`
-		IssuerBank   string         `json:"issuerBankCode,omitempty"`
+		OrderId      any            `json:"orderId,omitempty"`
+		OrderDate    any            `json:"reconciliationDate,omitempty"`
+		ApprovalCode any            `json:"approvalCodeo,omitempty"`
+		AcquirerBank any            `json:"acquirerBankCode,omitempty"`
+		IssuerBank   any            `json:"issuerBankCode,omitempty"`
 	}
 }
 
 type ResponseHeader struct {
-	ResponseCode        string `json:"responseCode,omitempty"`
-	ResponseDescription string `json:"responseDescription,omitempty"`
-	ResponseDateTime    string `json:"responseDateTime,omitempty"`
-	TransactionId       string `json:"transactionId,omitempty"`
+	ResponseCode        any `json:"responseCode,omitempty"`
+	ResponseDescription any `json:"responseDescription,omitempty"`
+	ResponseDateTime    any `json:"responseDateTime,omitempty"`
+	TransactionId       any `json:"transactionId,omitempty"`
 }
 
 func Random(n int) string {
@@ -306,7 +308,6 @@ func (api *API) MobilePayment() (response Response) {
 	request.Provision.Amount = api.Amount
 	request.Provision.Currency = api.Currency
 	request.Provision.PaymentType = "SALE"
-	request.Provision.PaymentMethod = "MOBILE_PAYMENT"
 	contactdata, _ := json.Marshal(request.Provision)
 	cli := new(http.Client)
 	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
