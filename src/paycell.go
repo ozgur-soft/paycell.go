@@ -63,7 +63,7 @@ type Request struct {
 		Installment   any           `json:"installmentCount,omitempty"`
 		PaymentType   any           `json:"paymentType,omitempty"`
 		AcquirerBank  any           `json:"acquirerBankCode,omitempty"`
-		SessionId     any           `json:"threeDSessionId,omitempty"`
+		ThreeDSession any           `json:"threeDSessionId,omitempty"`
 		Pin           any           `json:"pin,omitempty"`
 		Header        RequestHeader `json:"requestHeader,omitempty"`
 	}
@@ -80,6 +80,25 @@ type Request struct {
 		Amount        any           `json:"amount,omitempty"`
 		RefNo         any           `json:"referenceNumber,omitempty"`
 		OriginalRefNo any           `json:"originalReferenceNumber,omitempty"`
+		Header        RequestHeader `json:"requestHeader,omitempty"`
+	}
+	ThreeDSession struct {
+		MSisdn       any           `json:"msisdn,omitempty"`
+		MerchantCode any           `json:"merchantCode,omitempty"`
+		CardId       any           `json:"cardId,omitempty"`
+		CardToken    any           `json:"cardToken,omitempty"`
+		Installment  any           `json:"installmentCount,omitempty"`
+		Amount       any           `json:"amount,omitempty"`
+		RefNo        any           `json:"referenceNumber,omitempty"`
+		Target       any           `json:"target,omitempty"`
+		Transaction  any           `json:"transactionType,omitempty"`
+		Header       RequestHeader `json:"requestHeader,omitempty"`
+	}
+	ThreeDResult struct {
+		MSisdn        any           `json:"msisdn,omitempty"`
+		MerchantCode  any           `json:"merchantCode,omitempty"`
+		RefNo         any           `json:"referenceNumber,omitempty"`
+		ThreeDSession any           `json:"threeDSessionId,omitempty"`
 		Header        RequestHeader `json:"requestHeader,omitempty"`
 	}
 }
@@ -137,6 +156,19 @@ type Response struct {
 		ApprovalCode any            `json:"approvalCodeo,omitempty"`
 		AcquirerBank any            `json:"acquirerBankCode,omitempty"`
 		IssuerBank   any            `json:"issuerBankCode,omitempty"`
+	}
+	ThreeDSession struct {
+		Header        ResponseHeader `json:"responseHeader,omitempty"`
+		ThreeDSession any            `json:"threeDSessionId,omitempty"`
+	}
+	ThreeDResult struct {
+		CurrentStep    any `json:"currentStep,omitempty"`
+		MdErrorMessage any `json:"mdErrorMessage,omitempty"`
+		MdStatus       any `json:"mdStatus,omitempty"`
+		Operation      struct {
+			Result      any `json:"threeDResult,omitempty"`
+			Description any `json:"threeDResultDescription,omitempty"`
+		} `json:"threeDOperationResult,omitempty"`
 	}
 }
 
