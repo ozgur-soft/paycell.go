@@ -77,7 +77,7 @@ type (
 			RefNo         any           `json:"referenceNumber,omitempty"`
 			OriginalRefNo any           `json:"originalReferenceNumber,omitempty"`
 		}
-		Reverse struct {
+		Cancel struct {
 			Header        RequestHeader `json:"requestHeader,omitempty"`
 			MSisdn        any           `json:"msisdn,omitempty"`
 			MerchantCode  any           `json:"merchantCode,omitempty"`
@@ -142,9 +142,25 @@ type (
 			Header       ResponseHeader `json:"responseHeader,omitempty"`
 			OrderId      any            `json:"orderId,omitempty"`
 			OrderDate    any            `json:"reconciliationDate,omitempty"`
-			ApprovalCode any            `json:"approvalCodeo,omitempty"`
+			ApprovalCode any            `json:"approvalCode,omitempty"`
 			AcquirerBank any            `json:"acquirerBankCode,omitempty"`
 			IssuerBank   any            `json:"issuerBankCode,omitempty"`
+		}
+		Refund *struct {
+			Header       ResponseHeader `json:"responseHeader,omitempty"`
+			OrderId      any            `json:"orderId,omitempty"`
+			OrderDate    any            `json:"reconciliationDate,omitempty"`
+			ApprovalCode any            `json:"approvalCode,omitempty"`
+			StatusCode   any            `json:"retryStatusCode,omitempty"`
+			Description  any            `json:"retryStatusDescription,omitempty"`
+		}
+		Cancel *struct {
+			Header       ResponseHeader `json:"responseHeader,omitempty"`
+			OrderId      any            `json:"orderId,omitempty"`
+			OrderDate    any            `json:"reconciliationDate,omitempty"`
+			ApprovalCode any            `json:"approvalCode,omitempty"`
+			StatusCode   any            `json:"retryStatusCode,omitempty"`
+			Description  any            `json:"retryStatusDescription,omitempty"`
 		}
 		ThreeDSession *struct {
 			Header        ResponseHeader `json:"responseHeader,omitempty"`
@@ -397,6 +413,78 @@ func (api *API) PostAuth(ctx context.Context, req *Request) (res Response, err e
 		return res, nil
 	default:
 		return res, errors.New(res.Provision.Header.ResponseDescription)
+	}
+}
+
+func (api *API) Refund(ctx context.Context, req *Request) (res Response, err error) {
+	req.Refund.Header.ClientIPAddress = api.IPv4
+	req.Refund.Header.ApplicationName = api.Name
+	req.Refund.Header.ApplicationPwd = api.Password
+	req.Refund.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	req.Refund.Header.TransactionId = Random(20)
+	req.Refund.MSisdn = api.ISDN
+	req.Refund.MerchantCode = api.Merchant
+	req.Refund.RefNo = Prefix + fmt.Sprintf("%v", req.Refund.Header.TransactionDateTime)
+	req.Refund.Amount = api.Amount
+	req.Refund.Currency = api.Currency
+	postdata, err := json.Marshal(req.Refund)
+	if err != nil {
+		return res, err
+	}
+	cli := new(http.Client)
+	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/refund/", bytes.NewReader(postdata))
+	if err != nil {
+		return res, err
+	}
+	request.Header.Set("Content-Type", "application/json")
+	response, err := cli.Do(request)
+	if err != nil {
+		return res, err
+	}
+	defer response.Body.Close()
+	decoder := json.NewDecoder(response.Body)
+	decoder.UseNumber()
+	decoder.Decode(&res.Refund)
+	switch res.Refund.Header.ResponseCode {
+	case "0":
+		return res, nil
+	default:
+		return res, errors.New(res.Refund.Header.ResponseDescription)
+	}
+}
+
+func (api *API) Cancel(ctx context.Context, req *Request) (res Response, err error) {
+	req.Cancel.Header.ClientIPAddress = api.IPv4
+	req.Cancel.Header.ApplicationName = api.Name
+	req.Cancel.Header.ApplicationPwd = api.Password
+	req.Cancel.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	req.Cancel.Header.TransactionId = Random(20)
+	req.Cancel.MSisdn = api.ISDN
+	req.Cancel.MerchantCode = api.Merchant
+	req.Cancel.RefNo = Prefix + fmt.Sprintf("%v", req.Cancel.Header.TransactionDateTime)
+	postdata, err := json.Marshal(req.Cancel)
+	if err != nil {
+		return res, err
+	}
+	cli := new(http.Client)
+	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/reverse/", bytes.NewReader(postdata))
+	if err != nil {
+		return res, err
+	}
+	request.Header.Set("Content-Type", "application/json")
+	response, err := cli.Do(request)
+	if err != nil {
+		return res, err
+	}
+	defer response.Body.Close()
+	decoder := json.NewDecoder(response.Body)
+	decoder.UseNumber()
+	decoder.Decode(&res.Cancel)
+	switch res.Cancel.Header.ResponseCode {
+	case "0":
+		return res, nil
+	default:
+		return res, errors.New(res.Cancel.Header.ResponseDescription)
 	}
 }
 
