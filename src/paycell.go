@@ -263,7 +263,7 @@ func (api *API) SetStoreKey(key string) {
 }
 
 func (api *API) SetPrefix(prefix string) {
-	api.SetPrefix(prefix)
+	api.Prefix = prefix
 }
 
 func (api *API) SetMode(mode string) {
