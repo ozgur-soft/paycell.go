@@ -258,6 +258,14 @@ func Api(merchant, password, name string) (*API, *Request) {
 	return api, req
 }
 
+func (api *API) SetStoreKey(key string) {
+	api.Key = key
+}
+
+func (api *API) SetPrefix(prefix string) {
+	api.SetPrefix(prefix)
+}
+
 func (api *API) SetMode(mode string) {
 	api.Mode = mode
 }
