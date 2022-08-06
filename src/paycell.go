@@ -293,12 +293,6 @@ func (api *API) Auth(ctx context.Context, req *Request) (res Response, err error
 	req.Provision.Amount = api.Amount
 	req.Provision.Currency = api.Currency
 	req.Provision.PaymentType = "SALE"
-	if res, err := api.Auth(ctx, req); err == nil {
-		pretty, _ := json.MarshalIndent(res.Provision, " ", " ")
-		fmt.Println(string(pretty))
-	} else {
-		fmt.Println(err)
-	}
 	postdata, err := json.Marshal(req.Provision)
 	if err != nil {
 		return res, err
