@@ -118,15 +118,28 @@ type Request struct {
 	}
 }
 
-type RequestHeader struct {
-	ApplicationName     any `json:"applicationName,omitempty"`
-	ApplicationPwd      any `json:"applicationPwd,omitempty"`
-	ClientIPAddress     any `json:"clientIPAddress,omitempty"`
-	TransactionDateTime any `json:"transactionDateTime,omitempty"`
-	TransactionId       any `json:"transactionId,omitempty"`
-}
-
 type Response struct {
+	Provision struct {
+		Header       ResponseHeader `json:"responseHeader,omitempty"`
+		OrderId      any            `json:"orderId,omitempty"`
+		OrderDate    any            `json:"reconciliationDate,omitempty"`
+		ApprovalCode any            `json:"approvalCodeo,omitempty"`
+		AcquirerBank any            `json:"acquirerBankCode,omitempty"`
+		IssuerBank   any            `json:"issuerBankCode,omitempty"`
+	}
+	ThreeDSession struct {
+		Header        ResponseHeader `json:"responseHeader,omitempty"`
+		ThreeDSession any            `json:"threeDSessionId,omitempty"`
+	}
+	ThreeDResult struct {
+		CurrentStep    any `json:"currentStep,omitempty"`
+		MdErrorMessage any `json:"mdErrorMessage,omitempty"`
+		MdStatus       any `json:"mdStatus,omitempty"`
+		Operation      struct {
+			Result      any `json:"threeDResult,omitempty"`
+			Description any `json:"threeDResultDescription,omitempty"`
+		} `json:"threeDOperationResult,omitempty"`
+	}
 	PaymentMethods struct {
 		Header   ResponseHeader `json:"responseHeader,omitempty"`
 		EulaID   any            `json:"eulaID,omitempty"`
@@ -164,27 +177,14 @@ type Response struct {
 		ExpireDate any            `json:"expireDate,omitempty"`
 		RetryCount any            `json:"remainingRetryCount,omitempty"`
 	}
-	Provision struct {
-		Header       ResponseHeader `json:"responseHeader,omitempty"`
-		OrderId      any            `json:"orderId,omitempty"`
-		OrderDate    any            `json:"reconciliationDate,omitempty"`
-		ApprovalCode any            `json:"approvalCodeo,omitempty"`
-		AcquirerBank any            `json:"acquirerBankCode,omitempty"`
-		IssuerBank   any            `json:"issuerBankCode,omitempty"`
-	}
-	ThreeDSession struct {
-		Header        ResponseHeader `json:"responseHeader,omitempty"`
-		ThreeDSession any            `json:"threeDSessionId,omitempty"`
-	}
-	ThreeDResult struct {
-		CurrentStep    any `json:"currentStep,omitempty"`
-		MdErrorMessage any `json:"mdErrorMessage,omitempty"`
-		MdStatus       any `json:"mdStatus,omitempty"`
-		Operation      struct {
-			Result      any `json:"threeDResult,omitempty"`
-			Description any `json:"threeDResultDescription,omitempty"`
-		} `json:"threeDOperationResult,omitempty"`
-	}
+}
+
+type RequestHeader struct {
+	ApplicationName     any `json:"applicationName,omitempty"`
+	ApplicationPwd      any `json:"applicationPwd,omitempty"`
+	ClientIPAddress     any `json:"clientIPAddress,omitempty"`
+	TransactionDateTime any `json:"transactionDateTime,omitempty"`
+	TransactionId       any `json:"transactionId,omitempty"`
 }
 
 type ResponseHeader struct {
