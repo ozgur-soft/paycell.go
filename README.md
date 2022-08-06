@@ -33,17 +33,23 @@ func main() {
 	api.Key = storekey
 	api.SetMode(envmode)
 	api.SetISDN(isdn)
-	api.SetIPv4("127.0.0.1")     // Müşteri ip adresi
-	api.SetAmount("1.00", "TRY") // Satış tutarı
-
+	api.SetIPv4("127.0.0.1")              // Müşteri ip adresi
+	api.SetAmount("1.00", "TRY")          // Satış tutarı
 	req.SetCardNumber("4355084355084358") // Kart numarası (zorunlu)
 	req.SetCardExpiry("12", "26")         // Son kullanma tarihi - AA,YY (zorunlu)
 	req.SetCardCode("000")                // Kart arkasındaki 3 haneli numara (zorunlu)
 
 	ctx := context.Background()
-	if res, err := api.CardToken(ctx, req); err == nil {
-		pretty, _ := json.MarshalIndent(res.CardToken, " ", " ")
-		fmt.Println(string(pretty))
+	if token, err := api.CardToken(ctx, req); err == nil {
+		req := new(paycell.Request)
+		req.Provision.CardToken = token.CardToken.Token
+		if res, err := api.Auth(ctx, req); err == nil {
+			pretty, _ := json.MarshalIndent(res.Provision, " ", " ")
+			fmt.Println(string(pretty))
+		} else {
+			fmt.Println(err)
+		}
+
 	} else {
 		fmt.Println(err)
 	}
