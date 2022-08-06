@@ -261,7 +261,7 @@ func (req *Request) SetCardCode(code string) {
 	req.CardToken.CardCode = code
 }
 
-func (api *API) HashResponse(header ResponseHeader, cardToken string) string {
+func (api *API) Hash(header ResponseHeader, cardToken string) string {
 	hashdata := SHA256(strings.ToUpper(Application + header.TransactionId + header.ResponseDateTime + header.ResponseCode + cardToken + StoreKey + SHA256(strings.ToUpper(Password+Application))))
 	return hashdata
 }
