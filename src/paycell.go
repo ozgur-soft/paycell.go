@@ -42,7 +42,7 @@ type API struct {
 
 type Request struct {
 	CardToken struct {
-		Header     RequestHeader `json:"requestHeader,omitempty"`
+		Header     RequestHeader `json:"header,omitempty"`
 		CardNumber any           `json:"creditCardNo,omitempty"`
 		CardMonth  any           `json:"expireDateMonth,omitempty"`
 		CardYear   any           `json:"expireDateYear,omitempty"`
@@ -130,7 +130,7 @@ type Request struct {
 
 type Response struct {
 	CardToken struct {
-		Header    ResponseHeader `json:"responseHeader,omitempty"`
+		Header    ResponseHeader `json:"header,omitempty"`
 		CardToken any            `json:"cardToken,omitempty"`
 		HashData  any            `json:"hashData,omitempty"`
 	}
@@ -435,6 +435,9 @@ func (api *API) ThreeDResult(session interface{}) (response Response) {
 
 func (api *API) CardToken(request *Request) (response Response) {
 	apiurl := Endpoint[api.Mode+"_TOKEN"]
+	request.CardToken.Header.ApplicationName = Application
+	request.CardToken.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	request.CardToken.Header.TransactionId = Random(20)
 	request.CardToken.HashData = SHA256(strings.ToUpper(Application + request.CardToken.Header.TransactionId + request.CardToken.Header.TransactionDateTime + StoreKey + SHA256(strings.ToUpper(Password+Application))))
 	postdata, _ := json.Marshal(request.CardToken)
 	cli := new(http.Client)
