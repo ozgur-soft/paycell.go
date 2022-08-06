@@ -29,8 +29,9 @@ const (
 )
 
 func main() {
-	api, req := paycell.Api(merchant, apppass, appname, prefix)
+	api, req := paycell.Api(merchant, apppass, appname)
 	api.Key = storekey
+	api.Prefix = prefix
 	api.SetMode(envmode)
 	api.SetIPAddress("127.0.0.1")         // IP adresi (zorunlu)
 	api.SetPhoneNumber("905591111177")    // Müşteri numarası (zorunlu)
@@ -73,8 +74,9 @@ const (
 )
 
 func main() {
-	api, req := paycell.Api(merchant, apppass, appname, prefix)
+	api, req := paycell.Api(merchant, apppass, appname)
 	api.Key = storekey
+	api.Prefix = prefix
 	api.SetMode(envmode)
 	api.SetPhoneNumber("905591111177") // Müşteri numarası (zorunlu)
 	api.SetIPAddress("127.0.0.1")      // IP adresi (zorunlu)
@@ -115,8 +117,9 @@ const (
 )
 
 func main() {
-	api, req := paycell.Api(merchant, apppass, appname, prefix)
+	api, req := paycell.Api(merchant, apppass, appname)
 	api.Key = storekey
+	api.Prefix = prefix
 	api.SetMode(envmode)
 	api.SetPhoneNumber("905591111177") // Müşteri numarası (zorunlu)
 	api.SetIPAddress("127.0.0.1")      // IP adresi (zorunlu)
@@ -143,7 +146,7 @@ import (
 )
 
 func main() {
-	api, req := paycell.Api(merchant, apppass, appname, prefix)
+	api, req := paycell.Api(merchant, apppass, appname)
 	api.SetMode("TEST")           // "PROD","TEST"
 	api.SetIPAddress("127.0.0.1") // Müşteri ip adresi
 	api.SetAmount("1.00", "TRY")  // Satış tutarı
