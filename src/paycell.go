@@ -277,6 +277,11 @@ func (api *API) Hash(header ResponseHeader, cardToken string) string {
 }
 
 func (api *API) Auth(ctx context.Context, req *Request) (res Response, err error) {
+	token, err := api.CardToken(context.Background(), req)
+	if err != nil {
+		return res, err
+	}
+	req.Provision.CardToken = token.CardToken.Token
 	req.Provision.Header.ClientIPAddress = api.IPv4
 	req.Provision.Header.ApplicationName = api.Name
 	req.Provision.Header.ApplicationPwd = api.Password
@@ -288,6 +293,12 @@ func (api *API) Auth(ctx context.Context, req *Request) (res Response, err error
 	req.Provision.Amount = api.Amount
 	req.Provision.Currency = api.Currency
 	req.Provision.PaymentType = "SALE"
+	if res, err := api.Auth(ctx, req); err == nil {
+		pretty, _ := json.MarshalIndent(res.Provision, " ", " ")
+		fmt.Println(string(pretty))
+	} else {
+		fmt.Println(err)
+	}
 	postdata, err := json.Marshal(req.Provision)
 	if err != nil {
 		return res, err
@@ -315,6 +326,11 @@ func (api *API) Auth(ctx context.Context, req *Request) (res Response, err error
 }
 
 func (api *API) PreAuth(ctx context.Context, req *Request) (res Response, err error) {
+	token, err := api.CardToken(context.Background(), req)
+	if err != nil {
+		return res, err
+	}
+	req.Provision.CardToken = token.CardToken.Token
 	req.Provision.Header.ClientIPAddress = api.IPv4
 	req.Provision.Header.ApplicationName = api.Name
 	req.Provision.Header.ApplicationPwd = api.Password
