@@ -224,6 +224,16 @@ func Random(n int) string {
 	return string(bytes)
 }
 
+func Api(msisdn string) *API {
+	api := new(API)
+	api.MSisdn = msisdn
+	return api
+}
+
+func (api *API) SetMode(mode string) {
+	api.Mode = mode
+}
+
 func (api *API) SetIPAddress(ip string) {
 	api.ClientIP = ip
 }
