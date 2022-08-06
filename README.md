@@ -142,6 +142,8 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"log"
 
 	paycell "github.com/ozgur-soft/paycell.go/src"
@@ -172,14 +174,16 @@ func main() {
 				switch get.PaymentMethods.MobilePayment.IsEulaExpired {
 				case true: // Sözleşmesi Güncel Olmayan Müşteri İçin
 					req.MobilePayment.EulaID = get.PaymentMethods.MobilePayment.EulaId
-					if _, err := api.OpenMobilePayment(ctx, req); err == nil {
-						log.Println("mobil ödeme açıldı")
+					if open, err := api.OpenMobilePayment(ctx, req); err == nil {
+						pretty, _ := json.MarshalIndent(open.MobilePayment, " ", " ")
+						fmt.Println(string(pretty))
 					} else {
 						log.Println(err)
 					}
 				case false: // Sözleşmesi Güncel Olan Müşteri İçin
-					if _, err := api.OpenMobilePayment(ctx, req); err == nil {
-						log.Println("mobil ödeme açıldı")
+					if open, err := api.OpenMobilePayment(ctx, req); err == nil {
+						pretty, _ := json.MarshalIndent(open.MobilePayment, " ", " ")
+						fmt.Println(string(pretty))
 					} else {
 						log.Println(err)
 					}
