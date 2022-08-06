@@ -39,16 +39,9 @@ func main() {
 	req.SetCardCode("000")                // Kart arkasındaki 3 haneli numara (zorunlu)
 
 	ctx := context.Background()
-	if token, err := api.CardToken(ctx, req); err == nil {
-		req := new(paycell.Request)
-		req.Provision.CardToken = token.CardToken.Token
-		if res, err := api.Auth(ctx, req); err == nil {
-			pretty, _ := json.MarshalIndent(res.Provision, " ", " ")
-			fmt.Println(string(pretty))
-		} else {
-			fmt.Println(err)
-		}
-
+	if res, err := api.Auth(ctx, req); err == nil {
+		pretty, _ := json.MarshalIndent(res.Provision, " ", " ")
+		fmt.Println(string(pretty))
 	} else {
 		fmt.Println(err)
 	}
