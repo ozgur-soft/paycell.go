@@ -171,23 +171,17 @@ func main() {
 			if !get.PaymentMethods.MobilePayment.IsDcbOpen {
 				switch get.PaymentMethods.MobilePayment.IsEulaExpired {
 				case true: // Sözleşmesi Güncel Olmayan Müşteri İçin
-					if get.PaymentMethods.MobilePayment.EulaId != "" {
-						req.MobilePayment.EulaID = get.PaymentMethods.MobilePayment.EulaId
-						ctx := context.Background()
-						if _, err := api.OpenMobilePayment(ctx, req); err == nil {
-							log.Println("mobil ödeme açıldı")
-						} else {
-							log.Println(err)
-						}
+					req.MobilePayment.EulaID = get.PaymentMethods.MobilePayment.EulaId
+					if _, err := api.OpenMobilePayment(ctx, req); err == nil {
+						log.Println("mobil ödeme açıldı")
+					} else {
+						log.Println(err)
 					}
 				case false: // Sözleşmesi Güncel Olan Müşteri İçin
-					if get.PaymentMethods.MobilePayment.SignedEulaId != "" {
-						ctx := context.Background()
-						if _, err := api.OpenMobilePayment(ctx, req); err == nil {
-							log.Println("mobil ödeme açıldı")
-						} else {
-							log.Println(err)
-						}
+					if _, err := api.OpenMobilePayment(ctx, req); err == nil {
+						log.Println("mobil ödeme açıldı")
+					} else {
+						log.Println(err)
 					}
 				}
 			}
