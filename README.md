@@ -1,4 +1,10 @@
-# paycell
+# Paycell.go
+Turkcell (Paycell) API with golang
+
+# Installation
+```bash
+go get github.com/ozgur-soft/paycell.go
+```
 
 #Sanalpos satış işlemi
 ```go
@@ -9,7 +15,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	paycell "github.com/ozgur-soft/paycell/src"
+	paycell "github.com/ozgur-soft/paycell.go/src"
 )
 
 // Pos bilgileri
@@ -50,7 +56,7 @@ package main
 import (
 	"log"
 
-	paycell "github.com/ozgur-soft/paycell/src"
+	paycell "github.com/ozgur-soft/paycell.go/src"
 )
 
 func main() {
