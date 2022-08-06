@@ -34,7 +34,7 @@ func main() {
 	api.SetPrefix(prefix)
 	api.SetMode(envmode)
 	api.SetIPAddress("127.0.0.1")         // IP adresi (zorunlu)
-	api.SetPhoneNumber("905591111177")    // Müşteri numarası (zorunlu)
+	api.SetPhoneNumber("905305289290")    // Müşteri numarası (zorunlu)
 	api.SetAmount("1.00", "TRY")          // Satış tutarı (zorunlu)
 	req.SetCardNumber("4355084355084358") // Kart numarası (zorunlu)
 	req.SetCardExpiry("12", "26")         // Son kullanma tarihi - AA,YY (zorunlu)
@@ -78,7 +78,7 @@ func main() {
 	api.SetStoreKey(storekey)
 	api.SetPrefix(prefix)
 	api.SetMode(envmode)
-	api.SetPhoneNumber("905591111177") // Müşteri numarası (zorunlu)
+	api.SetPhoneNumber("905305289290") // Müşteri numarası (zorunlu)
 	api.SetIPAddress("127.0.0.1")      // IP adresi (zorunlu)
 	api.SetAmount("1.00", "TRY")       // İade tutarı (zorunlu)
 
@@ -121,7 +121,7 @@ func main() {
 	api.SetStoreKey(storekey)
 	api.SetPrefix(prefix)
 	api.SetMode(envmode)
-	api.SetPhoneNumber("905591111177") // Müşteri numarası (zorunlu)
+	api.SetPhoneNumber("905305289290") // Müşteri numarası (zorunlu)
 	api.SetIPAddress("127.0.0.1")      // IP adresi (zorunlu)
 
 	req.Cancel.OriginalRefNo = "" // Referans numarası (zorunlu)
