@@ -224,9 +224,26 @@ func Random(n int) string {
 	return string(bytes)
 }
 
-func (api *API) HashRequest(header RequestHeader) string {
-	hashdata := SHA256(strings.ToUpper(Application + header.TransactionId + header.TransactionDateTime + StoreKey + SHA256(strings.ToUpper(Password+Application))))
-	return hashdata
+func (api *API) SetIPAddress(ip string) {
+	api.ClientIP = ip
+}
+
+func (api *API) SetAmount(total string, currency string) {
+	api.Amount = strings.ReplaceAll(total, ".", "")
+	api.Currency = currency
+}
+
+func (request *Request) SetCardNumber(number string) {
+	request.CardToken.CardNumber = number
+}
+
+func (request *Request) SetCardExpiry(month, year string) {
+	request.CardToken.CardMonth = month
+	request.CardToken.CardYear = year
+}
+
+func (request *Request) SetCardCode(code string) {
+	request.CardToken.CardCode = code
 }
 
 func (api *API) HashResponse(header ResponseHeader, cardToken string) string {
@@ -248,9 +265,9 @@ func (api *API) Auth() (response Response) {
 	request.Provision.Amount = api.Amount
 	request.Provision.Currency = api.Currency
 	request.Provision.PaymentType = "SALE"
-	contactdata, _ := json.Marshal(request.Provision)
+	postdata, _ := json.Marshal(request.Provision)
 	cli := new(http.Client)
-	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
+	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
 		log.Println(err)
 		return response
@@ -284,9 +301,9 @@ func (api *API) PreAuth() (response Response) {
 	request.Provision.Amount = api.Amount
 	request.Provision.Currency = api.Currency
 	request.Provision.PaymentType = "PREAUTH"
-	contactdata, _ := json.Marshal(request.Provision)
+	postdata, _ := json.Marshal(request.Provision)
 	cli := new(http.Client)
-	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
+	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
 		log.Println(err)
 		return response
@@ -320,9 +337,9 @@ func (api *API) PostAuth() (response Response) {
 	request.Provision.Amount = api.Amount
 	request.Provision.Currency = api.Currency
 	request.Provision.PaymentType = "POSTAUTH"
-	contactdata, _ := json.Marshal(request.Provision)
+	postdata, _ := json.Marshal(request.Provision)
 	cli := new(http.Client)
-	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
+	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
 		log.Println(err)
 		return response
@@ -355,9 +372,9 @@ func (api *API) ThreeDSession() (response Response) {
 	request.ThreeDSession.RefNo = Prefix + fmt.Sprintf("%v", request.ThreeDSession.Header.TransactionDateTime)
 	request.ThreeDSession.Amount = api.Amount
 	request.ThreeDSession.Currency = api.Currency
-	contactdata, _ := json.Marshal(request.ThreeDSession)
+	postdata, _ := json.Marshal(request.ThreeDSession)
 	cli := new(http.Client)
-	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
+	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
 		log.Println(err)
 		return response
@@ -391,9 +408,35 @@ func (api *API) ThreeDResult(session interface{}) (response Response) {
 	if session != nil {
 		request.ThreeDResult.ThreeDSession = session
 	}
-	contactdata, _ := json.Marshal(request.ThreeDResult)
+	postdata, _ := json.Marshal(request.ThreeDResult)
 	cli := new(http.Client)
-	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
+	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
+	if err != nil {
+		log.Println(err)
+		return response
+	}
+	req.Header.Set("Content-Type", "application/json")
+	res, err := cli.Do(req)
+	if err != nil {
+		log.Println(err)
+		return response
+	}
+	defer res.Body.Close()
+	decoder := json.NewDecoder(res.Body)
+	decoder.UseNumber()
+	decoder.Decode(&response.ThreeDResult)
+	pretty, _ := json.MarshalIndent(response.ThreeDResult, " ", "\t")
+	fmt.Println(string(pretty))
+	return response
+}
+
+func (api *API) CardToken() (response Response) {
+	apiurl := Endpoint[api.Mode]
+	request := new(Request)
+	request.CardToken.HashData = SHA256(strings.ToUpper(Application + request.CardToken.Header.TransactionId + request.CardToken.Header.TransactionDateTime + StoreKey + SHA256(strings.ToUpper(Password+Application))))
+	postdata, _ := json.Marshal(request.ThreeDResult)
+	cli := new(http.Client)
+	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
 		log.Println(err)
 		return response
@@ -422,9 +465,9 @@ func (api *API) GetPaymentMethods() (response Response) {
 	request.PaymentMethods.Header.ApplicationPwd = Password
 	request.PaymentMethods.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	request.PaymentMethods.Header.TransactionId = Random(20)
-	contactdata, _ := json.Marshal(request.PaymentMethods)
+	postdata, _ := json.Marshal(request.PaymentMethods)
 	cli := new(http.Client)
-	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
+	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
 		log.Println(err)
 		return response
@@ -456,9 +499,9 @@ func (api *API) OpenMobilePayment(eula interface{}) (response Response) {
 	if eula != nil {
 		request.MobilePayment.EulaID = eula
 	}
-	contactdata, _ := json.Marshal(request.MobilePayment)
+	postdata, _ := json.Marshal(request.MobilePayment)
 	cli := new(http.Client)
-	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
+	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
 		log.Println(err)
 		return response
@@ -489,9 +532,9 @@ func (api *API) SendOTP() (response Response) {
 	request.OTP.MSisdn = api.MSisdn
 	request.OTP.RefNo = Random(20)
 	request.OTP.Amount = api.Amount
-	contactdata, _ := json.Marshal(request.OTP)
+	postdata, _ := json.Marshal(request.OTP)
 	cli := new(http.Client)
-	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
+	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
 		log.Println(err)
 		return response
@@ -528,9 +571,9 @@ func (api *API) ValidateOTP(token, otp interface{}) (response Response) {
 	if otp != nil {
 		request.OTP.OTP = otp
 	}
-	contactdata, _ := json.Marshal(request.OTP)
+	postdata, _ := json.Marshal(request.OTP)
 	cli := new(http.Client)
-	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(contactdata))
+	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
 		log.Println(err)
 		return response
