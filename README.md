@@ -170,22 +170,14 @@ func main() {
 	if get, err := api.GetPaymentMethods(ctx, req); err == nil {
 		if get.PaymentMethods.MobilePayment != nil {
 			if !get.PaymentMethods.MobilePayment.IsDcbOpen {
-				switch get.PaymentMethods.MobilePayment.IsEulaExpired {
-				case true: // Sözleşmesi Güncel Olmayan Müşteri İçin
+				if get.PaymentMethods.MobilePayment.IsEulaExpired {
 					req.MobilePayment.EulaID = get.PaymentMethods.MobilePayment.EulaId
-					if open, err := api.OpenMobilePayment(ctx, req); err == nil {
-						pretty, _ := json.MarshalIndent(open.MobilePayment, " ", " ")
-						fmt.Println(string(pretty))
-					} else {
-						fmt.Println(err)
-					}
-				case false: // Sözleşmesi Güncel Olan Müşteri İçin
-					if open, err := api.OpenMobilePayment(ctx, req); err == nil {
-						pretty, _ := json.MarshalIndent(open.MobilePayment, " ", " ")
-						fmt.Println(string(pretty))
-					} else {
-						fmt.Println(err)
-					}
+				}
+				if open, err := api.OpenMobilePayment(ctx, req); err == nil {
+					pretty, _ := json.MarshalIndent(open.MobilePayment, " ", " ")
+					fmt.Println(string(pretty))
+				} else {
+					fmt.Println(err)
 				}
 			}
 		}
