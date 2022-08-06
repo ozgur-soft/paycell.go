@@ -144,7 +144,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 
 	paycell "github.com/ozgur-soft/paycell.go/src"
 )
@@ -178,20 +177,20 @@ func main() {
 						pretty, _ := json.MarshalIndent(open.MobilePayment, " ", " ")
 						fmt.Println(string(pretty))
 					} else {
-						log.Println(err)
+						fmt.Println(err)
 					}
 				case false: // Sözleşmesi Güncel Olan Müşteri İçin
 					if open, err := api.OpenMobilePayment(ctx, req); err == nil {
 						pretty, _ := json.MarshalIndent(open.MobilePayment, " ", " ")
 						fmt.Println(string(pretty))
 					} else {
-						log.Println(err)
+						fmt.Println(err)
 					}
 				}
 			}
 		}
 	} else {
-		log.Println(err)
+		fmt.Println(err)
 	}
 }
 ```
