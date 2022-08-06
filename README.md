@@ -22,9 +22,9 @@ import (
 const (
 	envmode  = "TEST"                // Çalışma ortamı (Production : "PROD" - Test : "TEST")
 	merchant = "9998"                // İşyeri numarası
-	storekey = "PAYCELL12345"        // İşyeri anahtarı
 	appname  = "PAYCELLTEST"         // Uygulama adı
 	apppass  = "PaycellTestPassword" // Uygulama şifresi
+	storekey = "PAYCELL12345"        // İşyeri anahtarı
 	prefix   = "666"                 // Referans no ilk 3 hanesi
 )
 
@@ -67,9 +67,9 @@ import (
 const (
 	envmode  = "TEST"                // Çalışma ortamı (Production : "PROD" - Test : "TEST")
 	merchant = "9998"                // İşyeri numarası
-	storekey = "PAYCELL12345"        // İşyeri anahtarı
 	appname  = "PAYCELLTEST"         // Uygulama adı
 	apppass  = "PaycellTestPassword" // Uygulama şifresi
+	storekey = "PAYCELL12345"        // İşyeri anahtarı
 	prefix   = "666"                 // Referans no ilk 3 hanesi
 )
 
@@ -110,9 +110,9 @@ import (
 const (
 	envmode  = "TEST"                // Çalışma ortamı (Production : "PROD" - Test : "TEST")
 	merchant = "9998"                // İşyeri numarası
-	storekey = "PAYCELL12345"        // İşyeri anahtarı
 	appname  = "PAYCELLTEST"         // Uygulama adı
 	apppass  = "PaycellTestPassword" // Uygulama şifresi
+	storekey = "PAYCELL12345"        // İşyeri anahtarı
 	prefix   = "666"                 // Referans no ilk 3 hanesi
 )
 
@@ -152,9 +152,9 @@ import (
 const (
 	envmode  = "TEST"                // Çalışma ortamı (Production : "PROD" - Test : "TEST")
 	merchant = "9998"                // İşyeri numarası
-	storekey = "PAYCELL12345"        // İşyeri anahtarı
 	appname  = "PAYCELLTEST"         // Uygulama adı
 	apppass  = "PaycellTestPassword" // Uygulama şifresi
+	storekey = "PAYCELL12345"        // İşyeri anahtarı
 	prefix   = "666"                 // Referans no ilk 3 hanesi
 )
 
