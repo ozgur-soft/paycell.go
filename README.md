@@ -31,8 +31,8 @@ func main() {
 	api, req := paycell.Api(merchant, password, appname)
 	api.Key = storekey
 	api.SetMode(envmode)
-	api.SetIPv4("127.0.0.1")              // IP adresi (zorunlu)
-	api.SetISDN("905591111177")           // Müşteri numarası (zorunlu)
+	api.SetIPAddress("127.0.0.1")         // IP adresi (zorunlu)
+	api.SetPhoneNumber("905591111177")    // Müşteri numarası (zorunlu)
 	api.SetAmount("1.00", "TRY")          // Satış tutarı (zorunlu)
 	req.SetCardNumber("4355084355084358") // Kart numarası (zorunlu)
 	req.SetCardExpiry("12", "26")         // Son kullanma tarihi - AA,YY (zorunlu)
@@ -74,9 +74,9 @@ func main() {
 	api, req := paycell.Api(merchant, password, appname)
 	api.Key = storekey
 	api.SetMode(envmode)
-	api.SetISDN("905591111177")  // Müşteri numarası (zorunlu)
-	api.SetIPv4("127.0.0.1")     // IP adresi (zorunlu)
-	api.SetAmount("1.00", "TRY") // İade tutarı (zorunlu)
+	api.SetPhoneNumber("905591111177") // Müşteri numarası (zorunlu)
+	api.SetIPAddress("127.0.0.1")      // IP adresi (zorunlu)
+	api.SetAmount("1.00", "TRY")       // İade tutarı (zorunlu)
 
 	req.Refund.OriginalRefNo = "" // Referans numarası (zorunlu)
 
@@ -115,8 +115,8 @@ func main() {
 	api, req := paycell.Api(merchant, password, appname)
 	api.Key = storekey
 	api.SetMode(envmode)
-	api.SetISDN("905591111177") // Müşteri numarası (zorunlu)
-	api.SetIPv4("127.0.0.1")    // IP adresi (zorunlu)
+	api.SetPhoneNumber("905591111177") // Müşteri numarası (zorunlu)
+	api.SetIPAddress("127.0.0.1")      // IP adresi (zorunlu)
 
 	req.Cancel.OriginalRefNo = "" // Referans numarası (zorunlu)
 
