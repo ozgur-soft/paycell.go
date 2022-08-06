@@ -262,11 +262,11 @@ func (api *API) SetMode(mode string) {
 	api.Mode = mode
 }
 
-func (api *API) SetIPv4(ip string) {
+func (api *API) SetIPAddress(ip string) {
 	api.IPv4 = ip
 }
 
-func (api *API) SetISDN(isdn string) {
+func (api *API) SetPhoneNumber(isdn string) {
 	api.ISDN = isdn
 }
 
