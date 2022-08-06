@@ -1,5 +1,49 @@
 # paycell
 
+#Sanalpos satış işlemi
+```go
+package main
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+
+	paycell "github.com/ozgur-soft/paycell/src"
+)
+
+// Pos bilgileri
+const (
+	envmode  = "TEST"                // Çalışma ortamı (Production : "PROD" - Test : "TEST")
+	appname  = "PAYCELLTEST"         // Uygulama adı
+	merchant = "9998"                // İşyeri numarası
+	isdn     = "905591111177"        // Müşteri numarası
+	password = "PaycellTestPassword" // Şifre
+	storekey = "PAYCELL12345"        // İşyeri anahtarı
+)
+
+func main() {
+	api, req := paycell.Api(merchant, password, appname)
+	api.Key = storekey
+	api.SetMode(envmode)
+	api.SetISDN(isdn)
+	api.SetIPv4("127.0.0.1")     // Müşteri ip adresi
+	api.SetAmount("1.00", "TRY") // Satış tutarı
+
+	req.SetCardNumber("4355084355084358") // Kart numarası (zorunlu)
+	req.SetCardExpiry("12", "26")         // Son kullanma tarihi - AA,YY (zorunlu)
+	req.SetCardCode("000")                // Kart arkasındaki 3 haneli numara (zorunlu)
+
+	ctx := context.Background()
+	if res, err := api.CardToken(ctx, req); err == nil {
+		pretty, _ := json.MarshalIndent(res.CardToken, " ", " ")
+		fmt.Println(string(pretty))
+	} else {
+		fmt.Println(err)
+	}
+}
+```
+
 ```go
 package main
 
