@@ -6,7 +6,7 @@ Turkcell (Paycell) API with golang
 go get github.com/ozgur-soft/paycell.go
 ```
 
-#Sanalpos satış işlemi
+# Sanalpos satış işlemi
 ```go
 package main
 
