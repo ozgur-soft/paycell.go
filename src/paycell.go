@@ -272,8 +272,7 @@ func (api *API) Hash(header ResponseHeader, cardToken string) string {
 	return hashdata
 }
 
-func (api *API) Auth(req *Request) (res Response, err error) {
-	apiurl := Endpoints[api.Mode] + "/provision/"
+func (api *API) Auth(ctx context.Context, req *Request) (res Response, err error) {
 	req.Provision.Header.ClientIPAddress = api.IPv4
 	req.Provision.Header.ApplicationName = api.Name
 	req.Provision.Header.ApplicationPwd = api.Password
@@ -290,7 +289,7 @@ func (api *API) Auth(req *Request) (res Response, err error) {
 		return res, err
 	}
 	cli := new(http.Client)
-	request, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/provision/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -311,8 +310,7 @@ func (api *API) Auth(req *Request) (res Response, err error) {
 	}
 }
 
-func (api *API) PreAuth(req *Request) (res Response, err error) {
-	apiurl := Endpoints[api.Mode] + "/provision/"
+func (api *API) PreAuth(ctx context.Context, req *Request) (res Response, err error) {
 	req.Provision.Header.ClientIPAddress = api.IPv4
 	req.Provision.Header.ApplicationName = api.Name
 	req.Provision.Header.ApplicationPwd = api.Password
@@ -329,7 +327,7 @@ func (api *API) PreAuth(req *Request) (res Response, err error) {
 		return res, err
 	}
 	cli := new(http.Client)
-	request, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/provision/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -350,8 +348,7 @@ func (api *API) PreAuth(req *Request) (res Response, err error) {
 	}
 }
 
-func (api *API) PostAuth(req *Request) (res Response, err error) {
-	apiurl := Endpoints[api.Mode] + "/provision/"
+func (api *API) PostAuth(ctx context.Context, req *Request) (res Response, err error) {
 	req.Provision.Header.ClientIPAddress = api.IPv4
 	req.Provision.Header.ApplicationName = api.Name
 	req.Provision.Header.ApplicationPwd = api.Password
@@ -368,7 +365,7 @@ func (api *API) PostAuth(req *Request) (res Response, err error) {
 		return res, err
 	}
 	cli := new(http.Client)
-	request, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/provision/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -389,8 +386,7 @@ func (api *API) PostAuth(req *Request) (res Response, err error) {
 	}
 }
 
-func (api *API) ThreeDSession(req *Request) (res Response, err error) {
-	apiurl := Endpoints[api.Mode] + "/getThreeDSession/"
+func (api *API) ThreeDSession(ctx context.Context, req *Request) (res Response, err error) {
 	req.ThreeDSession.Header.ClientIPAddress = api.IPv4
 	req.ThreeDSession.Header.ApplicationName = api.Name
 	req.ThreeDSession.Header.ApplicationPwd = api.Password
@@ -406,7 +402,7 @@ func (api *API) ThreeDSession(req *Request) (res Response, err error) {
 		return res, err
 	}
 	cli := new(http.Client)
-	request, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/getThreeDSession/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -428,7 +424,6 @@ func (api *API) ThreeDSession(req *Request) (res Response, err error) {
 }
 
 func (api *API) ThreeDResult(ctx context.Context, req *Request) (res Response, err error) {
-	apiurl := Endpoints[api.Mode] + "/getThreeDSessionResult/"
 	req.ThreeDResult.Header.ClientIPAddress = api.IPv4
 	req.ThreeDResult.Header.ApplicationName = api.Name
 	req.ThreeDResult.Header.ApplicationPwd = api.Password
@@ -442,7 +437,7 @@ func (api *API) ThreeDResult(ctx context.Context, req *Request) (res Response, e
 		return res, err
 	}
 	cli := new(http.Client)
-	request, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/getThreeDSessionResult/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -494,8 +489,7 @@ func (api *API) CardToken(ctx context.Context, req *Request) (res Response, err 
 	}
 }
 
-func (api *API) GetPaymentMethods(req *Request) (res Response, err error) {
-	apiurl := Endpoints[api.Mode] + "/getPaymentMethods/"
+func (api *API) GetPaymentMethods(ctx context.Context, req *Request) (res Response, err error) {
 	req.PaymentMethods.MSisdn = api.ISDN
 	req.PaymentMethods.Header.ClientIPAddress = api.IPv4
 	req.PaymentMethods.Header.ApplicationName = api.Name
@@ -507,7 +501,7 @@ func (api *API) GetPaymentMethods(req *Request) (res Response, err error) {
 		return res, err
 	}
 	cli := new(http.Client)
-	request, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/getPaymentMethods/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -529,7 +523,6 @@ func (api *API) GetPaymentMethods(req *Request) (res Response, err error) {
 }
 
 func (api *API) OpenMobilePayment(ctx context.Context, req *Request) (res Response, err error) {
-	apiurl := Endpoints[api.Mode] + "/openMobilePayment/"
 	req.MobilePayment.Header.ClientIPAddress = api.IPv4
 	req.MobilePayment.Header.ApplicationName = api.Name
 	req.MobilePayment.Header.ApplicationPwd = api.Password
@@ -541,7 +534,7 @@ func (api *API) OpenMobilePayment(ctx context.Context, req *Request) (res Respon
 		return res, err
 	}
 	cli := new(http.Client)
-	request, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/openMobilePayment/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -562,8 +555,7 @@ func (api *API) OpenMobilePayment(ctx context.Context, req *Request) (res Respon
 	}
 }
 
-func (api *API) SendOTP(req *Request) (res Response, err error) {
-	apiurl := Endpoints[api.Mode] + "/sendOTP/"
+func (api *API) SendOTP(ctx context.Context, req *Request) (res Response, err error) {
 	req.OTP.Header.ClientIPAddress = api.IPv4
 	req.OTP.Header.ApplicationName = api.Name
 	req.OTP.Header.ApplicationPwd = api.Password
@@ -578,7 +570,7 @@ func (api *API) SendOTP(req *Request) (res Response, err error) {
 		return res, err
 	}
 	cli := new(http.Client)
-	request, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/sendOTP/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -600,7 +592,6 @@ func (api *API) SendOTP(req *Request) (res Response, err error) {
 }
 
 func (api *API) ValidateOTP(ctx context.Context, req *Request) (res Response, err error) {
-	apiurl := Endpoints[api.Mode] + "/validateOTP/"
 	req.OTP.Header.ClientIPAddress = api.IPv4
 	req.OTP.Header.ApplicationName = api.Name
 	req.OTP.Header.ApplicationPwd = api.Password
@@ -615,7 +606,7 @@ func (api *API) ValidateOTP(ctx context.Context, req *Request) (res Response, er
 		return res, err
 	}
 	cli := new(http.Client)
-	request, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/validateOTP/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
