@@ -162,7 +162,7 @@ func main() {
 	api.SetStoreKey(storekey)
 	api.SetPrefix(prefix)
 	api.SetMode(envmode)
-	api.SetPhoneNumber("905591111177") // Müşteri numarası (zorunlu)
+	api.SetPhoneNumber("905305289290") // Müşteri numarası (zorunlu)
 	api.SetIPAddress("127.0.0.1")      // IP adresi (zorunlu)
 
 	ctx := context.Background()
