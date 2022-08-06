@@ -23,7 +23,6 @@ const (
 	envmode  = "TEST"                // Çalışma ortamı (Production : "PROD" - Test : "TEST")
 	appname  = "PAYCELLTEST"         // Uygulama adı
 	merchant = "9998"                // İşyeri numarası
-	isdn     = "905591111177"        // Müşteri numarası
 	password = "PaycellTestPassword" // Şifre
 	storekey = "PAYCELL12345"        // İşyeri anahtarı
 )
@@ -32,9 +31,9 @@ func main() {
 	api, req := paycell.Api(merchant, password, appname)
 	api.Key = storekey
 	api.SetMode(envmode)
-	api.SetISDN(isdn)
-	api.SetIPv4("127.0.0.1")              // Müşteri ip adresi
-	api.SetAmount("1.00", "TRY")          // Satış tutarı
+	api.SetISDN("905591111177")           // Müşteri numarası (zorunlu)
+	api.SetIPv4("127.0.0.1")              // Müşteri ip adresi (zorunlu)
+	api.SetAmount("1.00", "TRY")          // Satış tutarı (zorunlu)
 	req.SetCardNumber("4355084355084358") // Kart numarası (zorunlu)
 	req.SetCardExpiry("12", "26")         // Son kullanma tarihi - AA,YY (zorunlu)
 	req.SetCardCode("000")                // Kart arkasındaki 3 haneli numara (zorunlu)
