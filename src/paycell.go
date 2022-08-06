@@ -443,7 +443,7 @@ func (api *API) ThreeDResult(session interface{}) (response Response) {
 }
 
 func (api *API) CardToken() (response Response) {
-	apiurl := Endpoint[api.Mode]
+	apiurl := Endpoint[api.Mode+"_TOKEN"]
 	request := new(Request)
 	request.CardToken.HashData = SHA256(strings.ToUpper(Application + request.CardToken.Header.TransactionId + request.CardToken.Header.TransactionDateTime + StoreKey + SHA256(strings.ToUpper(Password+Application))))
 	postdata, _ := json.Marshal(request.ThreeDResult)
