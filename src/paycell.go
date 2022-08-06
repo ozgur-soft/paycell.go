@@ -23,10 +23,10 @@ var (
 	Endpoint    = map[string]string{
 		"PROD":       "https://tpay.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
 		"TEST":       "https://tpay-test.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
-		"TEST_TOKEN": "https://omccstb.turkcell.com.tr/paymentmanagement/rest/getCardTokenSecure",
-		"TEST_FORM":  "https://omccstb.turkcell.com.tr/paymentmanagement/rest/threeDSecure",
 		"PROD_TOKEN": "https://epayment.turkcell.com.tr/paymentmanagement/rest/getCardTokenSecure",
 		"PROD_FORM":  "https://epayment.turkcell.com.tr/paymentmanagement/rest/threeDSecure",
+		"TEST_TOKEN": "https://omccstb.turkcell.com.tr/paymentmanagement/rest/getCardTokenSecure",
+		"TEST_FORM":  "https://omccstb.turkcell.com.tr/paymentmanagement/rest/threeDSecure",
 	}
 )
 
@@ -226,10 +226,11 @@ func Random(n int) string {
 	return string(bytes)
 }
 
-func Api(msisdn string) *API {
+func Api(msisdn string) (*API, *Request) {
 	api := new(API)
 	api.MSisdn = msisdn
-	return api
+	request := new(Request)
+	return api, request
 }
 
 func (api *API) SetMode(mode string) {
@@ -294,8 +295,6 @@ func (api *API) Auth() (response Response) {
 	decoder := json.NewDecoder(res.Body)
 	decoder.UseNumber()
 	decoder.Decode(&response.Provision)
-	pretty, _ := json.MarshalIndent(response.Provision, " ", "\t")
-	fmt.Println(string(pretty))
 	return response
 }
 
@@ -330,8 +329,6 @@ func (api *API) PreAuth() (response Response) {
 	decoder := json.NewDecoder(res.Body)
 	decoder.UseNumber()
 	decoder.Decode(&response.Provision)
-	pretty, _ := json.MarshalIndent(response.Provision, " ", "\t")
-	fmt.Println(string(pretty))
 	return response
 }
 
@@ -366,8 +363,6 @@ func (api *API) PostAuth() (response Response) {
 	decoder := json.NewDecoder(res.Body)
 	decoder.UseNumber()
 	decoder.Decode(&response.Provision)
-	pretty, _ := json.MarshalIndent(response.Provision, " ", "\t")
-	fmt.Println(string(pretty))
 	return response
 }
 
@@ -401,8 +396,6 @@ func (api *API) ThreeDSession() (response Response) {
 	decoder := json.NewDecoder(res.Body)
 	decoder.UseNumber()
 	decoder.Decode(&response.ThreeDSession)
-	pretty, _ := json.MarshalIndent(response.ThreeDSession, " ", "\t")
-	fmt.Println(string(pretty))
 	return response
 }
 
@@ -437,16 +430,13 @@ func (api *API) ThreeDResult(session interface{}) (response Response) {
 	decoder := json.NewDecoder(res.Body)
 	decoder.UseNumber()
 	decoder.Decode(&response.ThreeDResult)
-	pretty, _ := json.MarshalIndent(response.ThreeDResult, " ", "\t")
-	fmt.Println(string(pretty))
 	return response
 }
 
-func (api *API) CardToken() (response Response) {
+func (api *API) CardToken(request *Request) (response Response) {
 	apiurl := Endpoint[api.Mode+"_TOKEN"]
-	request := new(Request)
 	request.CardToken.HashData = SHA256(strings.ToUpper(Application + request.CardToken.Header.TransactionId + request.CardToken.Header.TransactionDateTime + StoreKey + SHA256(strings.ToUpper(Password+Application))))
-	postdata, _ := json.Marshal(request.ThreeDResult)
+	postdata, _ := json.Marshal(request.CardToken)
 	cli := new(http.Client)
 	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
@@ -462,9 +452,7 @@ func (api *API) CardToken() (response Response) {
 	defer res.Body.Close()
 	decoder := json.NewDecoder(res.Body)
 	decoder.UseNumber()
-	decoder.Decode(&response.ThreeDResult)
-	pretty, _ := json.MarshalIndent(response.ThreeDResult, " ", "\t")
-	fmt.Println(string(pretty))
+	decoder.Decode(&response.CardToken)
 	return response
 }
 
@@ -494,8 +482,6 @@ func (api *API) GetPaymentMethods() (response Response) {
 	decoder := json.NewDecoder(res.Body)
 	decoder.UseNumber()
 	decoder.Decode(&response.PaymentMethods)
-	pretty, _ := json.MarshalIndent(response.PaymentMethods, " ", "\t")
-	fmt.Println(string(pretty))
 	return response
 }
 
@@ -528,8 +514,6 @@ func (api *API) OpenMobilePayment(eula interface{}) (response Response) {
 	decoder := json.NewDecoder(res.Body)
 	decoder.UseNumber()
 	decoder.Decode(&response.MobilePayment)
-	pretty, _ := json.MarshalIndent(response.MobilePayment, " ", "\t")
-	fmt.Println(string(pretty))
 	return response
 }
 
@@ -561,8 +545,6 @@ func (api *API) SendOTP() (response Response) {
 	decoder := json.NewDecoder(res.Body)
 	decoder.UseNumber()
 	decoder.Decode(&response.OTP)
-	pretty, _ := json.MarshalIndent(response.OTP, " ", "\t")
-	fmt.Println(string(pretty))
 	return response
 }
 
@@ -600,7 +582,5 @@ func (api *API) ValidateOTP(token, otp interface{}) (response Response) {
 	decoder := json.NewDecoder(res.Body)
 	decoder.UseNumber()
 	decoder.Decode(&response.OTP)
-	pretty, _ := json.MarshalIndent(response.OTP, " ", "\t")
-	fmt.Println(string(pretty))
 	return response
 }
