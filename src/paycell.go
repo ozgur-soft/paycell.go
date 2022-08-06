@@ -21,10 +21,12 @@ var (
 	EulaID      = "17"
 	Prefix      = "666"
 	Endpoint    = map[string]string{
-		"PROD":  "https://tpay.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
-		"TEST":  "https://tpay-test.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
-		"TOKEN": "https://omccstb.turkcell.com.tr/paymentmanagement/rest/getCardTokenSecure",
-		"3D":    "https://omccstb.turkcell.com.tr/paymentmanagement/rest/threeDSecure",
+		"PROD":       "https://tpay.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
+		"TEST":       "https://tpay-test.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
+		"TEST_TOKEN": "https://omccstb.turkcell.com.tr/paymentmanagement/rest/getCardTokenSecure",
+		"TEST_FORM":  "https://omccstb.turkcell.com.tr/paymentmanagement/rest/threeDSecure",
+		"PROD_TOKEN": "https://epayment.turkcell.com.tr/paymentmanagement/rest/getCardTokenSecure",
+		"PROD_FORM":  "https://epayment.turkcell.com.tr/paymentmanagement/rest/threeDSecure",
 	}
 )
 
