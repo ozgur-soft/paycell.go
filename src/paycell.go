@@ -15,8 +15,6 @@ import (
 )
 
 var (
-	EulaID    = "17"
-	Prefix    = "666"
 	Endpoints = map[string]string{
 		"PROD":       "https://tpay.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
 		"TEST":       "https://tpay-test.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
@@ -35,6 +33,8 @@ type API struct {
 	Password string
 	Name     string
 	Key      string
+	EulaId   string
+	Prefix   string
 	ISDN     string
 	IPv4     string
 	Amount   string
@@ -249,11 +249,12 @@ func Random(n int) string {
 	return string(bytes)
 }
 
-func Api(merchant, password, name string) (*API, *Request) {
+func Api(merchant, password, name, prefix string) (*API, *Request) {
 	api := new(API)
 	api.Merchant = merchant
 	api.Password = password
 	api.Name = name
+	api.Prefix = prefix
 	req := new(Request)
 	return api, req
 }
@@ -306,7 +307,7 @@ func (api *API) PreAuth(ctx context.Context, req *Request) (res Response, err er
 	req.Provision.Header.TransactionId = Random(20)
 	req.Provision.MSisdn = api.ISDN
 	req.Provision.MerchantCode = api.Merchant
-	req.Provision.RefNo = Prefix + fmt.Sprintf("%v", req.Provision.Header.TransactionDateTime)
+	req.Provision.RefNo = api.Prefix + fmt.Sprintf("%v", req.Provision.Header.TransactionDateTime)
 	req.Provision.Amount = api.Amount
 	req.Provision.Currency = api.Currency
 	req.Provision.PaymentType = "PREAUTH"
@@ -350,7 +351,7 @@ func (api *API) Auth(ctx context.Context, req *Request) (res Response, err error
 	req.Provision.Header.TransactionId = Random(20)
 	req.Provision.MSisdn = api.ISDN
 	req.Provision.MerchantCode = api.Merchant
-	req.Provision.RefNo = Prefix + fmt.Sprintf("%v", req.Provision.Header.TransactionDateTime)
+	req.Provision.RefNo = api.Prefix + fmt.Sprintf("%v", req.Provision.Header.TransactionDateTime)
 	req.Provision.Amount = api.Amount
 	req.Provision.Currency = api.Currency
 	req.Provision.PaymentType = "SALE"
@@ -389,7 +390,7 @@ func (api *API) PostAuth(ctx context.Context, req *Request) (res Response, err e
 	req.Provision.Header.TransactionId = Random(20)
 	req.Provision.MSisdn = api.ISDN
 	req.Provision.MerchantCode = api.Merchant
-	req.Provision.RefNo = Prefix + fmt.Sprintf("%v", req.Provision.Header.TransactionDateTime)
+	req.Provision.RefNo = api.Prefix + fmt.Sprintf("%v", req.Provision.Header.TransactionDateTime)
 	req.Provision.Amount = api.Amount
 	req.Provision.Currency = api.Currency
 	req.Provision.PaymentType = "POSTAUTH"
@@ -427,7 +428,7 @@ func (api *API) Refund(ctx context.Context, req *Request) (res Response, err err
 	req.Refund.Header.TransactionId = Random(20)
 	req.Refund.MSisdn = api.ISDN
 	req.Refund.MerchantCode = api.Merchant
-	req.Refund.RefNo = Prefix + fmt.Sprintf("%v", req.Refund.Header.TransactionDateTime)
+	req.Refund.RefNo = api.Prefix + fmt.Sprintf("%v", req.Refund.Header.TransactionDateTime)
 	req.Refund.Amount = api.Amount
 	req.Refund.Currency = api.Currency
 	postdata, err := json.Marshal(req.Refund)
@@ -464,7 +465,7 @@ func (api *API) Cancel(ctx context.Context, req *Request) (res Response, err err
 	req.Cancel.Header.TransactionId = Random(20)
 	req.Cancel.MSisdn = api.ISDN
 	req.Cancel.MerchantCode = api.Merchant
-	req.Cancel.RefNo = Prefix + fmt.Sprintf("%v", req.Cancel.Header.TransactionDateTime)
+	req.Cancel.RefNo = api.Prefix + fmt.Sprintf("%v", req.Cancel.Header.TransactionDateTime)
 	postdata, err := json.Marshal(req.Cancel)
 	if err != nil {
 		return res, err
@@ -499,7 +500,7 @@ func (api *API) ThreeDSession(ctx context.Context, req *Request) (res Response, 
 	req.ThreeDSession.Header.TransactionId = Random(20)
 	req.ThreeDSession.MSisdn = api.ISDN
 	req.ThreeDSession.MerchantCode = api.Merchant
-	req.ThreeDSession.RefNo = Prefix + fmt.Sprintf("%v", req.ThreeDSession.Header.TransactionDateTime)
+	req.ThreeDSession.RefNo = api.Prefix + fmt.Sprintf("%v", req.ThreeDSession.Header.TransactionDateTime)
 	req.ThreeDSession.Amount = api.Amount
 	req.ThreeDSession.Currency = api.Currency
 	postdata, err := json.Marshal(req.ThreeDSession)
@@ -536,7 +537,7 @@ func (api *API) ThreeDResult(ctx context.Context, req *Request) (res Response, e
 	req.ThreeDResult.Header.TransactionId = Random(20)
 	req.ThreeDResult.MSisdn = api.ISDN
 	req.ThreeDResult.MerchantCode = api.Merchant
-	req.ThreeDResult.RefNo = Prefix + fmt.Sprintf("%v", req.ThreeDResult.Header.TransactionDateTime)
+	req.ThreeDResult.RefNo = api.Prefix + fmt.Sprintf("%v", req.ThreeDResult.Header.TransactionDateTime)
 	postdata, err := json.Marshal(req.ThreeDResult)
 	if err != nil {
 		return res, err
