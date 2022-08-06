@@ -2,12 +2,12 @@ package paycell
 
 import (
 	"bytes"
+	"context"
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -129,12 +129,12 @@ type Request struct {
 }
 
 type Response struct {
-	CardToken struct {
+	CardToken *struct {
 		Header    ResponseHeader `json:"header,omitempty"`
 		CardToken any            `json:"cardToken,omitempty"`
 		HashData  any            `json:"hashData,omitempty"`
 	}
-	Provision struct {
+	Provision *struct {
 		Header       ResponseHeader `json:"responseHeader,omitempty"`
 		OrderId      any            `json:"orderId,omitempty"`
 		OrderDate    any            `json:"reconciliationDate,omitempty"`
@@ -142,11 +142,11 @@ type Response struct {
 		AcquirerBank any            `json:"acquirerBankCode,omitempty"`
 		IssuerBank   any            `json:"issuerBankCode,omitempty"`
 	}
-	ThreeDSession struct {
+	ThreeDSession *struct {
 		Header        ResponseHeader `json:"responseHeader,omitempty"`
 		ThreeDSession any            `json:"threeDSessionId,omitempty"`
 	}
-	ThreeDResult struct {
+	ThreeDResult *struct {
 		CurrentStep    any `json:"currentStep,omitempty"`
 		MdErrorMessage any `json:"mdErrorMessage,omitempty"`
 		MdStatus       any `json:"mdStatus,omitempty"`
@@ -155,10 +155,10 @@ type Response struct {
 			Description any `json:"threeDResultDescription,omitempty"`
 		} `json:"threeDOperationResult,omitempty"`
 	}
-	PaymentMethods struct {
+	PaymentMethods *struct {
 		Header   ResponseHeader `json:"responseHeader,omitempty"`
 		EulaID   any            `json:"eulaID,omitempty"`
-		CardList []struct {
+		CardList []*struct {
 			CardBrand         any  `json:"cardBrand,omitempty"`
 			CardId            any  `json:"cardId,omitempty"`
 			CardType          any  `json:"cardType,omitempty"`
@@ -183,10 +183,10 @@ type Response struct {
 			IsEulaExpired  bool `json:"isEulaExpired,omitempty"`
 		} `json:"mobilePayment,omitempty"`
 	}
-	MobilePayment struct {
+	MobilePayment *struct {
 		Header ResponseHeader `json:"responseHeader,omitempty"`
 	}
-	OTP struct {
+	OTP *struct {
 		Header     ResponseHeader `json:"responseHeader,omitempty"`
 		Token      any            `json:"token,omitempty"`
 		ExpireDate any            `json:"expireDate,omitempty"`
@@ -202,7 +202,7 @@ type RequestHeader struct {
 	TransactionId       string `json:"transactionId,omitempty"`
 }
 
-type ResponseHeader struct {
+type ResponseHeader *struct {
 	ResponseCode        string `json:"responseCode,omitempty"`
 	ResponseDescription string `json:"responseDescription,omitempty"`
 	ResponseDateTime    string `json:"responseDateTime,omitempty"`
@@ -229,8 +229,8 @@ func Random(n int) string {
 func Api(msisdn string) (*API, *Request) {
 	api := new(API)
 	api.MSisdn = msisdn
-	request := new(Request)
-	return api, request
+	req := new(Request)
+	return api, req
 }
 
 func (api *API) SetMode(mode string) {
@@ -246,17 +246,17 @@ func (api *API) SetAmount(total string, currency string) {
 	api.Currency = currency
 }
 
-func (request *Request) SetCardNumber(number string) {
-	request.CardToken.CardNumber = number
+func (req *Request) SetCardNumber(number string) {
+	req.CardToken.CardNumber = number
 }
 
-func (request *Request) SetCardExpiry(month, year string) {
-	request.CardToken.CardMonth = month
-	request.CardToken.CardYear = year
+func (req *Request) SetCardExpiry(month, year string) {
+	req.CardToken.CardMonth = month
+	req.CardToken.CardYear = year
 }
 
-func (request *Request) SetCardCode(code string) {
-	request.CardToken.CardCode = code
+func (req *Request) SetCardCode(code string) {
+	req.CardToken.CardCode = code
 }
 
 func (api *API) HashResponse(header ResponseHeader, cardToken string) string {
@@ -264,366 +264,316 @@ func (api *API) HashResponse(header ResponseHeader, cardToken string) string {
 	return hashdata
 }
 
-func (api *API) Auth() (response Response) {
+func (api *API) Auth(req *Request) (res Response, err error) {
 	apiurl := Endpoint[api.Mode] + "/provision/"
-	request := new(Request)
-	request.Provision.Header.ClientIPAddress = api.ClientIP
-	request.Provision.Header.ApplicationName = Application
-	request.Provision.Header.ApplicationPwd = Password
-	request.Provision.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
-	request.Provision.Header.TransactionId = Random(20)
-	request.Provision.MSisdn = api.MSisdn
-	request.Provision.MerchantCode = Merchant
-	request.Provision.RefNo = Prefix + fmt.Sprintf("%v", request.Provision.Header.TransactionDateTime)
-	request.Provision.Amount = api.Amount
-	request.Provision.Currency = api.Currency
-	request.Provision.PaymentType = "SALE"
-	postdata, err := json.Marshal(request.Provision)
+	req.Provision.Header.ClientIPAddress = api.ClientIP
+	req.Provision.Header.ApplicationName = Application
+	req.Provision.Header.ApplicationPwd = Password
+	req.Provision.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	req.Provision.Header.TransactionId = Random(20)
+	req.Provision.MSisdn = api.MSisdn
+	req.Provision.MerchantCode = Merchant
+	req.Provision.RefNo = Prefix + fmt.Sprintf("%v", req.Provision.Header.TransactionDateTime)
+	req.Provision.Amount = api.Amount
+	req.Provision.Currency = api.Currency
+	req.Provision.PaymentType = "SALE"
+	postdata, err := json.Marshal(req.Provision)
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
 	cli := new(http.Client)
-	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
+	request, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
-	req.Header.Set("Content-Type", "application/json")
-	res, err := cli.Do(req)
+	request.Header.Set("Content-Type", "application/json")
+	response, err := cli.Do(request)
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
+	defer response.Body.Close()
+	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
-	decoder.Decode(&response.Provision)
-	return response
+	decoder.Decode(&res.Provision)
+	return res, err
 }
 
-func (api *API) PreAuth() (response Response) {
+func (api *API) PreAuth(req *Request) (res Response, err error) {
 	apiurl := Endpoint[api.Mode] + "/provision/"
-	request := new(Request)
-	request.Provision.Header.ClientIPAddress = api.ClientIP
-	request.Provision.Header.ApplicationName = Application
-	request.Provision.Header.ApplicationPwd = Password
-	request.Provision.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
-	request.Provision.Header.TransactionId = Random(20)
-	request.Provision.MSisdn = api.MSisdn
-	request.Provision.MerchantCode = Merchant
-	request.Provision.RefNo = Prefix + fmt.Sprintf("%v", request.Provision.Header.TransactionDateTime)
-	request.Provision.Amount = api.Amount
-	request.Provision.Currency = api.Currency
-	request.Provision.PaymentType = "PREAUTH"
-	postdata, err := json.Marshal(request.Provision)
+	req.Provision.Header.ClientIPAddress = api.ClientIP
+	req.Provision.Header.ApplicationName = Application
+	req.Provision.Header.ApplicationPwd = Password
+	req.Provision.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	req.Provision.Header.TransactionId = Random(20)
+	req.Provision.MSisdn = api.MSisdn
+	req.Provision.MerchantCode = Merchant
+	req.Provision.RefNo = Prefix + fmt.Sprintf("%v", req.Provision.Header.TransactionDateTime)
+	req.Provision.Amount = api.Amount
+	req.Provision.Currency = api.Currency
+	req.Provision.PaymentType = "PREAUTH"
+	postdata, err := json.Marshal(req.Provision)
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
 	cli := new(http.Client)
-	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
+	request, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
-	req.Header.Set("Content-Type", "application/json")
-	res, err := cli.Do(req)
+	request.Header.Set("Content-Type", "application/json")
+	response, err := cli.Do(request)
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
+	defer response.Body.Close()
+	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
-	decoder.Decode(&response.Provision)
-	return response
+	decoder.Decode(&res.Provision)
+	return res, err
 }
 
-func (api *API) PostAuth() (response Response) {
+func (api *API) PostAuth(req *Request) (res Response, err error) {
 	apiurl := Endpoint[api.Mode] + "/provision/"
-	request := new(Request)
-	request.Provision.Header.ClientIPAddress = api.ClientIP
-	request.Provision.Header.ApplicationName = Application
-	request.Provision.Header.ApplicationPwd = Password
-	request.Provision.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
-	request.Provision.Header.TransactionId = Random(20)
-	request.Provision.MSisdn = api.MSisdn
-	request.Provision.MerchantCode = Merchant
-	request.Provision.RefNo = Prefix + fmt.Sprintf("%v", request.Provision.Header.TransactionDateTime)
-	request.Provision.Amount = api.Amount
-	request.Provision.Currency = api.Currency
-	request.Provision.PaymentType = "POSTAUTH"
-	postdata, err := json.Marshal(request.Provision)
+	req.Provision.Header.ClientIPAddress = api.ClientIP
+	req.Provision.Header.ApplicationName = Application
+	req.Provision.Header.ApplicationPwd = Password
+	req.Provision.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	req.Provision.Header.TransactionId = Random(20)
+	req.Provision.MSisdn = api.MSisdn
+	req.Provision.MerchantCode = Merchant
+	req.Provision.RefNo = Prefix + fmt.Sprintf("%v", req.Provision.Header.TransactionDateTime)
+	req.Provision.Amount = api.Amount
+	req.Provision.Currency = api.Currency
+	req.Provision.PaymentType = "POSTAUTH"
+	postdata, err := json.Marshal(req.Provision)
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
 	cli := new(http.Client)
-	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
+	request, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
-	req.Header.Set("Content-Type", "application/json")
-	res, err := cli.Do(req)
+	request.Header.Set("Content-Type", "application/json")
+	response, err := cli.Do(request)
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
+	defer response.Body.Close()
+	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
-	decoder.Decode(&response.Provision)
-	return response
+	decoder.Decode(&res.Provision)
+	return res, err
 }
 
-func (api *API) ThreeDSession() (response Response) {
+func (api *API) ThreeDSession(req *Request) (res Response, err error) {
 	apiurl := Endpoint[api.Mode] + "/getThreeDSession/"
-	request := new(Request)
-	request.ThreeDSession.Header.ClientIPAddress = api.ClientIP
-	request.ThreeDSession.Header.ApplicationName = Application
-	request.ThreeDSession.Header.ApplicationPwd = Password
-	request.ThreeDSession.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
-	request.ThreeDSession.Header.TransactionId = Random(20)
-	request.ThreeDSession.MSisdn = api.MSisdn
-	request.ThreeDSession.MerchantCode = Merchant
-	request.ThreeDSession.RefNo = Prefix + fmt.Sprintf("%v", request.ThreeDSession.Header.TransactionDateTime)
-	request.ThreeDSession.Amount = api.Amount
-	request.ThreeDSession.Currency = api.Currency
-	postdata, err := json.Marshal(request.ThreeDSession)
+	req.ThreeDSession.Header.ClientIPAddress = api.ClientIP
+	req.ThreeDSession.Header.ApplicationName = Application
+	req.ThreeDSession.Header.ApplicationPwd = Password
+	req.ThreeDSession.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	req.ThreeDSession.Header.TransactionId = Random(20)
+	req.ThreeDSession.MSisdn = api.MSisdn
+	req.ThreeDSession.MerchantCode = Merchant
+	req.ThreeDSession.RefNo = Prefix + fmt.Sprintf("%v", req.ThreeDSession.Header.TransactionDateTime)
+	req.ThreeDSession.Amount = api.Amount
+	req.ThreeDSession.Currency = api.Currency
+	postdata, err := json.Marshal(req.ThreeDSession)
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
 	cli := new(http.Client)
-	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
+	request, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
-	req.Header.Set("Content-Type", "application/json")
-	res, err := cli.Do(req)
+	request.Header.Set("Content-Type", "application/json")
+	response, err := cli.Do(request)
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
+	defer response.Body.Close()
+	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
-	decoder.Decode(&response.ThreeDSession)
-	return response
+	decoder.Decode(&res.ThreeDSession)
+	return res, err
 }
 
-func (api *API) ThreeDResult(session interface{}) (response Response) {
+func (api *API) ThreeDResult(ctx context.Context, req *Request) (res Response, err error) {
 	apiurl := Endpoint[api.Mode] + "/getThreeDSessionResult/"
-	request := new(Request)
-	request.ThreeDResult.Header.ClientIPAddress = api.ClientIP
-	request.ThreeDResult.Header.ApplicationName = Application
-	request.ThreeDResult.Header.ApplicationPwd = Password
-	request.ThreeDResult.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
-	request.ThreeDResult.Header.TransactionId = Random(20)
-	request.ThreeDResult.MSisdn = api.MSisdn
-	request.ThreeDResult.MerchantCode = Merchant
-	request.ThreeDResult.RefNo = Prefix + fmt.Sprintf("%v", request.ThreeDResult.Header.TransactionDateTime)
-	if session != nil {
-		request.ThreeDResult.ThreeDSession = session
-	}
-	postdata, err := json.Marshal(request.ThreeDResult)
+	req.ThreeDResult.Header.ClientIPAddress = api.ClientIP
+	req.ThreeDResult.Header.ApplicationName = Application
+	req.ThreeDResult.Header.ApplicationPwd = Password
+	req.ThreeDResult.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	req.ThreeDResult.Header.TransactionId = Random(20)
+	req.ThreeDResult.MSisdn = api.MSisdn
+	req.ThreeDResult.MerchantCode = Merchant
+	req.ThreeDResult.RefNo = Prefix + fmt.Sprintf("%v", req.ThreeDResult.Header.TransactionDateTime)
+	postdata, err := json.Marshal(req.ThreeDResult)
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
 	cli := new(http.Client)
-	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
+	request, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
-	req.Header.Set("Content-Type", "application/json")
-	res, err := cli.Do(req)
+	request.Header.Set("Content-Type", "application/json")
+	response, err := cli.Do(request)
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
+	defer response.Body.Close()
+	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
-	decoder.Decode(&response.ThreeDResult)
-	return response
+	decoder.Decode(&res.ThreeDResult)
+	return res, err
 }
 
-func (api *API) CardToken(request *Request) (response Response) {
-	apiurl := Endpoint[api.Mode+"_TOKEN"]
-	request.CardToken.Header.ApplicationName = Application
-	request.CardToken.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
-	request.CardToken.Header.TransactionId = Random(20)
-	request.CardToken.HashData = SHA256(strings.ToUpper(Application + request.CardToken.Header.TransactionId + request.CardToken.Header.TransactionDateTime + StoreKey + SHA256(strings.ToUpper(Password+Application))))
-	postdata, err := json.Marshal(request.CardToken)
+func (api *API) CardToken(ctx context.Context, req *Request) (res Response, err error) {
+	req.CardToken.Header.ApplicationName = Application
+	req.CardToken.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	req.CardToken.Header.TransactionId = Random(20)
+	req.CardToken.HashData = SHA256(strings.ToUpper(Application + req.CardToken.Header.TransactionId + req.CardToken.Header.TransactionDateTime + StoreKey + SHA256(strings.ToUpper(Password+Application))))
+	postdata, err := json.Marshal(req.CardToken)
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
 	cli := new(http.Client)
-	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", Endpoint[api.Mode+"_TOKEN"], bytes.NewReader(postdata))
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
-	req.Header.Set("Content-Type", "application/json")
-	res, err := cli.Do(req)
+	request.Header.Set("Content-Type", "application/json")
+	response, err := cli.Do(request)
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
+	defer response.Body.Close()
+	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
-	decoder.Decode(&response.CardToken)
-	return response
+	decoder.Decode(&res.CardToken)
+	return res, err
 }
 
-func (api *API) GetPaymentMethods() (response Response) {
+func (api *API) GetPaymentMethods(req *Request) (res Response, err error) {
 	apiurl := Endpoint[api.Mode] + "/getPaymentMethods/"
-	request := new(Request)
-	request.PaymentMethods.MSisdn = api.MSisdn
-	request.PaymentMethods.Header.ClientIPAddress = api.ClientIP
-	request.PaymentMethods.Header.ApplicationName = Application
-	request.PaymentMethods.Header.ApplicationPwd = Password
-	request.PaymentMethods.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
-	request.PaymentMethods.Header.TransactionId = Random(20)
-	postdata, err := json.Marshal(request.PaymentMethods)
+	req.PaymentMethods.MSisdn = api.MSisdn
+	req.PaymentMethods.Header.ClientIPAddress = api.ClientIP
+	req.PaymentMethods.Header.ApplicationName = Application
+	req.PaymentMethods.Header.ApplicationPwd = Password
+	req.PaymentMethods.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	req.PaymentMethods.Header.TransactionId = Random(20)
+	postdata, err := json.Marshal(req.PaymentMethods)
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
 	cli := new(http.Client)
-	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
+	request, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
-	req.Header.Set("Content-Type", "application/json")
-	res, err := cli.Do(req)
+	request.Header.Set("Content-Type", "application/json")
+	response, err := cli.Do(request)
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
+	defer response.Body.Close()
+	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
-	decoder.Decode(&response.PaymentMethods)
-	return response
+	decoder.Decode(&res.PaymentMethods)
+	return res, err
 }
 
-func (api *API) OpenMobilePayment(eula interface{}) (response Response) {
+func (api *API) OpenMobilePayment(ctx context.Context, req *Request) (res Response, err error) {
 	apiurl := Endpoint[api.Mode] + "/openMobilePayment/"
-	request := new(Request)
-	request.MobilePayment.Header.ClientIPAddress = api.ClientIP
-	request.MobilePayment.Header.ApplicationName = Application
-	request.MobilePayment.Header.ApplicationPwd = Password
-	request.MobilePayment.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
-	request.MobilePayment.Header.TransactionId = Random(20)
-	request.MobilePayment.MSisdn = api.MSisdn
-	if eula != nil {
-		request.MobilePayment.EulaID = eula
-	}
-	postdata, err := json.Marshal(request.MobilePayment)
+	req.MobilePayment.Header.ClientIPAddress = api.ClientIP
+	req.MobilePayment.Header.ApplicationName = Application
+	req.MobilePayment.Header.ApplicationPwd = Password
+	req.MobilePayment.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	req.MobilePayment.Header.TransactionId = Random(20)
+	req.MobilePayment.MSisdn = api.MSisdn
+	postdata, err := json.Marshal(req.MobilePayment)
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
 	cli := new(http.Client)
-	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
+	request, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
-	req.Header.Set("Content-Type", "application/json")
-	res, err := cli.Do(req)
+	request.Header.Set("Content-Type", "application/json")
+	response, err := cli.Do(request)
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
+	defer response.Body.Close()
+	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
-	decoder.Decode(&response.MobilePayment)
-	return response
+	decoder.Decode(&res.MobilePayment)
+	return res, err
 }
 
-func (api *API) SendOTP() (response Response) {
+func (api *API) SendOTP(req *Request) (res Response, err error) {
 	apiurl := Endpoint[api.Mode] + "/sendOTP/"
-	request := new(Request)
-	request.OTP.Header.ClientIPAddress = api.ClientIP
-	request.OTP.Header.ApplicationName = Application
-	request.OTP.Header.ApplicationPwd = Password
-	request.OTP.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
-	request.OTP.Header.TransactionId = Random(20)
-	request.OTP.MSisdn = api.MSisdn
-	request.OTP.RefNo = Random(20)
-	request.OTP.Amount = api.Amount
-	postdata, err := json.Marshal(request.OTP)
+	req.OTP.Header.ClientIPAddress = api.ClientIP
+	req.OTP.Header.ApplicationName = Application
+	req.OTP.Header.ApplicationPwd = Password
+	req.OTP.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	req.OTP.Header.TransactionId = Random(20)
+	req.OTP.MSisdn = api.MSisdn
+	req.OTP.RefNo = Random(20)
+	req.OTP.Amount = api.Amount
+	req.OTP.Currency = api.Currency
+	postdata, err := json.Marshal(req.OTP)
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
 	cli := new(http.Client)
-	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
+	request, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
-	req.Header.Set("Content-Type", "application/json")
-	res, err := cli.Do(req)
+	request.Header.Set("Content-Type", "application/json")
+	response, err := cli.Do(request)
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
+	defer response.Body.Close()
+	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
-	decoder.Decode(&response.OTP)
-	return response
+	decoder.Decode(&res.OTP)
+	return res, err
 }
 
-func (api *API) ValidateOTP(token, otp interface{}) (response Response) {
+func (api *API) ValidateOTP(ctx context.Context, req *Request) (res Response, err error) {
 	apiurl := Endpoint[api.Mode] + "/validateOTP/"
-	request := new(Request)
-	request.OTP.Header.ClientIPAddress = api.ClientIP
-	request.OTP.Header.ApplicationName = Application
-	request.OTP.Header.ApplicationPwd = Password
-	request.OTP.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
-	request.OTP.Header.TransactionId = Random(20)
-	request.OTP.MSisdn = api.MSisdn
-	request.OTP.RefNo = Random(20)
-	request.OTP.Amount = api.Amount
-	if token != nil {
-		request.OTP.Token = token
-	}
-	if otp != nil {
-		request.OTP.OTP = otp
-	}
-	postdata, err := json.Marshal(request.OTP)
+	req.OTP.Header.ClientIPAddress = api.ClientIP
+	req.OTP.Header.ApplicationName = Application
+	req.OTP.Header.ApplicationPwd = Password
+	req.OTP.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	req.OTP.Header.TransactionId = Random(20)
+	req.OTP.MSisdn = api.MSisdn
+	req.OTP.RefNo = Random(20)
+	req.OTP.Amount = api.Amount
+	req.OTP.Currency = api.Currency
+	postdata, err := json.Marshal(req.OTP)
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
 	cli := new(http.Client)
-	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
+	request, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
-	req.Header.Set("Content-Type", "application/json")
-	res, err := cli.Do(req)
+	request.Header.Set("Content-Type", "application/json")
+	response, err := cli.Do(request)
 	if err != nil {
-		log.Println(err)
-		return response
+		return res, err
 	}
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
+	defer response.Body.Close()
+	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
-	decoder.Decode(&response.OTP)
-	return response
+	decoder.Decode(&res.OTP)
+	return res, err
 }
