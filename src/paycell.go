@@ -41,160 +41,164 @@ type API struct {
 	Currency string
 }
 
-type Request struct {
-	CardToken struct {
-		Header     RequestHeader `json:"header,omitempty"`
-		CardNumber any           `json:"creditCardNo,omitempty"`
-		CardMonth  any           `json:"expireDateMonth,omitempty"`
-		CardYear   any           `json:"expireDateYear,omitempty"`
-		CardCode   any           `json:"cvcNo,omitempty"`
-		Hash       any           `json:"hashData,omitempty"`
+type (
+	Request struct {
+		CardToken struct {
+			Header     RequestHeader `json:"header,omitempty"`
+			CardNumber any           `json:"creditCardNo,omitempty"`
+			CardMonth  any           `json:"expireDateMonth,omitempty"`
+			CardYear   any           `json:"expireDateYear,omitempty"`
+			CardCode   any           `json:"cvcNo,omitempty"`
+			Hash       any           `json:"hashData,omitempty"`
+		}
+		Provision struct {
+			Header        RequestHeader `json:"requestHeader,omitempty"`
+			MSisdn        any           `json:"msisdn,omitempty"`
+			MerchantCode  any           `json:"merchantCode,omitempty"`
+			CardId        any           `json:"cardId,omitempty"`
+			CardToken     any           `json:"cardToken,omitempty"`
+			RefNo         any           `json:"referenceNumber,omitempty"`
+			OriginalRefNo any           `json:"originalReferenceNumber,omitempty"`
+			Amount        any           `json:"amount,omitempty"`
+			PointAmount   any           `json:"pointAmount,omitempty"`
+			Currency      any           `json:"currency,omitempty"`
+			Installment   any           `json:"installmentCount,omitempty"`
+			PaymentType   any           `json:"paymentType,omitempty"`
+			AcquirerBank  any           `json:"acquirerBankCode,omitempty"`
+			ThreeDSession any           `json:"threeDSessionId,omitempty"`
+			Pin           any           `json:"pin,omitempty"`
+		}
+		Refund struct {
+			Header        RequestHeader `json:"requestHeader,omitempty"`
+			MSisdn        any           `json:"msisdn,omitempty"`
+			MerchantCode  any           `json:"merchantCode,omitempty"`
+			Amount        any           `json:"amount,omitempty"`
+			Currency      any           `json:"currency,omitempty"`
+			RefNo         any           `json:"referenceNumber,omitempty"`
+			OriginalRefNo any           `json:"originalReferenceNumber,omitempty"`
+		}
+		Reverse struct {
+			Header        RequestHeader `json:"requestHeader,omitempty"`
+			MSisdn        any           `json:"msisdn,omitempty"`
+			MerchantCode  any           `json:"merchantCode,omitempty"`
+			RefNo         any           `json:"referenceNumber,omitempty"`
+			OriginalRefNo any           `json:"originalReferenceNumber,omitempty"`
+		}
+		ThreeDSession struct {
+			Header       RequestHeader `json:"requestHeader,omitempty"`
+			MSisdn       any           `json:"msisdn,omitempty"`
+			MerchantCode any           `json:"merchantCode,omitempty"`
+			CardId       any           `json:"cardId,omitempty"`
+			CardToken    any           `json:"cardToken,omitempty"`
+			Installment  any           `json:"installmentCount,omitempty"`
+			Amount       any           `json:"amount,omitempty"`
+			Currency     any           `json:"currency,omitempty"`
+			RefNo        any           `json:"referenceNumber,omitempty"`
+			Target       any           `json:"target,omitempty"`
+			Transaction  any           `json:"transactionType,omitempty"`
+		}
+		ThreeDResult struct {
+			Header        RequestHeader `json:"requestHeader,omitempty"`
+			MSisdn        any           `json:"msisdn,omitempty"`
+			MerchantCode  any           `json:"merchantCode,omitempty"`
+			RefNo         any           `json:"referenceNumber,omitempty"`
+			ThreeDSession any           `json:"threeDSessionId,omitempty"`
+		}
+		ThreeDForm struct {
+			ThreeDSession  any `form:"threeDSessionId,omitempty"`
+			CallbackUrl    any `form:"callbackurl,omitempty"`
+			IsPoint        any `form:"isPoint,omitempty"`
+			IsPost3DResult any `form:"isPost3DResult,omitempty"`
+		}
+		PaymentMethods struct {
+			Header RequestHeader `json:"requestHeader,omitempty"`
+			MSisdn any           `json:"msisdn,omitempty"`
+		}
+		MobilePayment struct {
+			Header RequestHeader `json:"requestHeader,omitempty"`
+			MSisdn any           `json:"msisdn,omitempty"`
+			EulaID any           `json:"eulaID,omitempty"`
+		}
+		OTP struct {
+			Header   RequestHeader `json:"requestHeader,omitempty"`
+			MSisdn   any           `json:"msisdn,omitempty"`
+			Amount   any           `json:"amount,omitempty"`
+			Currency any           `json:"currency,omitempty"`
+			RefNo    any           `json:"referenceNumber,omitempty"`
+			OTP      any           `json:"otp,omitempty"`
+			Token    any           `json:"token,omitempty"`
+		}
 	}
-	Provision struct {
-		Header        RequestHeader `json:"requestHeader,omitempty"`
-		MSisdn        any           `json:"msisdn,omitempty"`
-		MerchantCode  any           `json:"merchantCode,omitempty"`
-		CardId        any           `json:"cardId,omitempty"`
-		CardToken     any           `json:"cardToken,omitempty"`
-		RefNo         any           `json:"referenceNumber,omitempty"`
-		OriginalRefNo any           `json:"originalReferenceNumber,omitempty"`
-		Amount        any           `json:"amount,omitempty"`
-		PointAmount   any           `json:"pointAmount,omitempty"`
-		Currency      any           `json:"currency,omitempty"`
-		Installment   any           `json:"installmentCount,omitempty"`
-		PaymentType   any           `json:"paymentType,omitempty"`
-		AcquirerBank  any           `json:"acquirerBankCode,omitempty"`
-		ThreeDSession any           `json:"threeDSessionId,omitempty"`
-		Pin           any           `json:"pin,omitempty"`
-	}
-	Refund struct {
-		Header        RequestHeader `json:"requestHeader,omitempty"`
-		MSisdn        any           `json:"msisdn,omitempty"`
-		MerchantCode  any           `json:"merchantCode,omitempty"`
-		Amount        any           `json:"amount,omitempty"`
-		Currency      any           `json:"currency,omitempty"`
-		RefNo         any           `json:"referenceNumber,omitempty"`
-		OriginalRefNo any           `json:"originalReferenceNumber,omitempty"`
-	}
-	Reverse struct {
-		Header        RequestHeader `json:"requestHeader,omitempty"`
-		MSisdn        any           `json:"msisdn,omitempty"`
-		MerchantCode  any           `json:"merchantCode,omitempty"`
-		RefNo         any           `json:"referenceNumber,omitempty"`
-		OriginalRefNo any           `json:"originalReferenceNumber,omitempty"`
-	}
-	ThreeDSession struct {
-		Header       RequestHeader `json:"requestHeader,omitempty"`
-		MSisdn       any           `json:"msisdn,omitempty"`
-		MerchantCode any           `json:"merchantCode,omitempty"`
-		CardId       any           `json:"cardId,omitempty"`
-		CardToken    any           `json:"cardToken,omitempty"`
-		Installment  any           `json:"installmentCount,omitempty"`
-		Amount       any           `json:"amount,omitempty"`
-		Currency     any           `json:"currency,omitempty"`
-		RefNo        any           `json:"referenceNumber,omitempty"`
-		Target       any           `json:"target,omitempty"`
-		Transaction  any           `json:"transactionType,omitempty"`
-	}
-	ThreeDResult struct {
-		Header        RequestHeader `json:"requestHeader,omitempty"`
-		MSisdn        any           `json:"msisdn,omitempty"`
-		MerchantCode  any           `json:"merchantCode,omitempty"`
-		RefNo         any           `json:"referenceNumber,omitempty"`
-		ThreeDSession any           `json:"threeDSessionId,omitempty"`
-	}
-	ThreeDForm struct {
-		ThreeDSession  any `form:"threeDSessionId,omitempty"`
-		CallbackUrl    any `form:"callbackurl,omitempty"`
-		IsPoint        any `form:"isPoint,omitempty"`
-		IsPost3DResult any `form:"isPost3DResult,omitempty"`
-	}
-	PaymentMethods struct {
-		Header RequestHeader `json:"requestHeader,omitempty"`
-		MSisdn any           `json:"msisdn,omitempty"`
-	}
-	MobilePayment struct {
-		Header RequestHeader `json:"requestHeader,omitempty"`
-		MSisdn any           `json:"msisdn,omitempty"`
-		EulaID any           `json:"eulaID,omitempty"`
-	}
-	OTP struct {
-		Header   RequestHeader `json:"requestHeader,omitempty"`
-		MSisdn   any           `json:"msisdn,omitempty"`
-		Amount   any           `json:"amount,omitempty"`
-		Currency any           `json:"currency,omitempty"`
-		RefNo    any           `json:"referenceNumber,omitempty"`
-		OTP      any           `json:"otp,omitempty"`
-		Token    any           `json:"token,omitempty"`
-	}
-}
+)
 
-type Response struct {
-	CardToken *struct {
-		Header ResponseHeader `json:"header,omitempty"`
-		Token  any            `json:"cardToken,omitempty"`
-		Hash   any            `json:"hashData,omitempty"`
-	}
-	Provision *struct {
-		Header       ResponseHeader `json:"responseHeader,omitempty"`
-		OrderId      any            `json:"orderId,omitempty"`
-		OrderDate    any            `json:"reconciliationDate,omitempty"`
-		ApprovalCode any            `json:"approvalCodeo,omitempty"`
-		AcquirerBank any            `json:"acquirerBankCode,omitempty"`
-		IssuerBank   any            `json:"issuerBankCode,omitempty"`
-	}
-	ThreeDSession *struct {
-		Header        ResponseHeader `json:"responseHeader,omitempty"`
-		ThreeDSession any            `json:"threeDSessionId,omitempty"`
-	}
-	ThreeDResult *struct {
-		Header         ResponseHeader `json:"responseHeader,omitempty"`
-		CurrentStep    any            `json:"currentStep,omitempty"`
-		MdErrorMessage any            `json:"mdErrorMessage,omitempty"`
-		MdStatus       any            `json:"mdStatus,omitempty"`
-		Operation      struct {
-			Result      any `json:"threeDResult,omitempty"`
-			Description any `json:"threeDResultDescription,omitempty"`
-		} `json:"threeDOperationResult,omitempty"`
-	}
-	PaymentMethods *struct {
-		Header   ResponseHeader `json:"responseHeader,omitempty"`
-		EulaID   any            `json:"eulaID,omitempty"`
-		CardList []*struct {
-			CardBrand         any  `json:"cardBrand,omitempty"`
-			CardId            any  `json:"cardId,omitempty"`
-			CardType          any  `json:"cardType,omitempty"`
-			MaskedCardNo      any  `json:"maskedCardNo,omitempty"`
-			Alias             any  `json:"alias,omitempty"`
-			ActivationDate    any  `json:"activationDate,omitempty"`
-			IsDefault         bool `json:"isDefault,omitempty"`
-			IsExpired         bool `json:"isExpired,omitempty"`
-			ShowEulaId        bool `json:"showEulaId,omitempty"`
-			IsThreeDValidated bool `json:"isThreeDValidated,omitempty"`
-			IsOTPValidated    bool `json:"isOTPValidated,omitempty"`
-		} `json:"cardList,omitempty"`
+type (
+	Response struct {
+		CardToken *struct {
+			Header ResponseHeader `json:"header,omitempty"`
+			Token  any            `json:"cardToken,omitempty"`
+			Hash   any            `json:"hashData,omitempty"`
+		}
+		Provision *struct {
+			Header       ResponseHeader `json:"responseHeader,omitempty"`
+			OrderId      any            `json:"orderId,omitempty"`
+			OrderDate    any            `json:"reconciliationDate,omitempty"`
+			ApprovalCode any            `json:"approvalCodeo,omitempty"`
+			AcquirerBank any            `json:"acquirerBankCode,omitempty"`
+			IssuerBank   any            `json:"issuerBankCode,omitempty"`
+		}
+		ThreeDSession *struct {
+			Header        ResponseHeader `json:"responseHeader,omitempty"`
+			ThreeDSession any            `json:"threeDSessionId,omitempty"`
+		}
+		ThreeDResult *struct {
+			Header         ResponseHeader `json:"responseHeader,omitempty"`
+			CurrentStep    any            `json:"currentStep,omitempty"`
+			MdErrorMessage any            `json:"mdErrorMessage,omitempty"`
+			MdStatus       any            `json:"mdStatus,omitempty"`
+			Operation      struct {
+				Result      any `json:"threeDResult,omitempty"`
+				Description any `json:"threeDResultDescription,omitempty"`
+			} `json:"threeDOperationResult,omitempty"`
+		}
+		PaymentMethods *struct {
+			Header   ResponseHeader `json:"responseHeader,omitempty"`
+			EulaID   any            `json:"eulaID,omitempty"`
+			CardList []*struct {
+				CardBrand         any  `json:"cardBrand,omitempty"`
+				CardId            any  `json:"cardId,omitempty"`
+				CardType          any  `json:"cardType,omitempty"`
+				MaskedCardNo      any  `json:"maskedCardNo,omitempty"`
+				Alias             any  `json:"alias,omitempty"`
+				ActivationDate    any  `json:"activationDate,omitempty"`
+				IsDefault         bool `json:"isDefault,omitempty"`
+				IsExpired         bool `json:"isExpired,omitempty"`
+				ShowEulaId        bool `json:"showEulaId,omitempty"`
+				IsThreeDValidated bool `json:"isThreeDValidated,omitempty"`
+				IsOTPValidated    bool `json:"isOTPValidated,omitempty"`
+			} `json:"cardList,omitempty"`
+			MobilePayment *struct {
+				EulaId         any  `json:"eulaId,omitempty"`
+				EulaUrl        any  `json:"eulaUrl,omitempty"`
+				SignedEulaId   any  `json:"signedEulaId,omitempty"`
+				StatementDate  any  `json:"statementDate,omitempty"`
+				Limit          any  `json:"limit,omitempty"`
+				MaxLimit       any  `json:"maxLimit,omitempty"`
+				RemainingLimit any  `json:"remainingLimit,omitempty"`
+				IsDcbOpen      bool `json:"isDcbOpen,omitempty"`
+				IsEulaExpired  bool `json:"isEulaExpired,omitempty"`
+			} `json:"mobilePayment,omitempty"`
+		}
 		MobilePayment *struct {
-			EulaId         any  `json:"eulaId,omitempty"`
-			EulaUrl        any  `json:"eulaUrl,omitempty"`
-			SignedEulaId   any  `json:"signedEulaId,omitempty"`
-			StatementDate  any  `json:"statementDate,omitempty"`
-			Limit          any  `json:"limit,omitempty"`
-			MaxLimit       any  `json:"maxLimit,omitempty"`
-			RemainingLimit any  `json:"remainingLimit,omitempty"`
-			IsDcbOpen      bool `json:"isDcbOpen,omitempty"`
-			IsEulaExpired  bool `json:"isEulaExpired,omitempty"`
-		} `json:"mobilePayment,omitempty"`
+			Header ResponseHeader `json:"responseHeader,omitempty"`
+		}
+		OTP *struct {
+			Header     ResponseHeader `json:"responseHeader,omitempty"`
+			Token      any            `json:"token,omitempty"`
+			ExpireDate any            `json:"expireDate,omitempty"`
+			RetryCount any            `json:"remainingRetryCount,omitempty"`
+		}
 	}
-	MobilePayment *struct {
-		Header ResponseHeader `json:"responseHeader,omitempty"`
-	}
-	OTP *struct {
-		Header     ResponseHeader `json:"responseHeader,omitempty"`
-		Token      any            `json:"token,omitempty"`
-		ExpireDate any            `json:"expireDate,omitempty"`
-		RetryCount any            `json:"remainingRetryCount,omitempty"`
-	}
-}
+)
 
 type RequestHeader struct {
 	ApplicationName     string `json:"applicationName,omitempty"`
