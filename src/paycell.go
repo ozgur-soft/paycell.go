@@ -48,7 +48,7 @@ type Request struct {
 		CardMonth  any           `json:"expireDateMonth,omitempty"`
 		CardYear   any           `json:"expireDateYear,omitempty"`
 		CardCode   any           `json:"cvcNo,omitempty"`
-		HashData   any           `json:"hashData,omitempty"`
+		Hash       any           `json:"hashData,omitempty"`
 	}
 	Provision struct {
 		Header        RequestHeader `json:"requestHeader,omitempty"`
@@ -131,9 +131,9 @@ type Request struct {
 
 type Response struct {
 	CardToken *struct {
-		Header    ResponseHeader `json:"header,omitempty"`
-		CardToken any            `json:"cardToken,omitempty"`
-		HashData  any            `json:"hashData,omitempty"`
+		Header ResponseHeader `json:"header,omitempty"`
+		Token  any            `json:"cardToken,omitempty"`
+		Hash   any            `json:"hashData,omitempty"`
 	}
 	Provision *struct {
 		Header       ResponseHeader `json:"responseHeader,omitempty"`
@@ -462,7 +462,7 @@ func (api *API) CardToken(ctx context.Context, req *Request) (res Response, err 
 	req.CardToken.Header.ApplicationName = api.Name
 	req.CardToken.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	req.CardToken.Header.TransactionId = Random(20)
-	req.CardToken.HashData = SHA256(strings.ToUpper(api.Name + req.CardToken.Header.TransactionId + req.CardToken.Header.TransactionDateTime + api.Key + SHA256(strings.ToUpper(api.Password+api.Name))))
+	req.CardToken.Hash = SHA256(strings.ToUpper(api.Name + req.CardToken.Header.TransactionId + req.CardToken.Header.TransactionDateTime + api.Key + SHA256(strings.ToUpper(api.Password+api.Name))))
 	postdata, err := json.Marshal(req.CardToken)
 	if err != nil {
 		return res, err
