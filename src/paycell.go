@@ -7,6 +7,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -147,9 +148,10 @@ type Response struct {
 		ThreeDSession any            `json:"threeDSessionId,omitempty"`
 	}
 	ThreeDResult *struct {
-		CurrentStep    any `json:"currentStep,omitempty"`
-		MdErrorMessage any `json:"mdErrorMessage,omitempty"`
-		MdStatus       any `json:"mdStatus,omitempty"`
+		Header         ResponseHeader `json:"responseHeader,omitempty"`
+		CurrentStep    any            `json:"currentStep,omitempty"`
+		MdErrorMessage any            `json:"mdErrorMessage,omitempty"`
+		MdStatus       any            `json:"mdStatus,omitempty"`
 		Operation      struct {
 			Result      any `json:"threeDResult,omitempty"`
 			Description any `json:"threeDResultDescription,omitempty"`
@@ -295,7 +297,12 @@ func (api *API) Auth(req *Request) (res Response, err error) {
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.Provision)
-	return res, err
+	switch res.Provision.Header.ResponseCode {
+	case "0":
+		return res, nil
+	default:
+		return res, errors.New(res.Provision.Header.ResponseDescription)
+	}
 }
 
 func (api *API) PreAuth(req *Request) (res Response, err error) {
@@ -329,7 +336,12 @@ func (api *API) PreAuth(req *Request) (res Response, err error) {
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.Provision)
-	return res, err
+	switch res.Provision.Header.ResponseCode {
+	case "0":
+		return res, nil
+	default:
+		return res, errors.New(res.Provision.Header.ResponseDescription)
+	}
 }
 
 func (api *API) PostAuth(req *Request) (res Response, err error) {
@@ -363,7 +375,12 @@ func (api *API) PostAuth(req *Request) (res Response, err error) {
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.Provision)
-	return res, err
+	switch res.Provision.Header.ResponseCode {
+	case "0":
+		return res, nil
+	default:
+		return res, errors.New(res.Provision.Header.ResponseDescription)
+	}
 }
 
 func (api *API) ThreeDSession(req *Request) (res Response, err error) {
@@ -396,7 +413,12 @@ func (api *API) ThreeDSession(req *Request) (res Response, err error) {
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.ThreeDSession)
-	return res, err
+	switch res.ThreeDSession.Header.ResponseCode {
+	case "0":
+		return res, nil
+	default:
+		return res, errors.New(res.ThreeDSession.Header.ResponseDescription)
+	}
 }
 
 func (api *API) ThreeDResult(ctx context.Context, req *Request) (res Response, err error) {
@@ -427,7 +449,12 @@ func (api *API) ThreeDResult(ctx context.Context, req *Request) (res Response, e
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.ThreeDResult)
-	return res, err
+	switch res.ThreeDResult.Header.ResponseCode {
+	case "0":
+		return res, nil
+	default:
+		return res, errors.New(res.ThreeDResult.Header.ResponseDescription)
+	}
 }
 
 func (api *API) CardToken(ctx context.Context, req *Request) (res Response, err error) {
@@ -453,7 +480,12 @@ func (api *API) CardToken(ctx context.Context, req *Request) (res Response, err 
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.CardToken)
-	return res, err
+	switch res.CardToken.Header.ResponseCode {
+	case "0":
+		return res, nil
+	default:
+		return res, errors.New(res.CardToken.Header.ResponseDescription)
+	}
 }
 
 func (api *API) GetPaymentMethods(req *Request) (res Response, err error) {
@@ -482,7 +514,12 @@ func (api *API) GetPaymentMethods(req *Request) (res Response, err error) {
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.PaymentMethods)
-	return res, err
+	switch res.PaymentMethods.Header.ResponseCode {
+	case "0":
+		return res, nil
+	default:
+		return res, errors.New(res.PaymentMethods.Header.ResponseDescription)
+	}
 }
 
 func (api *API) OpenMobilePayment(ctx context.Context, req *Request) (res Response, err error) {
@@ -511,7 +548,12 @@ func (api *API) OpenMobilePayment(ctx context.Context, req *Request) (res Respon
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.MobilePayment)
-	return res, err
+	switch res.MobilePayment.Header.ResponseCode {
+	case "0":
+		return res, nil
+	default:
+		return res, errors.New(res.MobilePayment.Header.ResponseDescription)
+	}
 }
 
 func (api *API) SendOTP(req *Request) (res Response, err error) {
@@ -543,7 +585,12 @@ func (api *API) SendOTP(req *Request) (res Response, err error) {
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.OTP)
-	return res, err
+	switch res.OTP.Header.ResponseCode {
+	case "0":
+		return res, nil
+	default:
+		return res, errors.New(res.OTP.Header.ResponseDescription)
+	}
 }
 
 func (api *API) ValidateOTP(ctx context.Context, req *Request) (res Response, err error) {
@@ -575,5 +622,10 @@ func (api *API) ValidateOTP(ctx context.Context, req *Request) (res Response, er
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.OTP)
-	return res, err
+	switch res.OTP.Header.ResponseCode {
+	case "0":
+		return res, nil
+	default:
+		return res, errors.New(res.OTP.Header.ResponseDescription)
+	}
 }
