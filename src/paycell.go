@@ -40,11 +40,12 @@ type API struct {
 
 type Request struct {
 	CardToken struct {
-		MSisdn        any           `json:"msisdn,omitempty"`
-		MerchantCode  any           `json:"merchantCode,omitempty"`
-		RefNo         any           `json:"referenceNumber,omitempty"`
-		OriginalRefNo any           `json:"originalReferenceNumber,omitempty"`
-		Header        RequestHeader `json:"requestHeader,omitempty"`
+		CardNumber any           `json:"creditCardNo,omitempty"`
+		CardMonth  any           `json:"expireDateMonth,omitempty"`
+		CardYear   any           `json:"expireDateYear,omitempty"`
+		CardCode   any           `json:"cvcNo,omitempty"`
+		HashData   any           `json:"hashData,omitempty"`
+		Header     RequestHeader `json:"requestHeader,omitempty"`
 	}
 	Provision struct {
 		MSisdn        any           `json:"msisdn,omitempty"`
@@ -127,7 +128,9 @@ type Request struct {
 
 type Response struct {
 	CardToken struct {
-		Header ResponseHeader `json:"responseHeader,omitempty"`
+		Header    ResponseHeader `json:"responseHeader,omitempty"`
+		CardToken any            `json:"cardToken,omitempty"`
+		HashData  any            `json:"hashData,omitempty"`
 	}
 	Provision struct {
 		Header       ResponseHeader `json:"responseHeader,omitempty"`
