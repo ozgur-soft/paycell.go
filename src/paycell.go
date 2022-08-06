@@ -249,12 +249,11 @@ func Random(n int) string {
 	return string(bytes)
 }
 
-func Api(merchant, password, name, prefix string) (*API, *Request) {
+func Api(merchant, password, name string) (*API, *Request) {
 	api := new(API)
 	api.Merchant = merchant
 	api.Password = password
 	api.Name = name
-	api.Prefix = prefix
 	req := new(Request)
 	return api, req
 }
