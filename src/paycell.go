@@ -278,7 +278,11 @@ func (api *API) Auth() (response Response) {
 	request.Provision.Amount = api.Amount
 	request.Provision.Currency = api.Currency
 	request.Provision.PaymentType = "SALE"
-	postdata, _ := json.Marshal(request.Provision)
+	postdata, err := json.Marshal(request.Provision)
+	if err != nil {
+		log.Println(err)
+		return response
+	}
 	cli := new(http.Client)
 	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
@@ -312,7 +316,11 @@ func (api *API) PreAuth() (response Response) {
 	request.Provision.Amount = api.Amount
 	request.Provision.Currency = api.Currency
 	request.Provision.PaymentType = "PREAUTH"
-	postdata, _ := json.Marshal(request.Provision)
+	postdata, err := json.Marshal(request.Provision)
+	if err != nil {
+		log.Println(err)
+		return response
+	}
 	cli := new(http.Client)
 	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
@@ -346,7 +354,11 @@ func (api *API) PostAuth() (response Response) {
 	request.Provision.Amount = api.Amount
 	request.Provision.Currency = api.Currency
 	request.Provision.PaymentType = "POSTAUTH"
-	postdata, _ := json.Marshal(request.Provision)
+	postdata, err := json.Marshal(request.Provision)
+	if err != nil {
+		log.Println(err)
+		return response
+	}
 	cli := new(http.Client)
 	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
@@ -379,7 +391,11 @@ func (api *API) ThreeDSession() (response Response) {
 	request.ThreeDSession.RefNo = Prefix + fmt.Sprintf("%v", request.ThreeDSession.Header.TransactionDateTime)
 	request.ThreeDSession.Amount = api.Amount
 	request.ThreeDSession.Currency = api.Currency
-	postdata, _ := json.Marshal(request.ThreeDSession)
+	postdata, err := json.Marshal(request.ThreeDSession)
+	if err != nil {
+		log.Println(err)
+		return response
+	}
 	cli := new(http.Client)
 	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
@@ -413,7 +429,11 @@ func (api *API) ThreeDResult(session interface{}) (response Response) {
 	if session != nil {
 		request.ThreeDResult.ThreeDSession = session
 	}
-	postdata, _ := json.Marshal(request.ThreeDResult)
+	postdata, err := json.Marshal(request.ThreeDResult)
+	if err != nil {
+		log.Println(err)
+		return response
+	}
 	cli := new(http.Client)
 	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
@@ -439,7 +459,11 @@ func (api *API) CardToken(request *Request) (response Response) {
 	request.CardToken.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	request.CardToken.Header.TransactionId = Random(20)
 	request.CardToken.HashData = SHA256(strings.ToUpper(Application + request.CardToken.Header.TransactionId + request.CardToken.Header.TransactionDateTime + StoreKey + SHA256(strings.ToUpper(Password+Application))))
-	postdata, _ := json.Marshal(request.CardToken)
+	postdata, err := json.Marshal(request.CardToken)
+	if err != nil {
+		log.Println(err)
+		return response
+	}
 	cli := new(http.Client)
 	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
@@ -468,7 +492,11 @@ func (api *API) GetPaymentMethods() (response Response) {
 	request.PaymentMethods.Header.ApplicationPwd = Password
 	request.PaymentMethods.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	request.PaymentMethods.Header.TransactionId = Random(20)
-	postdata, _ := json.Marshal(request.PaymentMethods)
+	postdata, err := json.Marshal(request.PaymentMethods)
+	if err != nil {
+		log.Println(err)
+		return response
+	}
 	cli := new(http.Client)
 	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
@@ -500,7 +528,11 @@ func (api *API) OpenMobilePayment(eula interface{}) (response Response) {
 	if eula != nil {
 		request.MobilePayment.EulaID = eula
 	}
-	postdata, _ := json.Marshal(request.MobilePayment)
+	postdata, err := json.Marshal(request.MobilePayment)
+	if err != nil {
+		log.Println(err)
+		return response
+	}
 	cli := new(http.Client)
 	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
@@ -531,7 +563,11 @@ func (api *API) SendOTP() (response Response) {
 	request.OTP.MSisdn = api.MSisdn
 	request.OTP.RefNo = Random(20)
 	request.OTP.Amount = api.Amount
-	postdata, _ := json.Marshal(request.OTP)
+	postdata, err := json.Marshal(request.OTP)
+	if err != nil {
+		log.Println(err)
+		return response
+	}
 	cli := new(http.Client)
 	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
@@ -568,7 +604,11 @@ func (api *API) ValidateOTP(token, otp interface{}) (response Response) {
 	if otp != nil {
 		request.OTP.OTP = otp
 	}
-	postdata, _ := json.Marshal(request.OTP)
+	postdata, err := json.Marshal(request.OTP)
+	if err != nil {
+		log.Println(err)
+		return response
+	}
 	cli := new(http.Client)
 	req, err := http.NewRequest("POST", apiurl, bytes.NewReader(postdata))
 	if err != nil {
