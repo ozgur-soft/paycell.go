@@ -136,55 +136,64 @@ func main() {
 }
 ```
 
+# Mobil ödeme açma işlemi
 ```go
 package main
 
 import (
+	"context"
 	"log"
 
 	paycell "github.com/ozgur-soft/paycell.go/src"
 )
 
+// Pos bilgileri
+const (
+	envmode  = "TEST"                // Çalışma ortamı (Production : "PROD" - Test : "TEST")
+	merchant = "9998"                // İşyeri numarası
+	storekey = "PAYCELL12345"        // İşyeri anahtarı
+	appname  = "PAYCELLTEST"         // Uygulama adı
+	apppass  = "PaycellTestPassword" // Uygulama şifresi
+	prefix   = "666"                 // Referans no ilk 3 hanesi
+)
+
 func main() {
 	api, req := paycell.Api(merchant, apppass, appname)
-	api.SetMode("TEST")           // "PROD","TEST"
-	api.SetIPAddress("127.0.0.1") // Müşteri ip adresi
-	api.SetAmount("1.00", "TRY")  // Satış tutarı
-	get := api.GetPaymentMethods()
-	if get.PaymentMethods.Header.ResponseCode == "0" {
+	api.SetStoreKey(storekey)
+	api.SetPrefix(prefix)
+	api.SetMode(envmode)
+	api.SetPhoneNumber("905591111177") // Müşteri numarası (zorunlu)
+	api.SetIPAddress("127.0.0.1")      // IP adresi (zorunlu)
+
+	ctx := context.Background()
+	if get, err := api.GetPaymentMethods(ctx, req); err == nil {
 		if get.PaymentMethods.MobilePayment != nil {
 			if !get.PaymentMethods.MobilePayment.IsDcbOpen {
 				switch get.PaymentMethods.MobilePayment.IsEulaExpired {
 				case true: // Sözleşmesi Güncel Olmayan Müşteri İçin
 					if get.PaymentMethods.MobilePayment.EulaId != "" {
-						open := api.OpenMobilePayment(get.PaymentMethods.MobilePayment.EulaId)
-						if open.MobilePayment.Header.ResponseCode == "0" {
+						req.MobilePayment.EulaID = get.PaymentMethods.MobilePayment.EulaId
+						ctx := context.Background()
+						if _, err := api.OpenMobilePayment(ctx, req); err == nil {
 							log.Println("mobil ödeme açıldı")
+						} else {
+							log.Println(err)
 						}
 					}
 				case false: // Sözleşmesi Güncel Olan Müşteri İçin
 					if get.PaymentMethods.MobilePayment.SignedEulaId != "" {
-						open := api.OpenMobilePayment(nil)
-						if open.MobilePayment.Header.ResponseCode == "0" {
+						ctx := context.Background()
+						if _, err := api.OpenMobilePayment(ctx, req); err == nil {
 							log.Println("mobil ödeme açıldı")
-						}
-					}
-				}
-			}
-			send := api.SendOTP()
-			if send.OTP.Header.ResponseCode == "0" {
-				if send.OTP.Token != nil {
-					otp := ""
-					validate := api.ValidateOTP(send.OTP.Token, otp)
-					if validate.OTP.Header.ResponseCode == "0" {
-						pay := api.Auth()
-						if pay.Provision.Header.ResponseCode == "0" {
-							log.Println("ödeme başarılı")
+						} else {
+							log.Println(err)
 						}
 					}
 				}
 			}
 		}
+	} else {
+		log.Println(err)
 	}
 }
 ```
