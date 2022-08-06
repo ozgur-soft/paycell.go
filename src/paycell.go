@@ -93,11 +93,10 @@ type Request struct {
 		Header        RequestHeader `json:"requestHeader,omitempty"`
 	}
 	ThreeDForm struct {
-		ThreeDSession  any           `form:"threeDSessionId,omitempty"`
-		CallbackUrl    any           `form:"callbackurl,omitempty"`
-		IsPoint        any           `form:"isPoint,omitempty"`
-		IsPost3DResult any           `form:"isPost3DResult,omitempty"`
-		Header         RequestHeader `form:"requestHeader,omitempty"`
+		ThreeDSession  any `form:"threeDSessionId,omitempty"`
+		CallbackUrl    any `form:"callbackurl,omitempty"`
+		IsPoint        any `form:"isPoint,omitempty"`
+		IsPost3DResult any `form:"isPost3DResult,omitempty"`
 	}
 	PaymentMethods struct {
 		MSisdn any           `json:"msisdn,omitempty"`
