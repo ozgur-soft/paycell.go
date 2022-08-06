@@ -56,18 +56,18 @@ type Request struct {
 		Pin           any           `json:"pin,omitempty"`
 		Header        RequestHeader `json:"requestHeader,omitempty"`
 	}
-	Reverse struct {
-		MSisdn        any           `json:"msisdn,omitempty"`
-		MerchantCode  any           `json:"merchantCode,omitempty"`
-		RefNo         any           `json:"referenceNumber,omitempty"`
-		OriginalRefNo any           `json:"originalReferenceNumber,omitempty"`
-		Header        RequestHeader `json:"requestHeader,omitempty"`
-	}
 	Refund struct {
 		MSisdn        any           `json:"msisdn,omitempty"`
 		MerchantCode  any           `json:"merchantCode,omitempty"`
 		Amount        any           `json:"amount,omitempty"`
 		Currency      any           `json:"currency,omitempty"`
+		RefNo         any           `json:"referenceNumber,omitempty"`
+		OriginalRefNo any           `json:"originalReferenceNumber,omitempty"`
+		Header        RequestHeader `json:"requestHeader,omitempty"`
+	}
+	Reverse struct {
+		MSisdn        any           `json:"msisdn,omitempty"`
+		MerchantCode  any           `json:"merchantCode,omitempty"`
 		RefNo         any           `json:"referenceNumber,omitempty"`
 		OriginalRefNo any           `json:"originalReferenceNumber,omitempty"`
 		Header        RequestHeader `json:"requestHeader,omitempty"`
