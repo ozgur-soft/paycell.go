@@ -34,9 +34,9 @@ type API struct {
 	Merchant string
 	Password string
 	Name     string
+	Key      string
 	ISDN     string
 	IPv4     string
-	Key      string
 	Amount   string
 	Currency string
 }
@@ -141,6 +141,7 @@ type (
 		Provision *struct {
 			Header       ResponseHeader `json:"responseHeader,omitempty"`
 			OrderId      any            `json:"orderId,omitempty"`
+			RefNo        any            `json:"referenceNumber,omitempty"`
 			OrderDate    any            `json:"reconciliationDate,omitempty"`
 			ApprovalCode any            `json:"approvalCode,omitempty"`
 			AcquirerBank any            `json:"acquirerBankCode,omitempty"`
@@ -292,49 +293,6 @@ func (api *API) Hash(res Response) string {
 	return hashdata
 }
 
-func (api *API) Auth(ctx context.Context, req *Request) (res Response, err error) {
-	token, err := api.CardToken(context.Background(), req)
-	if err != nil {
-		return res, err
-	}
-	req.Provision.CardToken = token.CardToken.Token
-	req.Provision.Header.ClientIPAddress = api.IPv4
-	req.Provision.Header.ApplicationName = api.Name
-	req.Provision.Header.ApplicationPwd = api.Password
-	req.Provision.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
-	req.Provision.Header.TransactionId = Random(20)
-	req.Provision.MSisdn = api.ISDN
-	req.Provision.MerchantCode = api.Merchant
-	req.Provision.RefNo = Prefix + fmt.Sprintf("%v", req.Provision.Header.TransactionDateTime)
-	req.Provision.Amount = api.Amount
-	req.Provision.Currency = api.Currency
-	req.Provision.PaymentType = "SALE"
-	postdata, err := json.Marshal(req.Provision)
-	if err != nil {
-		return res, err
-	}
-	cli := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/provision/", bytes.NewReader(postdata))
-	if err != nil {
-		return res, err
-	}
-	request.Header.Set("Content-Type", "application/json")
-	response, err := cli.Do(request)
-	if err != nil {
-		return res, err
-	}
-	defer response.Body.Close()
-	decoder := json.NewDecoder(response.Body)
-	decoder.UseNumber()
-	decoder.Decode(&res.Provision)
-	switch res.Provision.Header.ResponseCode {
-	case "0":
-		return res, nil
-	default:
-		return res, errors.New(res.Provision.Header.ResponseDescription)
-	}
-}
-
 func (api *API) PreAuth(ctx context.Context, req *Request) (res Response, err error) {
 	token, err := api.CardToken(context.Background(), req)
 	if err != nil {
@@ -372,6 +330,51 @@ func (api *API) PreAuth(ctx context.Context, req *Request) (res Response, err er
 	decoder.Decode(&res.Provision)
 	switch res.Provision.Header.ResponseCode {
 	case "0":
+		res.Provision.RefNo = req.Provision.RefNo
+		return res, nil
+	default:
+		return res, errors.New(res.Provision.Header.ResponseDescription)
+	}
+}
+
+func (api *API) Auth(ctx context.Context, req *Request) (res Response, err error) {
+	token, err := api.CardToken(context.Background(), req)
+	if err != nil {
+		return res, err
+	}
+	req.Provision.CardToken = token.CardToken.Token
+	req.Provision.Header.ClientIPAddress = api.IPv4
+	req.Provision.Header.ApplicationName = api.Name
+	req.Provision.Header.ApplicationPwd = api.Password
+	req.Provision.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	req.Provision.Header.TransactionId = Random(20)
+	req.Provision.MSisdn = api.ISDN
+	req.Provision.MerchantCode = api.Merchant
+	req.Provision.RefNo = Prefix + fmt.Sprintf("%v", req.Provision.Header.TransactionDateTime)
+	req.Provision.Amount = api.Amount
+	req.Provision.Currency = api.Currency
+	req.Provision.PaymentType = "SALE"
+	postdata, err := json.Marshal(req.Provision)
+	if err != nil {
+		return res, err
+	}
+	cli := new(http.Client)
+	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/provision/", bytes.NewReader(postdata))
+	if err != nil {
+		return res, err
+	}
+	request.Header.Set("Content-Type", "application/json")
+	response, err := cli.Do(request)
+	if err != nil {
+		return res, err
+	}
+	defer response.Body.Close()
+	decoder := json.NewDecoder(response.Body)
+	decoder.UseNumber()
+	decoder.Decode(&res.Provision)
+	switch res.Provision.Header.ResponseCode {
+	case "0":
+		res.Provision.RefNo = req.Provision.RefNo
 		return res, nil
 	default:
 		return res, errors.New(res.Provision.Header.ResponseDescription)
