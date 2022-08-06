@@ -39,6 +39,13 @@ type API struct {
 }
 
 type Request struct {
+	CardToken struct {
+		MSisdn        any           `json:"msisdn,omitempty"`
+		MerchantCode  any           `json:"merchantCode,omitempty"`
+		RefNo         any           `json:"referenceNumber,omitempty"`
+		OriginalRefNo any           `json:"originalReferenceNumber,omitempty"`
+		Header        RequestHeader `json:"requestHeader,omitempty"`
+	}
 	Provision struct {
 		MSisdn        any           `json:"msisdn,omitempty"`
 		MerchantCode  any           `json:"merchantCode,omitempty"`
@@ -119,6 +126,9 @@ type Request struct {
 }
 
 type Response struct {
+	CardToken struct {
+		Header ResponseHeader `json:"responseHeader,omitempty"`
+	}
 	Provision struct {
 		Header       ResponseHeader `json:"responseHeader,omitempty"`
 		OrderId      any            `json:"orderId,omitempty"`
@@ -180,18 +190,18 @@ type Response struct {
 }
 
 type RequestHeader struct {
-	ApplicationName     any `json:"applicationName,omitempty"`
-	ApplicationPwd      any `json:"applicationPwd,omitempty"`
-	ClientIPAddress     any `json:"clientIPAddress,omitempty"`
-	TransactionDateTime any `json:"transactionDateTime,omitempty"`
-	TransactionId       any `json:"transactionId,omitempty"`
+	ApplicationName     string `json:"applicationName,omitempty"`
+	ApplicationPwd      string `json:"applicationPwd,omitempty"`
+	ClientIPAddress     string `json:"clientIPAddress,omitempty"`
+	TransactionDateTime string `json:"transactionDateTime,omitempty"`
+	TransactionId       string `json:"transactionId,omitempty"`
 }
 
 type ResponseHeader struct {
-	ResponseCode        any `json:"responseCode,omitempty"`
-	ResponseDescription any `json:"responseDescription,omitempty"`
-	ResponseDateTime    any `json:"responseDateTime,omitempty"`
-	TransactionId       any `json:"transactionId,omitempty"`
+	ResponseCode        string `json:"responseCode,omitempty"`
+	ResponseDescription string `json:"responseDescription,omitempty"`
+	ResponseDateTime    string `json:"responseDateTime,omitempty"`
+	TransactionId       string `json:"transactionId,omitempty"`
 }
 
 func SHA256(data string) (hash string) {
@@ -211,13 +221,13 @@ func Random(n int) string {
 	return string(bytes)
 }
 
-func (api *API) HashRequest(transactionId, transactionDateTime string) string {
-	hashdata := SHA256(strings.ToUpper(Application + transactionId + transactionDateTime + StoreKey + SHA256(strings.ToUpper(Password+Application))))
+func (api *API) HashRequest(header RequestHeader) string {
+	hashdata := SHA256(strings.ToUpper(Application + header.TransactionId + header.TransactionDateTime + StoreKey + SHA256(strings.ToUpper(Password+Application))))
 	return hashdata
 }
 
-func (api *API) HashResponse(transactionId, responseDateTime, responseCode, cardToken string) string {
-	hashdata := SHA256(strings.ToUpper(Application + transactionId + responseDateTime + responseCode + cardToken + StoreKey + SHA256(strings.ToUpper(Password+Application))))
+func (api *API) HashResponse(header ResponseHeader, cardToken string) string {
+	hashdata := SHA256(strings.ToUpper(Application + header.TransactionId + header.ResponseDateTime + header.ResponseCode + cardToken + StoreKey + SHA256(strings.ToUpper(Password+Application))))
 	return hashdata
 }
 
