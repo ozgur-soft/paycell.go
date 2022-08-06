@@ -23,12 +23,13 @@ const (
 	envmode  = "TEST"                // Çalışma ortamı (Production : "PROD" - Test : "TEST")
 	appname  = "PAYCELLTEST"         // Uygulama adı
 	merchant = "9998"                // İşyeri numarası
-	password = "PaycellTestPassword" // Şifre
+	password = "PaycellTestPassword" // İşyeri şifresi
 	storekey = "PAYCELL12345"        // İşyeri anahtarı
+	prefix   = "666"                 // Referans no ilk 3 hanesi
 )
 
 func main() {
-	api, req := paycell.Api(merchant, password, appname)
+	api, req := paycell.Api(merchant, password, appname, prefix)
 	api.Key = storekey
 	api.SetMode(envmode)
 	api.SetIPAddress("127.0.0.1")         // IP adresi (zorunlu)
@@ -66,12 +67,13 @@ const (
 	envmode  = "TEST"                // Çalışma ortamı (Production : "PROD" - Test : "TEST")
 	appname  = "PAYCELLTEST"         // Uygulama adı
 	merchant = "9998"                // İşyeri numarası
-	password = "PaycellTestPassword" // Şifre
+	password = "PaycellTestPassword" // İşyeri şifresi
 	storekey = "PAYCELL12345"        // İşyeri anahtarı
+	prefix   = "666"                 // Referans no ilk 3 hanesi
 )
 
 func main() {
-	api, req := paycell.Api(merchant, password, appname)
+	api, req := paycell.Api(merchant, password, appname, prefix)
 	api.Key = storekey
 	api.SetMode(envmode)
 	api.SetPhoneNumber("905591111177") // Müşteri numarası (zorunlu)
@@ -107,12 +109,13 @@ const (
 	envmode  = "TEST"                // Çalışma ortamı (Production : "PROD" - Test : "TEST")
 	appname  = "PAYCELLTEST"         // Uygulama adı
 	merchant = "9998"                // İşyeri numarası
-	password = "PaycellTestPassword" // Şifre
+	password = "PaycellTestPassword" // İşyeri şifresi
 	storekey = "PAYCELL12345"        // İşyeri anahtarı
+	prefix   = "666"                 // Referans no ilk 3 hanesi
 )
 
 func main() {
-	api, req := paycell.Api(merchant, password, appname)
+	api, req := paycell.Api(merchant, password, appname, prefix)
 	api.Key = storekey
 	api.SetMode(envmode)
 	api.SetPhoneNumber("905591111177") // Müşteri numarası (zorunlu)
@@ -140,7 +143,7 @@ import (
 )
 
 func main() {
-	api := paycell.Api("905591111177")
+	api, req := paycell.Api(merchant, password, appname, prefix)
 	api.SetMode("TEST")           // "PROD","TEST"
 	api.SetIPAddress("127.0.0.1") // Müşteri ip adresi
 	api.SetAmount("1.00", "TRY")  // Satış tutarı
