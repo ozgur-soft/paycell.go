@@ -35,8 +35,8 @@ type any = interface{}
 
 type API struct {
 	Mode     string
-	MSisdn   string
-	ClientIP string
+	ISDN     string
+	IPv4     string
 	Amount   string
 	Currency string
 }
@@ -230,7 +230,7 @@ func Random(n int) string {
 
 func Api(msisdn string) (*API, *Request) {
 	api := new(API)
-	api.MSisdn = msisdn
+	api.ISDN = msisdn
 	req := new(Request)
 	return api, req
 }
@@ -240,7 +240,7 @@ func (api *API) SetMode(mode string) {
 }
 
 func (api *API) SetIPAddress(ip string) {
-	api.ClientIP = ip
+	api.IPv4 = ip
 }
 
 func (api *API) SetAmount(total string, currency string) {
@@ -268,12 +268,12 @@ func (api *API) Hash(header ResponseHeader, cardToken string) string {
 
 func (api *API) Auth(req *Request) (res Response, err error) {
 	apiurl := Endpoint[api.Mode] + "/provision/"
-	req.Provision.Header.ClientIPAddress = api.ClientIP
+	req.Provision.Header.ClientIPAddress = api.IPv4
 	req.Provision.Header.ApplicationName = Application
 	req.Provision.Header.ApplicationPwd = Password
 	req.Provision.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	req.Provision.Header.TransactionId = Random(20)
-	req.Provision.MSisdn = api.MSisdn
+	req.Provision.MSisdn = api.ISDN
 	req.Provision.MerchantCode = Merchant
 	req.Provision.RefNo = Prefix + fmt.Sprintf("%v", req.Provision.Header.TransactionDateTime)
 	req.Provision.Amount = api.Amount
@@ -307,12 +307,12 @@ func (api *API) Auth(req *Request) (res Response, err error) {
 
 func (api *API) PreAuth(req *Request) (res Response, err error) {
 	apiurl := Endpoint[api.Mode] + "/provision/"
-	req.Provision.Header.ClientIPAddress = api.ClientIP
+	req.Provision.Header.ClientIPAddress = api.IPv4
 	req.Provision.Header.ApplicationName = Application
 	req.Provision.Header.ApplicationPwd = Password
 	req.Provision.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	req.Provision.Header.TransactionId = Random(20)
-	req.Provision.MSisdn = api.MSisdn
+	req.Provision.MSisdn = api.ISDN
 	req.Provision.MerchantCode = Merchant
 	req.Provision.RefNo = Prefix + fmt.Sprintf("%v", req.Provision.Header.TransactionDateTime)
 	req.Provision.Amount = api.Amount
@@ -346,12 +346,12 @@ func (api *API) PreAuth(req *Request) (res Response, err error) {
 
 func (api *API) PostAuth(req *Request) (res Response, err error) {
 	apiurl := Endpoint[api.Mode] + "/provision/"
-	req.Provision.Header.ClientIPAddress = api.ClientIP
+	req.Provision.Header.ClientIPAddress = api.IPv4
 	req.Provision.Header.ApplicationName = Application
 	req.Provision.Header.ApplicationPwd = Password
 	req.Provision.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	req.Provision.Header.TransactionId = Random(20)
-	req.Provision.MSisdn = api.MSisdn
+	req.Provision.MSisdn = api.ISDN
 	req.Provision.MerchantCode = Merchant
 	req.Provision.RefNo = Prefix + fmt.Sprintf("%v", req.Provision.Header.TransactionDateTime)
 	req.Provision.Amount = api.Amount
@@ -385,12 +385,12 @@ func (api *API) PostAuth(req *Request) (res Response, err error) {
 
 func (api *API) ThreeDSession(req *Request) (res Response, err error) {
 	apiurl := Endpoint[api.Mode] + "/getThreeDSession/"
-	req.ThreeDSession.Header.ClientIPAddress = api.ClientIP
+	req.ThreeDSession.Header.ClientIPAddress = api.IPv4
 	req.ThreeDSession.Header.ApplicationName = Application
 	req.ThreeDSession.Header.ApplicationPwd = Password
 	req.ThreeDSession.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	req.ThreeDSession.Header.TransactionId = Random(20)
-	req.ThreeDSession.MSisdn = api.MSisdn
+	req.ThreeDSession.MSisdn = api.ISDN
 	req.ThreeDSession.MerchantCode = Merchant
 	req.ThreeDSession.RefNo = Prefix + fmt.Sprintf("%v", req.ThreeDSession.Header.TransactionDateTime)
 	req.ThreeDSession.Amount = api.Amount
@@ -423,12 +423,12 @@ func (api *API) ThreeDSession(req *Request) (res Response, err error) {
 
 func (api *API) ThreeDResult(ctx context.Context, req *Request) (res Response, err error) {
 	apiurl := Endpoint[api.Mode] + "/getThreeDSessionResult/"
-	req.ThreeDResult.Header.ClientIPAddress = api.ClientIP
+	req.ThreeDResult.Header.ClientIPAddress = api.IPv4
 	req.ThreeDResult.Header.ApplicationName = Application
 	req.ThreeDResult.Header.ApplicationPwd = Password
 	req.ThreeDResult.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	req.ThreeDResult.Header.TransactionId = Random(20)
-	req.ThreeDResult.MSisdn = api.MSisdn
+	req.ThreeDResult.MSisdn = api.ISDN
 	req.ThreeDResult.MerchantCode = Merchant
 	req.ThreeDResult.RefNo = Prefix + fmt.Sprintf("%v", req.ThreeDResult.Header.TransactionDateTime)
 	postdata, err := json.Marshal(req.ThreeDResult)
@@ -490,8 +490,8 @@ func (api *API) CardToken(ctx context.Context, req *Request) (res Response, err 
 
 func (api *API) GetPaymentMethods(req *Request) (res Response, err error) {
 	apiurl := Endpoint[api.Mode] + "/getPaymentMethods/"
-	req.PaymentMethods.MSisdn = api.MSisdn
-	req.PaymentMethods.Header.ClientIPAddress = api.ClientIP
+	req.PaymentMethods.MSisdn = api.ISDN
+	req.PaymentMethods.Header.ClientIPAddress = api.IPv4
 	req.PaymentMethods.Header.ApplicationName = Application
 	req.PaymentMethods.Header.ApplicationPwd = Password
 	req.PaymentMethods.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
@@ -524,12 +524,12 @@ func (api *API) GetPaymentMethods(req *Request) (res Response, err error) {
 
 func (api *API) OpenMobilePayment(ctx context.Context, req *Request) (res Response, err error) {
 	apiurl := Endpoint[api.Mode] + "/openMobilePayment/"
-	req.MobilePayment.Header.ClientIPAddress = api.ClientIP
+	req.MobilePayment.Header.ClientIPAddress = api.IPv4
 	req.MobilePayment.Header.ApplicationName = Application
 	req.MobilePayment.Header.ApplicationPwd = Password
 	req.MobilePayment.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	req.MobilePayment.Header.TransactionId = Random(20)
-	req.MobilePayment.MSisdn = api.MSisdn
+	req.MobilePayment.MSisdn = api.ISDN
 	postdata, err := json.Marshal(req.MobilePayment)
 	if err != nil {
 		return res, err
@@ -558,12 +558,12 @@ func (api *API) OpenMobilePayment(ctx context.Context, req *Request) (res Respon
 
 func (api *API) SendOTP(req *Request) (res Response, err error) {
 	apiurl := Endpoint[api.Mode] + "/sendOTP/"
-	req.OTP.Header.ClientIPAddress = api.ClientIP
+	req.OTP.Header.ClientIPAddress = api.IPv4
 	req.OTP.Header.ApplicationName = Application
 	req.OTP.Header.ApplicationPwd = Password
 	req.OTP.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	req.OTP.Header.TransactionId = Random(20)
-	req.OTP.MSisdn = api.MSisdn
+	req.OTP.MSisdn = api.ISDN
 	req.OTP.RefNo = Random(20)
 	req.OTP.Amount = api.Amount
 	req.OTP.Currency = api.Currency
@@ -595,12 +595,12 @@ func (api *API) SendOTP(req *Request) (res Response, err error) {
 
 func (api *API) ValidateOTP(ctx context.Context, req *Request) (res Response, err error) {
 	apiurl := Endpoint[api.Mode] + "/validateOTP/"
-	req.OTP.Header.ClientIPAddress = api.ClientIP
+	req.OTP.Header.ClientIPAddress = api.IPv4
 	req.OTP.Header.ApplicationName = Application
 	req.OTP.Header.ApplicationPwd = Password
 	req.OTP.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	req.OTP.Header.TransactionId = Random(20)
-	req.OTP.MSisdn = api.MSisdn
+	req.OTP.MSisdn = api.ISDN
 	req.OTP.RefNo = Random(20)
 	req.OTP.Amount = api.Amount
 	req.OTP.Currency = api.Currency
