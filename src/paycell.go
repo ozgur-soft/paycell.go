@@ -135,8 +135,8 @@ type (
 	Response struct {
 		CardToken *struct {
 			Header ResponseHeader `json:"header,omitempty"`
-			Token  any            `json:"cardToken,omitempty"`
-			Hash   any            `json:"hashData,omitempty"`
+			Token  string         `json:"cardToken,omitempty"`
+			Hash   string         `json:"hashData,omitempty"`
 		}
 		Provision *struct {
 			Header       ResponseHeader `json:"responseHeader,omitempty"`
@@ -271,8 +271,8 @@ func (req *Request) SetCardCode(code string) {
 	req.CardToken.CardCode = code
 }
 
-func (api *API) Hash(header ResponseHeader, cardToken string) string {
-	hashdata := SHA256(strings.ToUpper(api.Name + header.TransactionId + header.ResponseDateTime + header.ResponseCode + cardToken + api.Key + SHA256(strings.ToUpper(api.Password+api.Name))))
+func (api *API) Hash(res Response) string {
+	hashdata := SHA256(strings.ToUpper(api.Name + res.CardToken.Header.TransactionId + res.CardToken.Header.ResponseDateTime + res.CardToken.Header.ResponseCode + res.CardToken.Token + api.Key + SHA256(strings.ToUpper(api.Password+api.Name))))
 	return hashdata
 }
 
@@ -497,6 +497,9 @@ func (api *API) CardToken(ctx context.Context, req *Request) (res Response, err 
 	decoder.Decode(&res.CardToken)
 	switch res.CardToken.Header.ResponseCode {
 	case "0":
+		if res.CardToken.Hash != api.Hash(res) {
+			return res, errors.New("mismatched hash")
+		}
 		return res, nil
 	default:
 		return res, errors.New(res.CardToken.Header.ResponseDescription)
