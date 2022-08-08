@@ -172,8 +172,8 @@ type (
 			MdErrorMessage any            `json:"mdErrorMessage,omitempty"`
 			MdStatus       any            `json:"mdStatus,omitempty"`
 			Operation      struct {
-				Result      any `json:"threeDResult,omitempty"`
-				Description any `json:"threeDResultDescription,omitempty"`
+				Result      string `json:"threeDResult,omitempty"`
+				Description string `json:"threeDResultDescription,omitempty"`
 			} `json:"threeDOperationResult,omitempty"`
 		}
 		PaymentMethods *struct {
@@ -625,11 +625,11 @@ func (api *API) PreAuth3D(ctx context.Context, req *Request) (res Response, err 
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.ThreeDResult)
-	switch res.ThreeDResult.Header.ResponseCode {
+	switch res.ThreeDResult.Operation.Result {
 	case "0":
 		return res, nil
 	default:
-		return res, errors.New(res.ThreeDResult.Header.ResponseDescription)
+		return res, errors.New(res.ThreeDResult.Operation.Description)
 	}
 }
 
