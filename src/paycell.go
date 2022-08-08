@@ -514,7 +514,7 @@ func (api *API) Cancel(ctx context.Context, req *Request) (res Response, err err
 	}
 }
 
-func (api *API) ThreeDSession(ctx context.Context, req *Request) (res Response, err error) {
+func (api *API) PreAuth3Dinit(ctx context.Context, req *Request) (res Response, err error) {
 	token, err := api.CardToken(context.Background(), req)
 	if err != nil {
 		return res, err
@@ -525,9 +525,53 @@ func (api *API) ThreeDSession(ctx context.Context, req *Request) (res Response, 
 	req.ThreeDSession.Header.ApplicationPwd = api.Password
 	req.ThreeDSession.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	req.ThreeDSession.Header.TransactionId = Random(20)
+	req.ThreeDSession.Target = "MERCHANT"
+	req.ThreeDSession.Transaction = "PREAUTH"
 	req.ThreeDSession.MSisdn = api.ISDN
 	req.ThreeDSession.MerchantCode = api.Merchant
-	req.ThreeDSession.RefNo = api.Prefix + fmt.Sprintf("%v", req.ThreeDSession.Header.TransactionDateTime)
+	req.ThreeDSession.Amount = api.Amount
+	req.ThreeDSession.Currency = api.Currency
+	postdata, err := json.Marshal(req.ThreeDSession)
+	if err != nil {
+		return res, err
+	}
+	client := new(http.Client)
+	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/getThreeDSession/", bytes.NewReader(postdata))
+	if err != nil {
+		return res, err
+	}
+	request.Header.Set("Content-Type", "application/json")
+	response, err := client.Do(request)
+	if err != nil {
+		return res, err
+	}
+	defer response.Body.Close()
+	decoder := json.NewDecoder(response.Body)
+	decoder.UseNumber()
+	decoder.Decode(&res.ThreeDSession)
+	switch res.ThreeDSession.Header.ResponseCode {
+	case "0":
+		return res, nil
+	default:
+		return res, errors.New(res.ThreeDSession.Header.ResponseDescription)
+	}
+}
+
+func (api *API) Auth3Dinit(ctx context.Context, req *Request) (res Response, err error) {
+	token, err := api.CardToken(context.Background(), req)
+	if err != nil {
+		return res, err
+	}
+	req.ThreeDSession.CardToken = token.CardToken.Token
+	req.ThreeDSession.Header.ClientIPAddress = api.IPv4
+	req.ThreeDSession.Header.ApplicationName = api.Name
+	req.ThreeDSession.Header.ApplicationPwd = api.Password
+	req.ThreeDSession.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	req.ThreeDSession.Header.TransactionId = Random(20)
+	req.ThreeDSession.Target = "MERCHANT"
+	req.ThreeDSession.Transaction = "AUTH"
+	req.ThreeDSession.MSisdn = api.ISDN
+	req.ThreeDSession.MerchantCode = api.Merchant
 	req.ThreeDSession.Amount = api.Amount
 	req.ThreeDSession.Currency = api.Currency
 	postdata, err := json.Marshal(req.ThreeDSession)
