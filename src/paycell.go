@@ -318,6 +318,7 @@ func (api *API) Hash(res Response) string {
 func (api *API) PreAuth(ctx context.Context, req *Request) (res Response, err error) {
 	token, err := api.CardToken(context.Background(), req)
 	if err != nil {
+		res.Provision.Header = res.CardToken.Header
 		return res, err
 	}
 	req.Provision.CardToken = token.CardToken.Token
@@ -362,6 +363,7 @@ func (api *API) PreAuth(ctx context.Context, req *Request) (res Response, err er
 func (api *API) Auth(ctx context.Context, req *Request) (res Response, err error) {
 	token, err := api.CardToken(context.Background(), req)
 	if err != nil {
+		res.Provision.Header = res.CardToken.Header
 		return res, err
 	}
 	req.Provision.CardToken = token.CardToken.Token
@@ -516,6 +518,7 @@ func (api *API) Cancel(ctx context.Context, req *Request) (res Response, err err
 func (api *API) PreAuth3Dinit(ctx context.Context, req *Request) (res Response, err error) {
 	token, err := api.CardToken(context.Background(), req)
 	if err != nil {
+		res.ThreeDSession.Header = res.CardToken.Header
 		return res, err
 	}
 	req.ThreeDSession.CardToken = token.CardToken.Token
@@ -559,6 +562,7 @@ func (api *API) PreAuth3Dinit(ctx context.Context, req *Request) (res Response, 
 func (api *API) Auth3Dinit(ctx context.Context, req *Request) (res Response, err error) {
 	token, err := api.CardToken(context.Background(), req)
 	if err != nil {
+		res.ThreeDSession.Header = res.CardToken.Header
 		return res, err
 	}
 	req.ThreeDSession.CardToken = token.CardToken.Token
