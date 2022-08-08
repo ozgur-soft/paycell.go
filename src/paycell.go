@@ -599,7 +599,7 @@ func (api *API) Auth3Dinit(ctx context.Context, req *Request) (res Response, err
 	}
 }
 
-func (api *API) ThreeDResult(ctx context.Context, req *Request) (res Response, err error) {
+func (api *API) PreAuth3D(ctx context.Context, req *Request) (res Response, err error) {
 	req.ThreeDResult.Header.ClientIPAddress = api.IPv4
 	req.ThreeDResult.Header.ApplicationName = api.Name
 	req.ThreeDResult.Header.ApplicationPwd = api.Password
@@ -607,7 +607,40 @@ func (api *API) ThreeDResult(ctx context.Context, req *Request) (res Response, e
 	req.ThreeDResult.Header.TransactionId = Random(20)
 	req.ThreeDResult.MSisdn = api.ISDN
 	req.ThreeDResult.MerchantCode = api.Merchant
-	req.ThreeDResult.RefNo = api.Prefix + fmt.Sprintf("%v", req.ThreeDResult.Header.TransactionDateTime)
+	postdata, err := json.Marshal(req.ThreeDResult)
+	if err != nil {
+		return res, err
+	}
+	client := new(http.Client)
+	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/getThreeDSessionResult/", bytes.NewReader(postdata))
+	if err != nil {
+		return res, err
+	}
+	request.Header.Set("Content-Type", "application/json")
+	response, err := client.Do(request)
+	if err != nil {
+		return res, err
+	}
+	defer response.Body.Close()
+	decoder := json.NewDecoder(response.Body)
+	decoder.UseNumber()
+	decoder.Decode(&res.ThreeDResult)
+	switch res.ThreeDResult.Header.ResponseCode {
+	case "0":
+		return res, nil
+	default:
+		return res, errors.New(res.ThreeDResult.Header.ResponseDescription)
+	}
+}
+
+func (api *API) Auth3D(ctx context.Context, req *Request) (res Response, err error) {
+	req.ThreeDResult.Header.ClientIPAddress = api.IPv4
+	req.ThreeDResult.Header.ApplicationName = api.Name
+	req.ThreeDResult.Header.ApplicationPwd = api.Password
+	req.ThreeDResult.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
+	req.ThreeDResult.Header.TransactionId = Random(20)
+	req.ThreeDResult.MSisdn = api.ISDN
+	req.ThreeDResult.MerchantCode = api.Merchant
 	postdata, err := json.Marshal(req.ThreeDResult)
 	if err != nil {
 		return res, err
