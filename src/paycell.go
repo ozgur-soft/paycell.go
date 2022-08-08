@@ -3,27 +3,26 @@ package paycell
 import (
 	"bytes"
 	"context"
-	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"strings"
 	"time"
 )
 
-var (
-	Endpoints = map[string]string{
-		"PROD":       "https://tpay.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
-		"TEST":       "https://tpay-test.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
-		"PROD_TOKEN": "https://epayment.turkcell.com.tr/paymentmanagement/rest/getCardTokenSecure",
-		"TEST_TOKEN": "https://omccstb.turkcell.com.tr/paymentmanagement/rest/getCardTokenSecure",
-		"PROD_FORM":  "https://epayment.turkcell.com.tr/paymentmanagement/rest/threeDSecure",
-		"TEST_FORM":  "https://omccstb.turkcell.com.tr/paymentmanagement/rest/threeDSecure",
-	}
-)
+var Endpoints = map[string]string{
+	"PROD":       "https://tpay.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
+	"TEST":       "https://tpay-test.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
+	"PROD_TOKEN": "https://epayment.turkcell.com.tr/paymentmanagement/rest/getCardTokenSecure",
+	"TEST_TOKEN": "https://omccstb.turkcell.com.tr/paymentmanagement/rest/getCardTokenSecure",
+	"PROD_FORM":  "https://epayment.turkcell.com.tr/paymentmanagement/rest/threeDSecure",
+	"TEST_FORM":  "https://omccstb.turkcell.com.tr/paymentmanagement/rest/threeDSecure",
+}
 
 type any = interface{}
 
@@ -242,6 +241,7 @@ func SHA256(data string) (hash string) {
 func Random(n int) string {
 	const alphanum = "0123456789"
 	var bytes = make([]byte, n)
+	rand.Seed(time.Now().UnixNano())
 	rand.Read(bytes)
 	for i, b := range bytes {
 		bytes[i] = alphanum[b%byte(len(alphanum))]
@@ -322,13 +322,13 @@ func (api *API) PreAuth(ctx context.Context, req *Request) (res Response, err er
 	if err != nil {
 		return res, err
 	}
-	cli := new(http.Client)
+	client := new(http.Client)
 	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/provision/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
 	request.Header.Set("Content-Type", "application/json")
-	response, err := cli.Do(request)
+	response, err := client.Do(request)
 	if err != nil {
 		return res, err
 	}
@@ -366,13 +366,13 @@ func (api *API) Auth(ctx context.Context, req *Request) (res Response, err error
 	if err != nil {
 		return res, err
 	}
-	cli := new(http.Client)
+	client := new(http.Client)
 	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/provision/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
 	request.Header.Set("Content-Type", "application/json")
-	response, err := cli.Do(request)
+	response, err := client.Do(request)
 	if err != nil {
 		return res, err
 	}
@@ -405,13 +405,13 @@ func (api *API) PostAuth(ctx context.Context, req *Request) (res Response, err e
 	if err != nil {
 		return res, err
 	}
-	cli := new(http.Client)
+	client := new(http.Client)
 	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/provision/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
 	request.Header.Set("Content-Type", "application/json")
-	response, err := cli.Do(request)
+	response, err := client.Do(request)
 	if err != nil {
 		return res, err
 	}
@@ -442,13 +442,13 @@ func (api *API) Refund(ctx context.Context, req *Request) (res Response, err err
 	if err != nil {
 		return res, err
 	}
-	cli := new(http.Client)
+	client := new(http.Client)
 	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/refund/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
 	request.Header.Set("Content-Type", "application/json")
-	response, err := cli.Do(request)
+	response, err := client.Do(request)
 	if err != nil {
 		return res, err
 	}
@@ -477,13 +477,13 @@ func (api *API) Cancel(ctx context.Context, req *Request) (res Response, err err
 	if err != nil {
 		return res, err
 	}
-	cli := new(http.Client)
+	client := new(http.Client)
 	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/reverse/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
 	request.Header.Set("Content-Type", "application/json")
-	response, err := cli.Do(request)
+	response, err := client.Do(request)
 	if err != nil {
 		return res, err
 	}
@@ -514,13 +514,13 @@ func (api *API) ThreeDSession(ctx context.Context, req *Request) (res Response, 
 	if err != nil {
 		return res, err
 	}
-	cli := new(http.Client)
+	client := new(http.Client)
 	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/getThreeDSession/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
 	request.Header.Set("Content-Type", "application/json")
-	response, err := cli.Do(request)
+	response, err := client.Do(request)
 	if err != nil {
 		return res, err
 	}
@@ -549,13 +549,13 @@ func (api *API) ThreeDResult(ctx context.Context, req *Request) (res Response, e
 	if err != nil {
 		return res, err
 	}
-	cli := new(http.Client)
+	client := new(http.Client)
 	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/getThreeDSessionResult/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
 	request.Header.Set("Content-Type", "application/json")
-	response, err := cli.Do(request)
+	response, err := client.Do(request)
 	if err != nil {
 		return res, err
 	}
@@ -571,6 +571,29 @@ func (api *API) ThreeDResult(ctx context.Context, req *Request) (res Response, e
 	}
 }
 
+func (api *API) ThreeDForm(ctx context.Context, req *Request) (res string, err error) {
+	postdata, err := QueryString(req.ThreeDForm)
+	if err != nil {
+		return res, err
+	}
+	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode+"_FORM"], strings.NewReader(postdata.Encode()))
+	if err != nil {
+		return res, err
+	}
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	client := new(http.Client)
+	response, err := client.Do(request)
+	if err != nil {
+		return res, err
+	}
+	defer response.Body.Close()
+	if html, err := ioutil.ReadAll(response.Body); err == nil {
+		return string(html), nil
+	} else {
+		return res, err
+	}
+}
+
 func (api *API) CardToken(ctx context.Context, req *Request) (res Response, err error) {
 	req.CardToken.Header.ApplicationName = api.Name
 	req.CardToken.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
@@ -580,13 +603,13 @@ func (api *API) CardToken(ctx context.Context, req *Request) (res Response, err 
 	if err != nil {
 		return res, err
 	}
-	cli := new(http.Client)
+	client := new(http.Client)
 	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode+"_TOKEN"], bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
 	request.Header.Set("Content-Type", "application/json")
-	response, err := cli.Do(request)
+	response, err := client.Do(request)
 	if err != nil {
 		return res, err
 	}
@@ -616,13 +639,13 @@ func (api *API) GetPaymentMethods(ctx context.Context, req *Request) (res Respon
 	if err != nil {
 		return res, err
 	}
-	cli := new(http.Client)
+	client := new(http.Client)
 	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/getPaymentMethods/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
 	request.Header.Set("Content-Type", "application/json")
-	response, err := cli.Do(request)
+	response, err := client.Do(request)
 	if err != nil {
 		return res, err
 	}
@@ -649,13 +672,13 @@ func (api *API) OpenMobilePayment(ctx context.Context, req *Request) (res Respon
 	if err != nil {
 		return res, err
 	}
-	cli := new(http.Client)
+	client := new(http.Client)
 	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/openMobilePayment/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
 	request.Header.Set("Content-Type", "application/json")
-	response, err := cli.Do(request)
+	response, err := client.Do(request)
 	if err != nil {
 		return res, err
 	}
@@ -685,13 +708,13 @@ func (api *API) SendOTP(ctx context.Context, req *Request) (res Response, err er
 	if err != nil {
 		return res, err
 	}
-	cli := new(http.Client)
+	client := new(http.Client)
 	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/sendOTP/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
 	request.Header.Set("Content-Type", "application/json")
-	response, err := cli.Do(request)
+	response, err := client.Do(request)
 	if err != nil {
 		return res, err
 	}
@@ -721,13 +744,13 @@ func (api *API) ValidateOTP(ctx context.Context, req *Request) (res Response, er
 	if err != nil {
 		return res, err
 	}
-	cli := new(http.Client)
+	client := new(http.Client)
 	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/validateOTP/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
 	request.Header.Set("Content-Type", "application/json")
-	response, err := cli.Do(request)
+	response, err := client.Do(request)
 	if err != nil {
 		return res, err
 	}
