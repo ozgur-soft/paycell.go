@@ -6,7 +6,7 @@ Turkcell (Paycell) API with golang
 go get github.com/ozgur-soft/paycell.go
 ```
 
-# Satış işlemi
+# Satış
 ```go
 package main
 
@@ -51,7 +51,7 @@ func main() {
 }
 ```
 
-# İade işlemi
+# İade
 ```go
 package main
 
@@ -81,8 +81,7 @@ func main() {
 	api.SetPhoneNumber("905305289290") // Müşteri numarası (zorunlu)
 	api.SetIPAddress("127.0.0.1")      // IP adresi (zorunlu)
 	api.SetAmount("1.00", "TRY")       // İade tutarı (zorunlu)
-
-	req.Refund.OriginalRefNo = "" // Referans numarası (zorunlu)
+	req.Refund.OriginalRefNo = ""      // Referans numarası (zorunlu)
 
 	ctx := context.Background()
 	if res, err := api.Refund(ctx, req); err == nil {
@@ -94,7 +93,7 @@ func main() {
 }
 ```
 
-# İptal işlemi
+# İptal
 ```go
 package main
 
@@ -123,8 +122,7 @@ func main() {
 	api.SetMode(envmode)
 	api.SetPhoneNumber("905305289290") // Müşteri numarası (zorunlu)
 	api.SetIPAddress("127.0.0.1")      // IP adresi (zorunlu)
-
-	req.Cancel.OriginalRefNo = "" // Referans numarası (zorunlu)
+	req.Cancel.OriginalRefNo = ""      // Referans numarası (zorunlu)
 
 	ctx := context.Background()
 	if res, err := api.Cancel(ctx, req); err == nil {
@@ -136,7 +134,7 @@ func main() {
 }
 ```
 
-# Mobil ödeme açma işlemi
+# Mobil ödemeyi etkinleştirme
 ```go
 package main
 
