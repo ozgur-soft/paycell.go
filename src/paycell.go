@@ -132,53 +132,53 @@ type (
 
 type (
 	Response struct {
-		CardToken *struct {
-			Header ResponseHeader `json:"header,omitempty"`
-			Token  string         `json:"cardToken,omitempty"`
-			Hash   string         `json:"hashData,omitempty"`
+		CardToken struct {
+			Header *ResponseHeader `json:"header,omitempty"`
+			Token  string          `json:"cardToken,omitempty"`
+			Hash   string          `json:"hashData,omitempty"`
 		}
-		Provision *struct {
-			Header       ResponseHeader `json:"responseHeader,omitempty"`
-			OrderId      any            `json:"orderId,omitempty"`
-			RefNo        any            `json:"referenceNumber,omitempty"`
-			OrderDate    any            `json:"reconciliationDate,omitempty"`
-			ApprovalCode any            `json:"approvalCode,omitempty"`
-			AcquirerBank any            `json:"acquirerBankCode,omitempty"`
-			IssuerBank   any            `json:"issuerBankCode,omitempty"`
+		Provision struct {
+			Header       *ResponseHeader `json:"responseHeader,omitempty"`
+			OrderId      any             `json:"orderId,omitempty"`
+			RefNo        any             `json:"referenceNumber,omitempty"`
+			OrderDate    any             `json:"reconciliationDate,omitempty"`
+			ApprovalCode any             `json:"approvalCode,omitempty"`
+			AcquirerBank any             `json:"acquirerBankCode,omitempty"`
+			IssuerBank   any             `json:"issuerBankCode,omitempty"`
 		}
-		Refund *struct {
-			Header       ResponseHeader `json:"responseHeader,omitempty"`
-			OrderId      any            `json:"orderId,omitempty"`
-			OrderDate    any            `json:"reconciliationDate,omitempty"`
-			ApprovalCode any            `json:"approvalCode,omitempty"`
-			StatusCode   any            `json:"retryStatusCode,omitempty"`
-			Description  any            `json:"retryStatusDescription,omitempty"`
+		Refund struct {
+			Header       *ResponseHeader `json:"responseHeader,omitempty"`
+			OrderId      any             `json:"orderId,omitempty"`
+			OrderDate    any             `json:"reconciliationDate,omitempty"`
+			ApprovalCode any             `json:"approvalCode,omitempty"`
+			StatusCode   any             `json:"retryStatusCode,omitempty"`
+			Description  any             `json:"retryStatusDescription,omitempty"`
 		}
-		Cancel *struct {
-			Header       ResponseHeader `json:"responseHeader,omitempty"`
-			OrderId      any            `json:"orderId,omitempty"`
-			OrderDate    any            `json:"reconciliationDate,omitempty"`
-			ApprovalCode any            `json:"approvalCode,omitempty"`
-			StatusCode   any            `json:"retryStatusCode,omitempty"`
-			Description  any            `json:"retryStatusDescription,omitempty"`
+		Cancel struct {
+			Header       *ResponseHeader `json:"responseHeader,omitempty"`
+			OrderId      any             `json:"orderId,omitempty"`
+			OrderDate    any             `json:"reconciliationDate,omitempty"`
+			ApprovalCode any             `json:"approvalCode,omitempty"`
+			StatusCode   any             `json:"retryStatusCode,omitempty"`
+			Description  any             `json:"retryStatusDescription,omitempty"`
 		}
-		ThreeDSession *struct {
-			Header        ResponseHeader `json:"responseHeader,omitempty"`
-			ThreeDSession any            `json:"threeDSessionId,omitempty"`
+		ThreeDSession struct {
+			Header        *ResponseHeader `json:"responseHeader,omitempty"`
+			ThreeDSession any             `json:"threeDSessionId,omitempty"`
 		}
-		ThreeDResult *struct {
-			Header         ResponseHeader `json:"responseHeader,omitempty"`
-			CurrentStep    any            `json:"currentStep,omitempty"`
-			MdErrorMessage any            `json:"mdErrorMessage,omitempty"`
-			MdStatus       any            `json:"mdStatus,omitempty"`
+		ThreeDResult struct {
+			Header         *ResponseHeader `json:"responseHeader,omitempty"`
+			CurrentStep    any             `json:"currentStep,omitempty"`
+			MdErrorMessage any             `json:"mdErrorMessage,omitempty"`
+			MdStatus       any             `json:"mdStatus,omitempty"`
 			Operation      struct {
 				Result      string `json:"threeDResult,omitempty"`
 				Description string `json:"threeDResultDescription,omitempty"`
 			} `json:"threeDOperationResult,omitempty"`
 		}
-		PaymentMethods *struct {
-			Header   ResponseHeader `json:"responseHeader,omitempty"`
-			EulaID   any            `json:"eulaID,omitempty"`
+		PaymentMethods struct {
+			Header   *ResponseHeader `json:"responseHeader,omitempty"`
+			EulaID   any             `json:"eulaID,omitempty"`
 			CardList []*struct {
 				CardBrand         any  `json:"cardBrand,omitempty"`
 				CardId            any  `json:"cardId,omitempty"`
@@ -204,14 +204,14 @@ type (
 				IsEulaExpired  bool `json:"isEulaExpired,omitempty"`
 			} `json:"mobilePayment,omitempty"`
 		}
-		MobilePayment *struct {
-			Header ResponseHeader `json:"responseHeader,omitempty"`
+		MobilePayment struct {
+			Header *ResponseHeader `json:"responseHeader,omitempty"`
 		}
-		OTP *struct {
-			Header     ResponseHeader `json:"responseHeader,omitempty"`
-			Token      any            `json:"token,omitempty"`
-			ExpireDate any            `json:"expireDate,omitempty"`
-			RetryCount any            `json:"remainingRetryCount,omitempty"`
+		OTP struct {
+			Header     *ResponseHeader `json:"responseHeader,omitempty"`
+			Token      any             `json:"token,omitempty"`
+			ExpireDate any             `json:"expireDate,omitempty"`
+			RetryCount any             `json:"remainingRetryCount,omitempty"`
 		}
 	}
 )
@@ -224,7 +224,7 @@ type RequestHeader struct {
 	TransactionId       string `json:"transactionId,omitempty"`
 }
 
-type ResponseHeader *struct {
+type ResponseHeader struct {
 	ResponseCode        string `json:"responseCode,omitempty"`
 	ResponseDescription string `json:"responseDescription,omitempty"`
 	ResponseDateTime    string `json:"responseDateTime,omitempty"`
@@ -318,7 +318,6 @@ func (api *API) Hash(res Response) string {
 func (api *API) PreAuth(ctx context.Context, req *Request) (res Response, err error) {
 	token, err := api.CardToken(context.Background(), req)
 	if err != nil {
-		res.Provision.Header = res.CardToken.Header
 		return res, err
 	}
 	req.Provision.CardToken = token.CardToken.Token
@@ -363,7 +362,6 @@ func (api *API) PreAuth(ctx context.Context, req *Request) (res Response, err er
 func (api *API) Auth(ctx context.Context, req *Request) (res Response, err error) {
 	token, err := api.CardToken(context.Background(), req)
 	if err != nil {
-		res.Provision.Header = res.CardToken.Header
 		return res, err
 	}
 	req.Provision.CardToken = token.CardToken.Token
@@ -518,7 +516,6 @@ func (api *API) Cancel(ctx context.Context, req *Request) (res Response, err err
 func (api *API) PreAuth3Dinit(ctx context.Context, req *Request) (res Response, err error) {
 	token, err := api.CardToken(context.Background(), req)
 	if err != nil {
-		res.ThreeDSession.Header = res.CardToken.Header
 		return res, err
 	}
 	req.ThreeDSession.CardToken = token.CardToken.Token
@@ -562,7 +559,6 @@ func (api *API) PreAuth3Dinit(ctx context.Context, req *Request) (res Response, 
 func (api *API) Auth3Dinit(ctx context.Context, req *Request) (res Response, err error) {
 	token, err := api.CardToken(context.Background(), req)
 	if err != nil {
-		res.ThreeDSession.Header = res.CardToken.Header
 		return res, err
 	}
 	req.ThreeDSession.CardToken = token.CardToken.Token
