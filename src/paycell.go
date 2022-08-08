@@ -238,6 +238,20 @@ func SHA256(data string) (hash string) {
 	return hash
 }
 
+func B64(data string) (hash string) {
+	hash = base64.StdEncoding.EncodeToString([]byte(data))
+	return hash
+}
+
+func D64(data string) []byte {
+	b, err := base64.StdEncoding.DecodeString(data)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	return b
+}
+
 func Random(n int) string {
 	const alphanum = "0123456789"
 	var bytes = make([]byte, n)
@@ -588,7 +602,7 @@ func (api *API) ThreeDForm(ctx context.Context, req *Request) (res string, err e
 	}
 	defer response.Body.Close()
 	if html, err := ioutil.ReadAll(response.Body); err == nil {
-		return string(html), nil
+		return B64(string(html)), nil
 	} else {
 		return res, err
 	}
