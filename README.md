@@ -1,3 +1,6 @@
+[![license](https://img.shields.io/:license-mit-blue.svg)](https://github.com/ozgur-soft/paycell.go/blob/main/LICENSE.md)
+[![documentation](https://pkg.go.dev/badge/github.com/ozgur-soft/paycell.go)](https://pkg.go.dev/github.com/ozgur-soft/paycell.go/src)
+
 # Paycell.go
 Turkcell (Paycell) API with golang
 
