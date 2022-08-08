@@ -89,10 +89,11 @@ type (
 			MerchantCode any           `json:"merchantCode,omitempty"`
 			CardId       any           `json:"cardId,omitempty"`
 			CardToken    any           `json:"cardToken,omitempty"`
-			Installment  any           `json:"installmentCount,omitempty"`
-			Amount       any           `json:"amount,omitempty"`
-			Currency     any           `json:"currency,omitempty"`
 			RefNo        any           `json:"referenceNumber,omitempty"`
+			Amount       any           `json:"amount,omitempty"`
+			PointAmount  any           `json:"pointAmount,omitempty"`
+			Currency     any           `json:"currency,omitempty"`
+			Installment  any           `json:"installmentCount,omitempty"`
 			Target       any           `json:"target,omitempty"`
 			Transaction  any           `json:"transactionType,omitempty"`
 		}
@@ -514,6 +515,11 @@ func (api *API) Cancel(ctx context.Context, req *Request) (res Response, err err
 }
 
 func (api *API) ThreeDSession(ctx context.Context, req *Request) (res Response, err error) {
+	token, err := api.CardToken(context.Background(), req)
+	if err != nil {
+		return res, err
+	}
+	req.ThreeDSession.CardToken = token.CardToken.Token
 	req.ThreeDSession.Header.ClientIPAddress = api.IPv4
 	req.ThreeDSession.Header.ApplicationName = api.Name
 	req.ThreeDSession.Header.ApplicationPwd = api.Password
@@ -585,7 +591,7 @@ func (api *API) ThreeDResult(ctx context.Context, req *Request) (res Response, e
 	}
 }
 
-func (api *API) ThreeDForm(ctx context.Context, req *Request) (res string, err error) {
+func (api *API) Auth3Dhtml(ctx context.Context, req *Request) (res string, err error) {
 	postdata, err := QueryString(req.ThreeDForm)
 	if err != nil {
 		return res, err
