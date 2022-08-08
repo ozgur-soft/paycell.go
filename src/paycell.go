@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"strings"
@@ -640,22 +639,23 @@ func (api *API) Auth3Dhtml(ctx context.Context, req *Request) (res string, err e
 	if err != nil {
 		return res, err
 	}
-	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode+"_FORM"], strings.NewReader(postdata.Encode()))
-	if err != nil {
-		return res, err
+	html := []string{}
+	html = append(html, `<!DOCTYPE html>`)
+	html = append(html, `<html>`)
+	html = append(html, `<head>`)
+	html = append(html, `<script type="text/javascript">function submitonload() {document.payment.submit();document.getElementById('button').remove();document.getElementById('body').insertAdjacentHTML("beforeend", "Lütfen bekleyiniz...");}</script>`)
+	html = append(html, `</head>`)
+	html = append(html, `<body onload="javascript:submitonload();" id="body" style="text-align:center;margin:10px;font-family:Arial;font-weight:bold;">`)
+	html = append(html, `<form action="`+Endpoints[api.Mode+"_FORM"]+`" method="post" name="payment">`)
+	for k := range postdata {
+		html = append(html, `<input type="hidden" name="`+k+`" value="`+postdata.Get(k)+`">`)
 	}
-	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	client := new(http.Client)
-	response, err := client.Do(request)
-	if err != nil {
-		return res, err
-	}
-	defer response.Body.Close()
-	if html, err := ioutil.ReadAll(response.Body); err == nil {
-		return B64(string(html)), nil
-	} else {
-		return res, err
-	}
+	html = append(html, `<input type="submit" value="Gönder" id="button">`)
+	html = append(html, `</form>`)
+	html = append(html, `</body>`)
+	html = append(html, `</html>`)
+	res = B64(strings.Join(html, "\n"))
+	return res, err
 }
 
 func (api *API) CardToken(ctx context.Context, req *Request) (res Response, err error) {
