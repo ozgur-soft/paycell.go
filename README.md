@@ -1,12 +1,12 @@
-[![license](https://img.shields.io/:license-mit-blue.svg)](https://github.com/ozgur-soft/paycell.go/blob/main/LICENSE.md)
-[![documentation](https://pkg.go.dev/badge/github.com/ozgur-soft/paycell.go)](https://pkg.go.dev/github.com/ozgur-soft/paycell.go/src)
+[![license](https://img.shields.io/:license-mit-blue.svg)](https://github.com/ozgur-yalcin/paycell.go/blob/main/LICENSE.md)
+[![documentation](https://pkg.go.dev/badge/github.com/ozgur-yalcin/paycell.go)](https://pkg.go.dev/github.com/ozgur-yalcin/paycell.go/src)
 
 # Paycell.go
 Turkcell (Paycell) API with golang
 
 # Installation
 ```bash
-go get github.com/ozgur-soft/paycell.go
+go get github.com/ozgur-yalcin/paycell.go
 ```
 
 # Satış
@@ -18,7 +18,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	paycell "github.com/ozgur-soft/paycell.go/src"
+	paycell "github.com/ozgur-yalcin/paycell.go/src"
 )
 
 // Pos bilgileri
@@ -63,7 +63,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	paycell "github.com/ozgur-soft/paycell.go/src"
+	paycell "github.com/ozgur-yalcin/paycell.go/src"
 )
 
 // Pos bilgileri
@@ -105,7 +105,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	paycell "github.com/ozgur-soft/paycell.go/src"
+	paycell "github.com/ozgur-yalcin/paycell.go/src"
 )
 
 // Pos bilgileri
@@ -146,7 +146,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	paycell "github.com/ozgur-soft/paycell.go/src"
+	paycell "github.com/ozgur-yalcin/paycell.go/src"
 )
 
 // Pos bilgileri
