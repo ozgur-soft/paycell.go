@@ -10,11 +10,12 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
 
-var Endpoints = map[string]string{
+var EndPoints = map[string]string{
 	"PROD":       "https://tpay.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
 	"TEST":       "https://tpay-test.turkcell.com.tr/tpay/provision/services/restful/getCardToken",
 	"PROD_TOKEN": "https://epayment.turkcell.com.tr/paymentmanagement/rest/getCardTokenSecure",
@@ -318,6 +319,7 @@ func (api *API) Hash(res Response) string {
 func (api *API) PreAuth(ctx context.Context, req *Request) (res Response, err error) {
 	token, err := api.CardToken(context.Background(), req)
 	if err != nil {
+		res.Provision.Header = new(ResponseHeader)
 		return res, err
 	}
 	req.Provision.CardToken = token.CardToken.Token
@@ -337,7 +339,7 @@ func (api *API) PreAuth(ctx context.Context, req *Request) (res Response, err er
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/provision/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/provision/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -350,18 +352,17 @@ func (api *API) PreAuth(ctx context.Context, req *Request) (res Response, err er
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.Provision)
-	switch res.Provision.Header.ResponseCode {
-	case "0":
+	if code, err := strconv.Atoi(res.Provision.Header.ResponseCode); err == nil && code == 0 {
 		res.Provision.RefNo = req.Provision.RefNo
 		return res, nil
-	default:
-		return res, errors.New(res.Provision.Header.ResponseDescription)
 	}
+	return res, errors.New(res.Provision.Header.ResponseDescription)
 }
 
 func (api *API) Auth(ctx context.Context, req *Request) (res Response, err error) {
 	token, err := api.CardToken(context.Background(), req)
 	if err != nil {
+		res.Provision.Header = new(ResponseHeader)
 		return res, err
 	}
 	req.Provision.CardToken = token.CardToken.Token
@@ -381,7 +382,7 @@ func (api *API) Auth(ctx context.Context, req *Request) (res Response, err error
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/provision/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/provision/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -394,18 +395,17 @@ func (api *API) Auth(ctx context.Context, req *Request) (res Response, err error
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.Provision)
-	switch res.Provision.Header.ResponseCode {
-	case "0":
+	if code, err := strconv.Atoi(res.Provision.Header.ResponseCode); err == nil && code == 0 {
 		res.Provision.RefNo = req.Provision.RefNo
 		return res, nil
-	default:
-		return res, errors.New(res.Provision.Header.ResponseDescription)
 	}
+	return res, errors.New(res.Provision.Header.ResponseDescription)
 }
 
 func (api *API) PreAuth3Dinit(ctx context.Context, req *Request) (res Response, err error) {
 	token, err := api.CardToken(context.Background(), req)
 	if err != nil {
+		res.ThreeDSession.Header = new(ResponseHeader)
 		return res, err
 	}
 	req.ThreeDSession.CardToken = token.CardToken.Token
@@ -425,7 +425,7 @@ func (api *API) PreAuth3Dinit(ctx context.Context, req *Request) (res Response, 
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/getThreeDSession/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/getThreeDSession/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -438,17 +438,16 @@ func (api *API) PreAuth3Dinit(ctx context.Context, req *Request) (res Response, 
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.ThreeDSession)
-	switch res.ThreeDSession.Header.ResponseCode {
-	case "0":
+	if code, err := strconv.Atoi(res.ThreeDSession.Header.ResponseCode); err == nil && code == 0 {
 		return res, nil
-	default:
-		return res, errors.New(res.ThreeDSession.Header.ResponseDescription)
 	}
+	return res, errors.New(res.ThreeDSession.Header.ResponseDescription)
 }
 
 func (api *API) Auth3Dinit(ctx context.Context, req *Request) (res Response, err error) {
 	token, err := api.CardToken(context.Background(), req)
 	if err != nil {
+		res.ThreeDSession.Header = new(ResponseHeader)
 		return res, err
 	}
 	req.ThreeDSession.CardToken = token.CardToken.Token
@@ -468,7 +467,7 @@ func (api *API) Auth3Dinit(ctx context.Context, req *Request) (res Response, err
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/getThreeDSession/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/getThreeDSession/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -481,12 +480,10 @@ func (api *API) Auth3Dinit(ctx context.Context, req *Request) (res Response, err
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.ThreeDSession)
-	switch res.ThreeDSession.Header.ResponseCode {
-	case "0":
+	if code, err := strconv.Atoi(res.ThreeDSession.Header.ResponseCode); err == nil && code == 0 {
 		return res, nil
-	default:
-		return res, errors.New(res.ThreeDSession.Header.ResponseDescription)
 	}
+	return res, errors.New(res.ThreeDSession.Header.ResponseDescription)
 }
 
 func (api *API) PreAuth3D(ctx context.Context, req *Request) (res Response, err error) {
@@ -502,7 +499,7 @@ func (api *API) PreAuth3D(ctx context.Context, req *Request) (res Response, err 
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/getThreeDSessionResult/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/getThreeDSessionResult/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -515,12 +512,10 @@ func (api *API) PreAuth3D(ctx context.Context, req *Request) (res Response, err 
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.ThreeDResult)
-	switch res.ThreeDResult.Operation.Result {
-	case "0":
+	if code, err := strconv.Atoi(res.ThreeDResult.Operation.Result); err == nil && code == 0 {
 		return res, nil
-	default:
-		return res, errors.New(res.ThreeDResult.Operation.Description)
 	}
+	return res, errors.New(res.ThreeDResult.Operation.Description)
 }
 
 func (api *API) Auth3D(ctx context.Context, req *Request) (res Response, err error) {
@@ -536,7 +531,7 @@ func (api *API) Auth3D(ctx context.Context, req *Request) (res Response, err err
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/getThreeDSessionResult/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/getThreeDSessionResult/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -549,12 +544,10 @@ func (api *API) Auth3D(ctx context.Context, req *Request) (res Response, err err
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.ThreeDResult)
-	switch res.ThreeDResult.Header.ResponseCode {
-	case "0":
+	if code, err := strconv.Atoi(res.ThreeDResult.Header.ResponseCode); err == nil && code == 0 {
 		return res, nil
-	default:
-		return res, errors.New(res.ThreeDResult.Header.ResponseDescription)
 	}
+	return res, errors.New(res.ThreeDResult.Header.ResponseDescription)
 }
 
 func (api *API) PreAuth3Dhtml(ctx context.Context, req *Request) (string, error) {
@@ -582,7 +575,7 @@ func (api *API) PostAuth(ctx context.Context, req *Request) (res Response, err e
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/provision/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/provision/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -595,12 +588,10 @@ func (api *API) PostAuth(ctx context.Context, req *Request) (res Response, err e
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.Provision)
-	switch res.Provision.Header.ResponseCode {
-	case "0":
+	if code, err := strconv.Atoi(res.Provision.Header.ResponseCode); err == nil && code == 0 {
 		return res, nil
-	default:
-		return res, errors.New(res.Provision.Header.ResponseDescription)
 	}
+	return res, errors.New(res.Provision.Header.ResponseDescription)
 }
 
 func (api *API) Refund(ctx context.Context, req *Request) (res Response, err error) {
@@ -619,7 +610,7 @@ func (api *API) Refund(ctx context.Context, req *Request) (res Response, err err
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/refund/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/refund/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -632,12 +623,10 @@ func (api *API) Refund(ctx context.Context, req *Request) (res Response, err err
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.Refund)
-	switch res.Refund.Header.ResponseCode {
-	case "0":
+	if code, err := strconv.Atoi(res.Refund.Header.ResponseCode); err == nil && code == 0 {
 		return res, nil
-	default:
-		return res, errors.New(res.Refund.Header.ResponseDescription)
 	}
+	return res, errors.New(res.Refund.Header.ResponseDescription)
 }
 
 func (api *API) Cancel(ctx context.Context, req *Request) (res Response, err error) {
@@ -654,7 +643,7 @@ func (api *API) Cancel(ctx context.Context, req *Request) (res Response, err err
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/reverse/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/reverse/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -667,12 +656,10 @@ func (api *API) Cancel(ctx context.Context, req *Request) (res Response, err err
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.Cancel)
-	switch res.Cancel.Header.ResponseCode {
-	case "0":
+	if code, err := strconv.Atoi(res.Cancel.Header.ResponseCode); err == nil && code == 0 {
 		return res, nil
-	default:
-		return res, errors.New(res.Cancel.Header.ResponseDescription)
 	}
+	return res, errors.New(res.Cancel.Header.ResponseDescription)
 }
 
 func (api *API) Transaction3D(ctx context.Context, req *Request) (res string, err error) {
@@ -684,10 +671,11 @@ func (api *API) Transaction3D(ctx context.Context, req *Request) (res string, er
 	html = append(html, `<!DOCTYPE html>`)
 	html = append(html, `<html>`)
 	html = append(html, `<head>`)
+	html = append(html, `<meta http-equiv="Content-Type" content="text/html; charset=utf-8">`)
 	html = append(html, `<script type="text/javascript">function submitonload() {document.payment.submit();document.getElementById('button').remove();document.getElementById('body').insertAdjacentHTML("beforeend", "Lütfen bekleyiniz...");}</script>`)
 	html = append(html, `</head>`)
 	html = append(html, `<body onload="javascript:submitonload();" id="body" style="text-align:center;margin:10px;font-family:Arial;font-weight:bold;">`)
-	html = append(html, `<form action="`+Endpoints[api.Mode+"_FORM"]+`" method="post" name="payment">`)
+	html = append(html, `<form action="`+EndPoints[api.Mode+"_FORM"]+`" method="post" name="payment">`)
 	for k := range postdata {
 		html = append(html, `<input type="hidden" name="`+k+`" value="`+postdata.Get(k)+`">`)
 	}
@@ -709,7 +697,7 @@ func (api *API) CardToken(ctx context.Context, req *Request) (res Response, err 
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode+"_TOKEN"], bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode+"_TOKEN"], bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -722,15 +710,13 @@ func (api *API) CardToken(ctx context.Context, req *Request) (res Response, err 
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.CardToken)
-	switch res.CardToken.Header.ResponseCode {
-	case "0":
+	if code, err := strconv.Atoi(res.CardToken.Header.ResponseCode); err == nil && code == 0 {
 		if res.CardToken.Hash != api.Hash(res) {
-			return res, errors.New("mismatched hash")
+			return res, errors.New("INVALID_HASH")
 		}
 		return res, nil
-	default:
-		return res, errors.New(res.CardToken.Header.ResponseDescription)
 	}
+	return res, errors.New(res.CardToken.Header.ResponseDescription)
 }
 
 func (api *API) GetPaymentMethods(ctx context.Context, req *Request) (res Response, err error) {
@@ -745,7 +731,7 @@ func (api *API) GetPaymentMethods(ctx context.Context, req *Request) (res Respon
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/getPaymentMethods/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/getPaymentMethods/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -758,12 +744,10 @@ func (api *API) GetPaymentMethods(ctx context.Context, req *Request) (res Respon
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.PaymentMethods)
-	switch res.PaymentMethods.Header.ResponseCode {
-	case "0":
+	if code, err := strconv.Atoi(res.PaymentMethods.Header.ResponseCode); err == nil && code == 0 {
 		return res, nil
-	default:
-		return res, errors.New(res.PaymentMethods.Header.ResponseDescription)
 	}
+	return res, errors.New(res.PaymentMethods.Header.ResponseDescription)
 }
 
 func (api *API) OpenMobilePayment(ctx context.Context, req *Request) (res Response, err error) {
@@ -778,7 +762,7 @@ func (api *API) OpenMobilePayment(ctx context.Context, req *Request) (res Respon
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/openMobilePayment/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/openMobilePayment/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -791,12 +775,10 @@ func (api *API) OpenMobilePayment(ctx context.Context, req *Request) (res Respon
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.MobilePayment)
-	switch res.MobilePayment.Header.ResponseCode {
-	case "0":
+	if code, err := strconv.Atoi(res.MobilePayment.Header.ResponseCode); err == nil && code == 0 {
 		return res, nil
-	default:
-		return res, errors.New(res.MobilePayment.Header.ResponseDescription)
 	}
+	return res, errors.New(res.MobilePayment.Header.ResponseDescription)
 }
 
 func (api *API) SendOTP(ctx context.Context, req *Request) (res Response, err error) {
@@ -814,7 +796,7 @@ func (api *API) SendOTP(ctx context.Context, req *Request) (res Response, err er
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/sendOTP/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/sendOTP/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -827,12 +809,10 @@ func (api *API) SendOTP(ctx context.Context, req *Request) (res Response, err er
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.OTP)
-	switch res.OTP.Header.ResponseCode {
-	case "0":
+	if code, err := strconv.Atoi(res.OTP.Header.ResponseCode); err == nil && code == 0 {
 		return res, nil
-	default:
-		return res, errors.New(res.OTP.Header.ResponseDescription)
 	}
+	return res, errors.New(res.OTP.Header.ResponseDescription)
 }
 
 func (api *API) ValidateOTP(ctx context.Context, req *Request) (res Response, err error) {
@@ -850,7 +830,7 @@ func (api *API) ValidateOTP(ctx context.Context, req *Request) (res Response, er
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", Endpoints[api.Mode]+"/validateOTP/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/validateOTP/", bytes.NewReader(postdata))
 	if err != nil {
 		return res, err
 	}
@@ -863,10 +843,8 @@ func (api *API) ValidateOTP(ctx context.Context, req *Request) (res Response, er
 	decoder := json.NewDecoder(response.Body)
 	decoder.UseNumber()
 	decoder.Decode(&res.OTP)
-	switch res.OTP.Header.ResponseCode {
-	case "0":
+	if code, err := strconv.Atoi(res.OTP.Header.ResponseCode); err == nil && code == 0 {
 		return res, nil
-	default:
-		return res, errors.New(res.OTP.Header.ResponseDescription)
 	}
+	return res, errors.New(res.OTP.Header.ResponseDescription)
 }
