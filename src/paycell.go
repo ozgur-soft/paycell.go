@@ -335,12 +335,12 @@ func (api *API) PreAuth(ctx context.Context, req *Request) (res Response, err er
 	req.Provision.Amount = api.Amount
 	req.Provision.Currency = api.Currency
 	req.Provision.PaymentType = "PREAUTH"
-	postdata, err := json.Marshal(req.Provision)
+	payload, err := json.Marshal(req.Provision)
 	if err != nil {
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/provision/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/provision/", bytes.NewReader(payload))
 	if err != nil {
 		return res, err
 	}
@@ -378,12 +378,12 @@ func (api *API) Auth(ctx context.Context, req *Request) (res Response, err error
 	req.Provision.Amount = api.Amount
 	req.Provision.Currency = api.Currency
 	req.Provision.PaymentType = "SALE"
-	postdata, err := json.Marshal(req.Provision)
+	payload, err := json.Marshal(req.Provision)
 	if err != nil {
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/provision/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/provision/", bytes.NewReader(payload))
 	if err != nil {
 		return res, err
 	}
@@ -421,12 +421,12 @@ func (api *API) PreAuth3Dinit(ctx context.Context, req *Request) (res Response, 
 	req.ThreeDSession.MerchantCode = api.Merchant
 	req.ThreeDSession.Amount = api.Amount
 	req.ThreeDSession.Currency = api.Currency
-	postdata, err := json.Marshal(req.ThreeDSession)
+	payload, err := json.Marshal(req.ThreeDSession)
 	if err != nil {
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/getThreeDSession/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/getThreeDSession/", bytes.NewReader(payload))
 	if err != nil {
 		return res, err
 	}
@@ -463,12 +463,12 @@ func (api *API) Auth3Dinit(ctx context.Context, req *Request) (res Response, err
 	req.ThreeDSession.MerchantCode = api.Merchant
 	req.ThreeDSession.Amount = api.Amount
 	req.ThreeDSession.Currency = api.Currency
-	postdata, err := json.Marshal(req.ThreeDSession)
+	payload, err := json.Marshal(req.ThreeDSession)
 	if err != nil {
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/getThreeDSession/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/getThreeDSession/", bytes.NewReader(payload))
 	if err != nil {
 		return res, err
 	}
@@ -495,12 +495,12 @@ func (api *API) PreAuth3D(ctx context.Context, req *Request) (res Response, err 
 	req.ThreeDResult.Header.TransactionId = Random(20)
 	req.ThreeDResult.MSisdn = api.ISDN
 	req.ThreeDResult.MerchantCode = api.Merchant
-	postdata, err := json.Marshal(req.ThreeDResult)
+	payload, err := json.Marshal(req.ThreeDResult)
 	if err != nil {
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/getThreeDSessionResult/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/getThreeDSessionResult/", bytes.NewReader(payload))
 	if err != nil {
 		return res, err
 	}
@@ -527,12 +527,12 @@ func (api *API) Auth3D(ctx context.Context, req *Request) (res Response, err err
 	req.ThreeDResult.Header.TransactionId = Random(20)
 	req.ThreeDResult.MSisdn = api.ISDN
 	req.ThreeDResult.MerchantCode = api.Merchant
-	postdata, err := json.Marshal(req.ThreeDResult)
+	payload, err := json.Marshal(req.ThreeDResult)
 	if err != nil {
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/getThreeDSessionResult/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/getThreeDSessionResult/", bytes.NewReader(payload))
 	if err != nil {
 		return res, err
 	}
@@ -571,12 +571,12 @@ func (api *API) PostAuth(ctx context.Context, req *Request) (res Response, err e
 	req.Provision.Amount = api.Amount
 	req.Provision.Currency = api.Currency
 	req.Provision.PaymentType = "POSTAUTH"
-	postdata, err := json.Marshal(req.Provision)
+	payload, err := json.Marshal(req.Provision)
 	if err != nil {
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/provision/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/provision/", bytes.NewReader(payload))
 	if err != nil {
 		return res, err
 	}
@@ -606,12 +606,12 @@ func (api *API) Refund(ctx context.Context, req *Request) (res Response, err err
 	req.Refund.RefNo = api.Prefix + fmt.Sprintf("%v", req.Refund.Header.TransactionDateTime)
 	req.Refund.Amount = api.Amount
 	req.Refund.Currency = api.Currency
-	postdata, err := json.Marshal(req.Refund)
+	payload, err := json.Marshal(req.Refund)
 	if err != nil {
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/refund/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/refund/", bytes.NewReader(payload))
 	if err != nil {
 		return res, err
 	}
@@ -639,12 +639,12 @@ func (api *API) Cancel(ctx context.Context, req *Request) (res Response, err err
 	req.Cancel.MSisdn = api.ISDN
 	req.Cancel.MerchantCode = api.Merchant
 	req.Cancel.RefNo = api.Prefix + fmt.Sprintf("%v", req.Cancel.Header.TransactionDateTime)
-	postdata, err := json.Marshal(req.Cancel)
+	payload, err := json.Marshal(req.Cancel)
 	if err != nil {
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/reverse/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/reverse/", bytes.NewReader(payload))
 	if err != nil {
 		return res, err
 	}
@@ -664,7 +664,7 @@ func (api *API) Cancel(ctx context.Context, req *Request) (res Response, err err
 }
 
 func (api *API) Transaction3D(ctx context.Context, req *Request) (res string, err error) {
-	postdata, err := QueryString(req.ThreeDForm)
+	payload, err := QueryString(req.ThreeDForm)
 	if err != nil {
 		return res, err
 	}
@@ -677,8 +677,8 @@ func (api *API) Transaction3D(ctx context.Context, req *Request) (res string, er
 	html = append(html, `</head>`)
 	html = append(html, `<body onload="javascript:submitonload();" id="body" style="text-align:center;margin:10px;font-family:Arial;font-weight:bold;">`)
 	html = append(html, `<form action="`+EndPoints[api.Mode+"_FORM"]+`" method="post" name="payment">`)
-	for k := range postdata {
-		html = append(html, `<input type="hidden" name="`+k+`" value="`+postdata.Get(k)+`">`)
+	for k := range payload {
+		html = append(html, `<input type="hidden" name="`+k+`" value="`+payload.Get(k)+`">`)
 	}
 	html = append(html, `<input type="submit" value="Gönder" id="button">`)
 	html = append(html, `</form>`)
@@ -693,12 +693,12 @@ func (api *API) CardToken(ctx context.Context, req *Request) (res Response, err 
 	req.CardToken.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	req.CardToken.Header.TransactionId = Random(20)
 	req.CardToken.Hash = SHA256(strings.ToUpper(api.Name + req.CardToken.Header.TransactionId + req.CardToken.Header.TransactionDateTime + api.Key + SHA256(strings.ToUpper(api.Password+api.Name))))
-	postdata, err := json.Marshal(req.CardToken)
+	payload, err := json.Marshal(req.CardToken)
 	if err != nil {
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode+"_TOKEN"], bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode+"_TOKEN"], bytes.NewReader(payload))
 	if err != nil {
 		return res, err
 	}
@@ -727,12 +727,12 @@ func (api *API) GetPaymentMethods(ctx context.Context, req *Request) (res Respon
 	req.PaymentMethods.Header.ApplicationPwd = api.Password
 	req.PaymentMethods.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	req.PaymentMethods.Header.TransactionId = Random(20)
-	postdata, err := json.Marshal(req.PaymentMethods)
+	payload, err := json.Marshal(req.PaymentMethods)
 	if err != nil {
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/getPaymentMethods/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/getPaymentMethods/", bytes.NewReader(payload))
 	if err != nil {
 		return res, err
 	}
@@ -758,12 +758,12 @@ func (api *API) OpenMobilePayment(ctx context.Context, req *Request) (res Respon
 	req.MobilePayment.Header.TransactionDateTime = strings.ReplaceAll(time.Now().Format("20060102150405.000"), ".", "")
 	req.MobilePayment.Header.TransactionId = Random(20)
 	req.MobilePayment.MSisdn = api.ISDN
-	postdata, err := json.Marshal(req.MobilePayment)
+	payload, err := json.Marshal(req.MobilePayment)
 	if err != nil {
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/openMobilePayment/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/openMobilePayment/", bytes.NewReader(payload))
 	if err != nil {
 		return res, err
 	}
@@ -792,12 +792,12 @@ func (api *API) SendOTP(ctx context.Context, req *Request) (res Response, err er
 	req.OTP.RefNo = Random(20)
 	req.OTP.Amount = api.Amount
 	req.OTP.Currency = api.Currency
-	postdata, err := json.Marshal(req.OTP)
+	payload, err := json.Marshal(req.OTP)
 	if err != nil {
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/sendOTP/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/sendOTP/", bytes.NewReader(payload))
 	if err != nil {
 		return res, err
 	}
@@ -826,12 +826,12 @@ func (api *API) ValidateOTP(ctx context.Context, req *Request) (res Response, er
 	req.OTP.RefNo = Random(20)
 	req.OTP.Amount = api.Amount
 	req.OTP.Currency = api.Currency
-	postdata, err := json.Marshal(req.OTP)
+	payload, err := json.Marshal(req.OTP)
 	if err != nil {
 		return res, err
 	}
 	client := new(http.Client)
-	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/validateOTP/", bytes.NewReader(postdata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode]+"/validateOTP/", bytes.NewReader(payload))
 	if err != nil {
 		return res, err
 	}
